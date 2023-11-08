@@ -1,4 +1,4 @@
-![SchoolEvent Logo](./public/schoolevent_letter_logo_black.svg)
+![SchoolEvent Logo](./public/schoolevent_letter_logo_white.svg)
 
 ### SchoolEvent, the web application for managing and organizing school events.
 
@@ -13,6 +13,7 @@
 - [TypeScript](https://www.typescriptlang.org/) - Typed JavaScript at Any Scale
 - [Ant Design](https://ant.design/) - A design system for enterprise-level products
 - [LessCSS](https://lesscss.org/) - The dynamic stylesheet language
+- [Phosphor Icons](https://phosphoricons.com/) - Flexible icons for everyone
 
 # Installation
 
@@ -172,4 +173,14 @@ export function myUtilFunction(params: IMyUtilFunctionParams) {
 
 // Good ✅
 export function myUtilFunction(param: string) {}
+```
+
+## Icons
+
+We uses Phosphor Icons. You can find all the icons [here](https://phosphoricons.com/).
+
+You can import icons the following way:
+
+```tsx
+import { MyIcon } from '@phosphor-icons/react'
 ```

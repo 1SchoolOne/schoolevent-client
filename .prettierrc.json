@@ -9,9 +9,12 @@
 	"printWidth": 100,
 	"plugins": ["@trivago/prettier-plugin-sort-imports"],
 	"importOrder": [
+		"^(?!@components|@utils|@types)[^./]",
 		"^@(components|types|utils)",
-		"^[./].*(?<!\\.less)(?<!\\.css)(?<![-/]types)(?<![-/]constants)$",
-		"\\.(less|css)$"
+		"^[./].(?<!\\.less)(?<![-/]types)(?<![-/]constants)$",
+		"^[./].(?<!\\.less)(?<![-/]types)$",
+		"^[./].*(?<!\\.less)$",
+		"\\.less$"
 	],
 	"importOrderSeparation": true,
 	"importOrderSortSpecifiers": true

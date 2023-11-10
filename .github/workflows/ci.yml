@@ -1,0 +1,55 @@
+name: Lint and Build
+
+permissions:
+  pull-requests: write
+
+on:
+  pull_request:
+    branches:
+      - '*'     # Listen to all branches
+    types:
+      - opened
+      - synchronize
+  push:
+    branches:
+      - master
+      - develop
+
+env:
+  NODE_VERSION: 16
+
+jobs:
+  linting:
+    name: Linting
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install NodeJS
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Code Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Code Linting
+        run: yarn run lint
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install NodeJS
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Code Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Build
+        run: yarn run build

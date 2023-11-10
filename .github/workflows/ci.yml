@@ -9,10 +9,11 @@ on:
       - '*'     # Listen to all branches
     types:
       - opened
-      - edited
-      - reopened
       - synchronize
-      - ready_for_review
+  push:
+    branches:
+      - master
+      - develop
 
 env:
   NODE_VERSION: 16

@@ -6,7 +6,7 @@
 	"scripts": {
 		"dev": "vite",
 		"build": "tsc && vite build",
-		"lint": "npx eslint src/ --ext .ts,.tsx --report-unused-disable-directives --max-warnings 0",
+		"lint": "npx eslint --format=pretty src/ --ext .ts,.tsx --report-unused-disable-directives --max-warnings 0",
 		"preview": "vite preview"
 	},
 	"dependencies": {
@@ -27,6 +27,7 @@
 		"@vitejs/plugin-react-swc": "3.3.2",
 		"eslint": "8.45.0",
 		"eslint-config-airbnb-typescript": "17.1.0",
+		"eslint-formatter-pretty": "5",
 		"eslint-plugin-react-hooks": "4.6.0",
 		"eslint-plugin-react-refresh": "0.4.3",
 		"less": "4.2.0",

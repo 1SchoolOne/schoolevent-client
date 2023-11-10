@@ -11,10 +11,10 @@
 	"importOrder": [
 		"^(?!@components|@utils|@types)[^./]",
 		"^@(components|types|utils)",
-		"^[./].(?<!\\.less)(?<![-/]types)(?<![-/]constants)$",
-		"^[./].(?<!\\.less)(?<![-/]types)$",
-		"^[./].*(?<!\\.less)$",
-		"\\.less$"
+		"^[./].(?<!\\.(less|css))(?<![-/]types)(?<![-/]constants)$",
+		"^[./].(?<!\\.(less|css))(?<![-/]types)$",
+		"^[./].*(?<!\\.(less|css))$",
+		"\\.(less|css)$"
 	],
 	"importOrderSeparation": true,
 	"importOrderSortSpecifiers": true

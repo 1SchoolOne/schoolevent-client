@@ -7,6 +7,7 @@
 		"dev": "vite",
 		"build": "tsc && vite build",
 		"lint": "npx eslint --format=pretty src/ --ext .ts,.tsx --report-unused-disable-directives --max-warnings 0",
+		"lint:fix": "npx eslint --fix --format=pretty src/ --ext .ts,.tsx --report-unused-disable-directives --max-warnings 0",
 		"preview": "vite preview"
 	},
 	"dependencies": {

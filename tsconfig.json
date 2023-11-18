@@ -23,9 +23,9 @@
 		/* Aliases */
 		"paths": {
 			"@components": ["./src/components/index.ts"],
-			"@utils/*": ["./src/utils"],
+			"@utils/*": ["./src/utils/*"],
 			"@types": ["./src/types/index.ts"],
-			"@assets/*": ["./src/assets"],
+			"@assets/*": ["./src/assets/*"],
 			"@routes": ["./src/routes/index.ts"]
 		}
 	},

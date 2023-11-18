@@ -1,0 +1,66 @@
+@import '../../assets/variables.less';
+
+.login-container {
+	height: 100%;
+	width: 100%;
+	display: grid;
+	grid-template-columns: 40% 60%;
+
+	&__hero {
+		width: 100%;
+		border-radius: 2rem;
+		padding: 1rem;
+		margin: 1rem;
+		background-color: #0f1828;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+
+		img:nth-child(1) {
+			width: 200px;
+		}
+
+		img:nth-child(2) {
+			height: 4rem;
+			width: auto;
+			margin-top: 2rem;
+		}
+
+		p {
+			margin-top: 6rem;
+			color: white;
+			font-size: 1.75rem;
+
+			span {
+				color: @primary-color;
+			}
+		}
+	}
+
+	&__form {
+		width: 100%;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+
+		h1 {
+			font-size: 2.5rem;
+		}
+
+		form {
+			max-width: 400px;
+			width: 100%;
+			padding: 1rem;
+
+			label.ant-form-item-required {
+				font-size: 1.15rem;
+			}
+
+			button[type='submit'] {
+				margin-top: 2rem;
+			}
+		}
+	}
+}

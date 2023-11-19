@@ -30,7 +30,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
 		return () => {
 			subscription.unsubscribe()
 		}
-	}, [])
+	}, []) // eslint-disable-line react-hooks/exhaustive-deps
 
 	const value: IAuthContext = useMemo(
 		() => ({
@@ -38,7 +38,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
 			signOut: () => supabase.auth.signOut(),
 			user,
 		}),
-		[user],
+		[user], // eslint-disable-line react-hooks/exhaustive-deps
 	)
 
 	return (
@@ -54,6 +54,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
 	)
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useAuth() {
 	return useContext(AuthContext)
 }

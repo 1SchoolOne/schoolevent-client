@@ -25,7 +25,7 @@ export function MainLayout() {
 		if (!user) {
 			navigate('/login')
 		}
-	}, [])
+	}, []) // eslint-disable-line react-hooks/exhaustive-deps
 
 	return (
 		<Layout>

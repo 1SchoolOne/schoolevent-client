@@ -1,7 +1,7 @@
 import { Button, Form, Input } from 'antd'
 import { useNavigate } from 'react-router-dom'
 
-import { useSupabase } from '@utils/useSupabase'
+import { useSupabase } from '@utils'
 
 import { ILoginFormFields } from './LoginForm-types'
 

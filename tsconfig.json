@@ -23,7 +23,7 @@
 		/* Aliases */
 		"paths": {
 			"@components": ["./src/components/index.ts"],
-			"@utils/*": ["./src/utils/*"],
+			"@utils": ["./src/utils/index.ts"],
 			"@types": ["./src/types/index.ts"],
 			"@assets/*": ["./src/assets/*"],
 			"@routes": ["./src/routes/index.ts"],

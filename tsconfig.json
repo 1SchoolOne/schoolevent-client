@@ -26,7 +26,8 @@
 			"@utils/*": ["./src/utils/*"],
 			"@types": ["./src/types/index.ts"],
 			"@assets/*": ["./src/assets/*"],
-			"@routes": ["./src/routes/index.ts"]
+			"@routes": ["./src/routes/index.ts"],
+			"@contexts": ["./src/contexts/index.ts"]
 		}
 	},
 	"include": ["src"],

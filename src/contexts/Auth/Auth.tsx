@@ -1,8 +1,9 @@
 import { User } from '@supabase/supabase-js'
+import { Spin } from 'antd'
 import { createContext, useContext, useEffect, useMemo, useState } from 'react'
 
 import { PropsWithChildren } from '@types'
-import { useSupabase } from '@utils/useSupabase'
+import { useSupabase } from '@utils'
 
 import { IAuthContext } from './Auth-types'
 
@@ -31,7 +32,6 @@ export function AuthProvider({ children }: PropsWithChildren) {
 		}
 	}, [])
 
-	// Will be passed down to Signup, Login and Dashboard components
 	const value: IAuthContext = useMemo(
 		() => ({
 			signIn: (data) => supabase.auth.signInWithPassword(data),
@@ -41,7 +41,17 @@ export function AuthProvider({ children }: PropsWithChildren) {
 		[user],
 	)
 
-	return <AuthContext.Provider value={value}>{!loading && children}</AuthContext.Provider>
+	return (
+		<AuthContext.Provider value={value}>
+			{loading ? (
+				<div className="auth-loader">
+					<Spin className="auth-loader__spin" size="large" />
+				</div>
+			) : (
+				children
+			)}
+		</AuthContext.Provider>
+	)
 }
 
 export function useAuth() {

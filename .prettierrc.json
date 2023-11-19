@@ -9,8 +9,8 @@
 	"printWidth": 100,
 	"plugins": ["@trivago/prettier-plugin-sort-imports"],
 	"importOrder": [
-		"^(?!@components|@utils|@types|@routes|@assets)[^./]",
-		"^@(components|types|utils|routes|assets)",
+		"^(?!@components|@utils|@types|@routes|@assets|@contexts)[^./]",
+		"^@(components|types|utils|routes|assets|contexts)",
 		"^[./].(?<!\\.(less|css))(?<![-/]types)(?<![-/]constants)$",
 		"^[./].(?<!\\.(less|css))(?<![-/]types)$",
 		"^[./].*(?<!\\.(less|css))$",

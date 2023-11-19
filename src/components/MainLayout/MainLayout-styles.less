@@ -1,0 +1,64 @@
+.ant-layout {
+	height: 100%;
+
+	.ant-layout-sider {
+		.sider__logo {
+			display: flex;
+			align-items: center;
+			margin: 7px 10px;
+			height: 50px;
+			gap: 15px;
+
+			img:nth-child(1) {
+				transition: 250ms;
+				height: 35px;
+			}
+
+			img:nth-child(2) {
+				height: fit-content;
+				width: 110px;
+				opacity: 1;
+				transition: 250ms;
+			}
+		}
+
+		&-collapsed {
+			.sider__logo {
+				img:nth-child(1) {
+					margin-left: 15px;
+				}
+
+				img:nth-child(2) {
+					opacity: 0;
+				}
+			}
+		}
+	}
+
+	.ant-menu {
+		margin-top: 2rem;
+	}
+
+	.ant-layout-header {
+		position: relative;
+		background-color: #eee;
+
+		.sider-trigger,
+		.sider-trigger__collapsed {
+			position: absolute;
+			left: 0;
+			top: 50%;
+			transform: translate(-30%, -50%);
+
+			svg {
+				transition: rotate 250ms ease-in-out;
+			}
+		}
+
+		.sider-trigger__collapsed {
+			svg {
+				rotate: 180deg;
+			}
+		}
+	}
+}

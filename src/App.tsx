@@ -2,9 +2,11 @@ import { useEffect, useState } from 'react'
 import { Helmet } from 'react-helmet'
 import { RouterProvider, createBrowserRouter } from 'react-router-dom'
 
-import { loginRoute } from '@routes'
+import { MainLayout } from '@components'
+import { AuthProvider } from '@contexts'
+import { loginRoute, noMatchRoute } from '@routes'
 
-import './App.css'
+import './App.less'
 
 function App() {
 	const [faviconHref, setFaviconHref] = useState<string>('')
@@ -18,7 +20,18 @@ function App() {
 			setFaviconHref(`schoolevent_logo_${matcher.matches ? 'white' : 'black'}.svg`)
 	}, [faviconHref])
 
-	const router = createBrowserRouter([loginRoute])
+	const router = createBrowserRouter([
+		loginRoute,
+		noMatchRoute,
+		{
+			path: '/',
+			element: (
+				<AuthProvider>
+					<MainLayout />
+				</AuthProvider>
+			),
+		},
+	])
 
 	return (
 		<>

@@ -1,4 +1,4 @@
-![SchoolEvent Logo](./public/schoolevent_letter_logo_white.svg)
+![SchoolEvent Logo](./public/schoolevent_text_white.svg)
 
 ### SchoolEvent, the web application for managing and organizing school events.
 

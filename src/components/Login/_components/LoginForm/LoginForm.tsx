@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 
 import { useSupabase } from '@utils'
 
-import { ILoginFormFields } from './LoginForm-types'
+import { ILoginFormFields } from '../types'
 
 export function LoginForm() {
 	const [form] = Form.useForm()

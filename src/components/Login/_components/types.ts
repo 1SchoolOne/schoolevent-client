@@ -3,4 +3,6 @@ export interface ILoginFormFields {
 	password?: string
 }
 
-export interface IMagicLinkFormFields extends Omit<ILoginFormFields, 'password'> {}
+export interface IMagicLinkFormFields extends Omit<ILoginFormFields, 'password'> {
+	confirmCode?: string
+}

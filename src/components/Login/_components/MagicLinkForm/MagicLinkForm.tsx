@@ -1,16 +1,23 @@
+import { Info as InfoIcon } from '@phosphor-icons/react'
 import { Button, Form, Input } from 'antd'
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 import { useSupabase } from '@utils'
 
 import { IMagicLinkFormFields } from '../types'
 
+import './MagicLinkForm-styles.less'
+
 export function MagicLinkForm() {
+	const [buttonLabel, setButtonLabel] = useState<string>('Envoyer le lien')
 	const [form] = Form.useForm()
 	const supabase = useSupabase()
+	const navigate = useNavigate()
 
 	const inDevMode = import.meta.env.DEV
 
-	const onFinish = async (values: IMagicLinkFormFields) => {
+	const sendLink = async (values: IMagicLinkFormFields) => {
 		const { email } = values
 
 		if (!email) return
@@ -25,7 +32,35 @@ export function MagicLinkForm() {
 
 		if (error) {
 			console.error(error)
+		}
+	}
+
+	const verifyCode = async (values: IMagicLinkFormFields) => {
+		const { email, confirmCode } = values
+
+		if (!email || !confirmCode) return
+
+		const { error } = await supabase.auth.verifyOtp({ email, token: confirmCode, type: 'email' })
+
+		if (error) {
+			console.error(error)
 			return
+		}
+
+		navigate('/')
+	}
+
+	const onFinish = async (values: IMagicLinkFormFields) => {
+		const { email, confirmCode } = values
+
+		if (!email) return
+
+		if (confirmCode === '') {
+			console.log('sending link')
+			await sendLink(values)
+		} else {
+			console.log('verifying code')
+			await verifyCode(values)
 		}
 	}
 
@@ -37,7 +72,7 @@ export function MagicLinkForm() {
 			layout="vertical"
 			autoComplete="off"
 			onFinish={onFinish}
-			initialValues={{ email: '' }}
+			initialValues={{ email: '', confirmCode: '' }}
 		>
 			<Form.Item<IMagicLinkFormFields>
 				label="Email"
@@ -47,9 +82,30 @@ export function MagicLinkForm() {
 				<Input />
 			</Form.Item>
 
+			<Form.Item
+				label="Confirmation code"
+				name="confirmCode"
+				extra={
+					<p>
+						<InfoIcon size="1rem" />
+						Si le lien ne redirige pas vers la dashboard, entrez le code reçu avec le lien.
+					</p>
+				}
+			>
+				<Input
+					onChange={(e) => {
+						if (e.target.value === '') {
+							setButtonLabel('Envoyer le lien')
+						} else {
+							setButtonLabel('Valider le code')
+						}
+					}}
+				/>
+			</Form.Item>
+
 			<Form.Item>
 				<Button htmlType="submit" type="primary" block>
-					Envoyer le lien
+					{buttonLabel}
 				</Button>
 			</Form.Item>
 		</Form>

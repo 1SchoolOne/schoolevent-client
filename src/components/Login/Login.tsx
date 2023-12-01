@@ -18,7 +18,7 @@ export function Login() {
 		if (!searchParams.get('magiclink')) {
 			setSearchParams({ magiclink: 'false' })
 		}
-	}, [])
+	}, [searchParams, setSearchParams])
 
 	return (
 		<div className="login-container">

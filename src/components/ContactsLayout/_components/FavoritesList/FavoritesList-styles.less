@@ -1,0 +1,20 @@
+.favorites-list {
+	width: 100%;
+
+	&__item {
+		border-radius: 6px;
+		padding: 0.3rem 0.5rem;
+		background-color: rgba(0, 0, 0, 0.03);
+		transition: 150ms cubic-bezier(0.85, 0, 0.15, 1);
+		font-weight: bold;
+
+		i {
+			font-weight: normal;
+		}
+
+		&:hover {
+			background-color: rgba(0, 0, 0, 0.075);
+			cursor: pointer;
+		}
+	}
+}

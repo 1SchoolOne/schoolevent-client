@@ -1,5 +1,7 @@
 import { Layout } from 'antd'
 
+import { FavoritesList, Table } from './_components'
+
 import './ContactsLayout-styles.less'
 
 const { Content, Header, Sider } = Layout
@@ -7,10 +9,14 @@ const { Content, Header, Sider } = Layout
 export function ContactsLayout() {
 	return (
 		<Layout className="contacts-layout">
-			<Sider>Favoris</Sider>
+			<Header>Search, filters, sorting...</Header>
 			<Layout>
-				<Header>Search, filters, sorting...</Header>
-				<Content>Table and map</Content>
+				<Sider width={250}>
+					<FavoritesList />
+				</Sider>
+				<Content>
+					<Table />
+				</Content>
 			</Layout>
 		</Layout>
 	)

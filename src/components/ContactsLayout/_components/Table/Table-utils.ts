@@ -4,9 +4,11 @@ import { IQueryParams, ITableConfigState, TReducerActionType } from './Table-typ
 export function fetchTableData(queryParams: IQueryParams) {
 	const { limit, offset, select, where, orderBy } = queryParams
 
-	const url = `${GOUV_API_URL}?timezone=Europe%2FParis&limit=${limit}&offset=${offset}${
-		select ? `&select=${select}` : ''
-	}${where ? `&where=${where}` : ''}${orderBy ? `&order_by=${orderBy}` : ''}`
+	const selectQuery = select ? `&select=${select}` : ''
+	const whereQuery = where ? `&where=${where}` : ''
+	const orderByQuery = orderBy ? `&order_by=${orderBy}` : ''
+
+	const url = `${GOUV_API_URL}?timezone=Europe%2FParis&limit=${limit}&offset=${offset}${selectQuery}${whereQuery}${orderByQuery}`
 
 	return fetch(url)
 }
@@ -38,6 +40,11 @@ export function reducer(state: ITableConfigState, action: TReducerActionType): I
 			return {
 				...state,
 				orderBy: `${action.payload.field} ${action.payload.order}`,
+			}
+		case 'SET_TABLE_HEIGHT':
+			return {
+				...state,
+				tableHeight: action.payload.height,
 			}
 	}
 }

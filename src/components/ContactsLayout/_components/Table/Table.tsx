@@ -1,6 +1,6 @@
 import { Table as AntdTable } from 'antd'
-import { ColumnsType } from 'antd/lib/table'
-import { useEffect, useReducer } from 'react'
+import { ColumnsType, TableRef } from 'antd/lib/table'
+import { useEffect, useLayoutEffect, useReducer, useRef } from 'react'
 
 import { INIT_TABLE_STATE, SELECTED_FIELDS } from './Table-constants'
 import { ISchool } from './Table-types'
@@ -10,6 +10,19 @@ import './Table-styles.less'
 
 export function Table() {
 	const [tableConfig, setTableConfig] = useReducer(reducer, INIT_TABLE_STATE)
+	const tableRef = useRef<TableRef>(null)
+
+	// This effect is used to calculate the table height so it can fit
+	// properly in its container.
+	useLayoutEffect(() => {
+		const node = tableRef.current
+		const clientRect = node?.nativeElement.getBoundingClientRect()
+
+		const top = clientRect?.top ?? 0
+		const height = window.innerHeight - top - 55
+
+		setTableConfig({ type: 'SET_TABLE_HEIGHT', payload: { height } })
+	}, [tableRef])
 
 	useEffect(() => {
 		const fetchData = async () => {
@@ -50,7 +63,9 @@ export function Table() {
 	]
 
 	return (
-		<AntdTable
+		<AntdTable<ISchool>
+			ref={tableRef}
+			scroll={{ y: tableConfig.tableHeight }}
 			className="contacts-table"
 			columns={columns}
 			dataSource={tableConfig.data}
@@ -64,9 +79,12 @@ export function Table() {
 
 					setTableConfig({ type: 'SET_OFFSET', payload: { offset } })
 				},
+				showTotal: (total, range) => {
+					return `${range[0]}-${range[1]} sur ${total} établissements`
+				},
 			}}
 			onChange={(_pagination, _filters, sorter) => {
-				if (!Array.isArray(sorter)) {
+				if (!Array.isArray(sorter) && Object.entries(sorter).length > 0) {
 					const order = sorter.order === 'ascend' ? 'ASC' : 'DESC'
 
 					setTableConfig({

@@ -12,4 +12,5 @@ export const INIT_TABLE_STATE: ITableConfigState = {
 	totalCount: 0,
 	paginationSize: 20,
 	offset: 0,
+	tableHeight: 0,
 }

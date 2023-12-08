@@ -25,6 +25,7 @@ export type TReducerActionType =
 	| TSetPaginationSizeAction
 	| TSetOffsetAction
 	| TSetOrderByAction
+	| TSetTableHeightAction
 
 interface IAPIResponse {
 	total_count: number
@@ -67,6 +68,13 @@ type TSetOrderByAction = {
 	}
 }
 
+type TSetTableHeightAction = {
+	type: 'SET_TABLE_HEIGHT'
+	payload: {
+		height: number
+	}
+}
+
 export interface ITableConfigState {
 	data: ISchool[]
 	loading: boolean
@@ -74,4 +82,5 @@ export interface ITableConfigState {
 	paginationSize: number
 	offset: number
 	orderBy?: string
+	tableHeight: number
 }

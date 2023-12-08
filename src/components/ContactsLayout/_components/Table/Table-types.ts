@@ -65,7 +65,7 @@ type TSetOrderByAction = {
 	payload: {
 		field: keyof ISchool
 		order: 'ASC' | 'DESC'
-	}
+	} | null
 }
 
 type TSetTableHeightAction = {
@@ -78,9 +78,14 @@ type TSetTableHeightAction = {
 export interface ITableConfigState {
 	data: ISchool[]
 	loading: boolean
-	totalCount: number
+	totalCount: number | undefined
 	paginationSize: number
 	offset: number
 	orderBy?: string
 	tableHeight: number
+}
+
+export interface ITableStorage {
+	orderBy: string | null
+	paginationSize: number
 }

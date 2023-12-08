@@ -9,8 +9,8 @@ export const SELECTED_FIELDS =
 export const INIT_TABLE_STATE: ITableConfigState = {
 	data: [],
 	loading: true,
-	totalCount: 0,
-	paginationSize: 20,
+	totalCount: undefined,
+	paginationSize: 25,
 	offset: 0,
 	tableHeight: 0,
 }

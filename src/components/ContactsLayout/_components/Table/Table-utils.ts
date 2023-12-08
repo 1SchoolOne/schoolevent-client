@@ -1,5 +1,15 @@
+import { SortOrder } from 'antd/lib/table/interface'
+
+import { getLocalStorage } from '@utils'
+
 import { GOUV_API_URL } from './Table-constants'
-import { IQueryParams, ITableConfigState, TReducerActionType } from './Table-types'
+import {
+	IQueryParams,
+	ISchool,
+	ITableConfigState,
+	ITableStorage,
+	TReducerActionType,
+} from './Table-types'
 
 export function fetchTableData(queryParams: IQueryParams) {
 	const { limit, offset, select, where, orderBy } = queryParams
@@ -14,6 +24,9 @@ export function fetchTableData(queryParams: IQueryParams) {
 }
 
 export function reducer(state: ITableConfigState, action: TReducerActionType): ITableConfigState {
+	const localStorage = getLocalStorage()
+	const tableStorage = localStorage.get('contacts.table') as ITableStorage
+
 	switch (action.type) {
 		case 'SET_DATA':
 			return {
@@ -27,6 +40,11 @@ export function reducer(state: ITableConfigState, action: TReducerActionType): I
 				loading: action.payload.loading,
 			}
 		case 'SET_PAGINATION_SIZE':
+			localStorage.set('contacts.table', {
+				...tableStorage,
+				paginationSize: action.payload.paginationSize,
+			} as ITableStorage)
+
 			return {
 				...state,
 				paginationSize: action.payload.paginationSize,
@@ -37,6 +55,23 @@ export function reducer(state: ITableConfigState, action: TReducerActionType): I
 				offset: action.payload.offset,
 			}
 		case 'SET_ORDER_BY':
+			if (action.payload === null) {
+				localStorage.set('contacts.table', {
+					...tableStorage,
+					orderBy: null,
+				} as ITableStorage)
+
+				return {
+					...state,
+					orderBy: undefined,
+				}
+			}
+
+			localStorage.set('contacts.table', {
+				...tableStorage,
+				orderBy: `${action.payload.field} ${action.payload.order}`,
+			} as ITableStorage)
+
 			return {
 				...state,
 				orderBy: `${action.payload.field} ${action.payload.order}`,
@@ -47,4 +82,25 @@ export function reducer(state: ITableConfigState, action: TReducerActionType): I
 				tableHeight: action.payload.height,
 			}
 	}
+}
+
+/**
+ * Get the sort order of a column from the orderBy string
+ */
+export function getSortOrder(
+	index: keyof ISchool,
+	orderBy: string | undefined,
+): SortOrder | undefined {
+	if (!orderBy || orderBy === '') {
+		return undefined
+	}
+
+	const field = orderBy.split(' ')[0]
+	const order = orderBy.split(' ')[1]
+
+	if (field === index) {
+		return order === 'ASC' ? 'ascend' : 'descend'
+	}
+
+	return undefined
 }

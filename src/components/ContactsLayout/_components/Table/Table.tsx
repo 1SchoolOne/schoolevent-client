@@ -2,10 +2,11 @@ import { Table as AntdTable } from 'antd'
 import { ColumnsType, TableRef } from 'antd/lib/table'
 import { useEffect, useLayoutEffect, useReducer, useRef } from 'react'
 
+import { ITableStorage } from '@types'
 import { useLocalStorage } from '@utils'
 
 import { INIT_TABLE_STATE, SELECTED_FIELDS } from './Table-constants'
-import { ISchool, ITableStorage } from './Table-types'
+import { ISchool } from './Table-types'
 import { fetchTableData, getSortOrder, reducer } from './Table-utils'
 
 import './Table-styles.less'
@@ -35,9 +36,9 @@ export function Table() {
 
 			setTableConfig({ type: 'SET_PAGINATION_SIZE', payload: { paginationSize } })
 		} else {
-			localStorage.set('contacts.table', {
-				orderBy: null,
-				paginationSize: INIT_TABLE_STATE.paginationSize,
+			localStorage.set({
+				key: 'contacts.table',
+				data: { orderBy: null, paginationSize: INIT_TABLE_STATE.paginationSize },
 			})
 		}
 

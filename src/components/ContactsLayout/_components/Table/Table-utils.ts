@@ -1,15 +1,10 @@
 import { SortOrder } from 'antd/lib/table/interface'
 
+import { ITableStorage } from '@types'
 import { getLocalStorage } from '@utils'
 
 import { GOUV_API_URL } from './Table-constants'
-import {
-	IQueryParams,
-	ISchool,
-	ITableConfigState,
-	ITableStorage,
-	TReducerActionType,
-} from './Table-types'
+import { IQueryParams, ISchool, ITableConfigState, TReducerActionType } from './Table-types'
 
 export function fetchTableData(queryParams: IQueryParams) {
 	const { limit, offset, select, where, orderBy } = queryParams
@@ -40,10 +35,13 @@ export function reducer(state: ITableConfigState, action: TReducerActionType): I
 				loading: action.payload.loading,
 			}
 		case 'SET_PAGINATION_SIZE':
-			localStorage.set('contacts.table', {
-				...tableStorage,
-				paginationSize: action.payload.paginationSize,
-			} as ITableStorage)
+			localStorage.set({
+				key: 'contacts.table',
+				data: {
+					...tableStorage,
+					paginationSize: action.payload.paginationSize,
+				},
+			})
 
 			return {
 				...state,
@@ -56,10 +54,13 @@ export function reducer(state: ITableConfigState, action: TReducerActionType): I
 			}
 		case 'SET_ORDER_BY':
 			if (action.payload === null) {
-				localStorage.set('contacts.table', {
-					...tableStorage,
-					orderBy: null,
-				} as ITableStorage)
+				localStorage.set({
+					key: 'contacts.table',
+					data: {
+						...tableStorage,
+						orderBy: null,
+					},
+				})
 
 				return {
 					...state,
@@ -67,10 +68,13 @@ export function reducer(state: ITableConfigState, action: TReducerActionType): I
 				}
 			}
 
-			localStorage.set('contacts.table', {
-				...tableStorage,
-				orderBy: `${action.payload.field} ${action.payload.order}`,
-			} as ITableStorage)
+			localStorage.set({
+				key: 'contacts.table',
+				data: {
+					...tableStorage,
+					orderBy: `${action.payload.field} ${action.payload.order}`,
+				},
+			})
 
 			return {
 				...state,

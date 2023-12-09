@@ -84,8 +84,3 @@ export interface ITableConfigState {
 	orderBy?: string
 	tableHeight: number
 }
-
-export interface ITableStorage {
-	orderBy: string | null
-	paginationSize: number
-}

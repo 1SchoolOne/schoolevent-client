@@ -28,7 +28,7 @@
 
 					.ant-table-body {
 						flex: auto;
-						overflow: scroll;
+						overflow: auto;
 					}
 				}
 
@@ -46,6 +46,12 @@
 	}
 
 	tbody.ant-table-tbody {
+		.favorite-button {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+
 		tr:nth-child(even) {
 			td.ant-table-cell.ant-table-cell-row-hover {
 				background: #fdf0e3;

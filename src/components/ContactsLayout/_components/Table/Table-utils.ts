@@ -26,8 +26,8 @@ export function reducer(state: ITableConfigState, action: TReducerActionType): I
 		case 'SET_DATA':
 			return {
 				...state,
-				data: action.payload.data.results,
-				totalCount: action.payload.data.total_count,
+				data: action.payload.results,
+				totalCount: action.payload.total_count,
 			}
 		case 'SET_LOADING':
 			return {

@@ -1,20 +1,41 @@
-import { Table as AntdTable } from 'antd'
+import { Star as FavoriteIcon } from '@phosphor-icons/react'
+import { Table as AntdTable, Button } from 'antd'
 import { ColumnsType, TableRef } from 'antd/lib/table'
 import { useEffect, useLayoutEffect, useReducer, useRef } from 'react'
 
+import { useAuth, useFavorites } from '@contexts'
 import { ITableStorage } from '@types'
 import { useLocalStorage } from '@utils'
 
 import { INIT_TABLE_STATE, SELECTED_FIELDS } from './Table-constants'
-import { ISchool } from './Table-types'
+import { IAPIResponse, ISchool } from './Table-types'
 import { fetchTableData, getSortOrder, reducer } from './Table-utils'
 
 import './Table-styles.less'
 
 export function Table() {
 	const [tableConfig, setTableConfig] = useReducer(reducer, INIT_TABLE_STATE)
+	const { user } = useAuth()
+	const { favorites, addFavorite, deleteFavorite, doesFavoriteExist } = useFavorites()
 	const localStorage = useLocalStorage()
 	const tableRef = useRef<TableRef>(null)
+
+	const handleFavorites = async (record: ISchool) => {
+		if (user) {
+			const exists = await doesFavoriteExist(record.identifiant_de_l_etablissement, user.id)
+
+			if (exists) {
+				await deleteFavorite(record.identifiant_de_l_etablissement, user.id)
+			} else {
+				await addFavorite(user.id, {
+					id: record.identifiant_de_l_etablissement,
+					name: record.nom_etablissement,
+					city: record.nom_commune,
+					postalCode: record.code_postal,
+				})
+			}
+		}
+	}
 
 	useLayoutEffect(() => {
 		// This part is used to either set the table config from the local storage
@@ -57,21 +78,30 @@ export function Table() {
 		const fetchData = async () => {
 			setTableConfig({ type: 'SET_LOADING', payload: { loading: true } })
 
-			const response = await fetchTableData({
+			const rawResponse = await fetchTableData({
 				limit: tableConfig.paginationSize,
 				offset: tableConfig.offset,
 				select: SELECTED_FIELDS,
 				where: 'type_etablissement="Lycée" OR type_etablissement="Collège"',
 				orderBy: tableConfig.orderBy,
 			})
-			const data = await response.json()
+			const response: IAPIResponse = await rawResponse.json()
 
-			setTableConfig({ type: 'SET_DATA', payload: { data } })
+			// We add the 'favoris' field to the data
+			const data = response.results.map((school) => ({
+				...school,
+				favoris: favorites.some((fav) => fav.id === school.identifiant_de_l_etablissement),
+			}))
+
+			setTableConfig({
+				type: 'SET_DATA',
+				payload: { results: data, total_count: response.total_count },
+			})
 			setTableConfig({ type: 'SET_LOADING', payload: { loading: false } })
 		}
 
 		fetchData()
-	}, [tableConfig.paginationSize, tableConfig.offset, tableConfig.orderBy])
+	}, [tableConfig.paginationSize, tableConfig.offset, tableConfig.orderBy, localStorage, favorites])
 
 	const columns: ColumnsType<ISchool> = [
 		{
@@ -108,6 +138,23 @@ export function Table() {
 			dataIndex: 'adresse_1',
 			sorter: true,
 			sortOrder: getSortOrder('adresse_1', tableConfig.orderBy),
+		},
+		{
+			key: 'favoris',
+			title: 'Favoris',
+			dataIndex: 'favoris',
+			render: (value, record) => {
+				return (
+					<Button
+						className="favorite-button"
+						onClick={async () => {
+							await handleFavorites(record)
+						}}
+						icon={<FavoriteIcon size="1rem" weight={value ? 'fill' : 'regular'} />}
+						type="text"
+					/>
+				)
+			},
 		},
 	]
 

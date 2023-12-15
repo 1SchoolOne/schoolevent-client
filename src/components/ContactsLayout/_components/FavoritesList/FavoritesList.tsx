@@ -1,40 +1,51 @@
-import { MagnifyingGlass as SearchIcon } from '@phosphor-icons/react'
-import { Input, List, Space } from 'antd'
+import { Trash as DeleteIcon, MagnifyingGlass as SearchIcon } from '@phosphor-icons/react'
+import { Dropdown, Input, List, Space } from 'antd'
+
+import { useAuth, useFavorites } from '@contexts'
 
 import './FavoritesList-styles.less'
 
 export function FavoritesList() {
-	// Until we have a real data source, we use this mock data
-	const dataSource = [
-		{
-			school: 'ESIEE-IT',
-			city: 'Pontoise',
-			postalCode: '95000',
-		},
-		{
-			school: 'ESCP',
-			city: 'Paris',
-			postalCode: '75015',
-		},
-	]
+	const { favorites, loading, deleteFavorite } = useFavorites()
+	const { user } = useAuth()
+
+	if (!user) {
+		return null
+	}
 
 	return (
 		<Space className="favorites-list" direction="vertical">
 			<Input placeholder="Rechercher des favoris" prefix={<SearchIcon />} />
 			<List
-				dataSource={dataSource}
+				dataSource={favorites}
+				loading={loading}
 				renderItem={(item) => (
-					<List.Item>
-						<List.Item.Meta
-							className="favorites-list__item"
-							title={item.school}
-							description={
-								<i>
-									{item.city} - {item.postalCode}
-								</i>
-							}
-						/>
-					</List.Item>
+					<Dropdown
+						menu={{
+							items: [
+								{
+									key: 1,
+									label: 'Supprimer',
+									icon: <DeleteIcon />,
+									danger: true,
+									onClick: () => deleteFavorite(item.id, user.id),
+								},
+							],
+						}}
+						trigger={['contextMenu']}
+					>
+						<List.Item key={item.id}>
+							<List.Item.Meta
+								className="favorites-list__item"
+								title={item.name}
+								description={
+									<i>
+										{item.city} - {item.postalCode}
+									</i>
+								}
+							/>
+						</List.Item>
+					</Dropdown>
 				)}
 			/>
 		</Space>

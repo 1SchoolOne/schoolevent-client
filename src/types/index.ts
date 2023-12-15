@@ -13,19 +13,10 @@ export interface ITableStorage {
 	paginationSize: number
 }
 
-export interface IFavoritesStorage {
-	favorites: string[]
-}
-
 interface ISetTableStorage {
 	key: 'contacts.table'
 	data: ITableStorage
 }
 
-interface ISetFavoritesStorage {
-	key: 'contacts.favorites'
-	data: IFavoritesStorage
-}
-
-export type TSetStorageParams = ISetTableStorage | ISetFavoritesStorage
-export type TSetStorageReturn = ITableStorage | IFavoritesStorage | null
+export type TSetStorageParams = ISetTableStorage
+export type TSetStorageReturn = ITableStorage | null

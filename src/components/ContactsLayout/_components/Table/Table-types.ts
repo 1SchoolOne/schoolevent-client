@@ -1,3 +1,7 @@
+import { useSupabase } from '@utils'
+
+import { IFavorite } from '../../../../contexts/FavoriteContacts/FavoriteContacts-types'
+
 export interface IQueryParams {
 	limit: number
 	offset: number
@@ -17,6 +21,7 @@ export interface ISchool {
 	longitude: string
 	mail: string
 	telephone: string
+	favoris: boolean
 }
 
 export type TReducerActionType =
@@ -27,15 +32,16 @@ export type TReducerActionType =
 	| TSetOrderByAction
 	| TSetTableHeightAction
 
-interface IAPIResponse {
+export interface IAPIResponse {
 	total_count: number
-	results: ISchool[]
+	results: Omit<ISchool, 'favoris'>[]
 }
 
 type TSetDataAction = {
 	type: 'SET_DATA'
 	payload: {
-		data: IAPIResponse
+		total_count: number
+		results: ISchool[]
 	}
 }
 

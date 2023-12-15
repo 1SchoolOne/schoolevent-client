@@ -3,9 +3,9 @@ import { useEffect, useState } from 'react'
 import { Helmet } from 'react-helmet'
 import { RouterProvider, createBrowserRouter } from 'react-router-dom'
 
-import { ContactsLayout, MainLayout } from '@components'
+import { MainLayout } from '@components'
 import { AuthProvider, useTheme } from '@contexts'
-import { loginRoute, noMatchRoute } from '@routes'
+import { contactsRoute, loginRoute, noMatchRoute } from '@routes'
 
 import './App.less'
 
@@ -27,12 +27,7 @@ function App() {
 					<MainLayout />
 				</AuthProvider>
 			),
-			children: [
-				{
-					path: 'contacts',
-					element: <ContactsLayout />,
-				},
-			],
+			children: [contactsRoute],
 		},
 	])
 

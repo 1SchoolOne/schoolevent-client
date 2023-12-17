@@ -34,6 +34,7 @@ function App() {
 	return (
 		<ConfigProvider
 			theme={{
+				cssVar: true,
 				token: { colorPrimary: '#FE8E06' },
 				algorithm: theme === 'dark' ? themeAlg.darkAlgorithm : themeAlg.defaultAlgorithm,
 			}}

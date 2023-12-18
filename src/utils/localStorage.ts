@@ -14,7 +14,6 @@ export function useLocalStorage() {
 	return useMemo(
 		() => ({
 			...storage,
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			set: ({ key, data }: TSetStorageParams) => {
 				storage.set(key, data)
 			},
@@ -33,7 +32,6 @@ export function getLocalStorage() {
 
 	return {
 		...storage,
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		set: ({ key, data }: TSetStorageParams) => {
 			storage.set(key, data)
 		},

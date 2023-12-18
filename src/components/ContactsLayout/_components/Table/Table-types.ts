@@ -1,7 +1,3 @@
-import { useSupabase } from '@utils'
-
-import { IFavorite } from '../../../../contexts/FavoriteContacts/FavoriteContacts-types'
-
 export interface IQueryParams {
 	limit: number
 	offset: number

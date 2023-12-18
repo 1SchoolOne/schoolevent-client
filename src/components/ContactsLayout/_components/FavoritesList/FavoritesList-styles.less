@@ -10,11 +10,25 @@
 
 		i {
 			font-weight: normal;
+			height: fit-content;
 		}
 
-		&:hover {
-			background-color: rgba(0, 0, 0, 0.075);
-			cursor: pointer;
+		.favorite-delete-button {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
+	}
+}
+
+.ant-popover {
+	.ant-popconfirm-message-icon {
+		display: flex;
+		margin: auto;
+		margin-right: 0.5ch;
+
+		.warning-icon {
+			color: var(--ant-color-error);
 		}
 	}
 }

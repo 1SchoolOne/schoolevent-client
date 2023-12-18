@@ -1,5 +1,5 @@
 import { Star as FavoriteIcon } from '@phosphor-icons/react'
-import { Table as AntdTable, Button } from 'antd'
+import { Table as AntdTable, Button, Space, Typography } from 'antd'
 import { ColumnsType, TableRef } from 'antd/lib/table'
 import { useEffect, useLayoutEffect, useReducer, useRef } from 'react'
 
@@ -92,6 +92,7 @@ export function Table() {
 				...school,
 				favoris: favorites.some((fav) => fav.id === school.identifiant_de_l_etablissement),
 			}))
+			console.log(data)
 
 			setTableConfig({
 				type: 'SET_DATA',
@@ -161,6 +162,9 @@ export function Table() {
 	return (
 		<AntdTable<ISchool>
 			ref={tableRef}
+			rowKey={(record) =>
+				`${record.identifiant_de_l_etablissement}-${record.nom_commune}-${record.code_postal}`
+			}
 			scroll={{ y: tableConfig.tableHeight }}
 			className="contacts-table"
 			columns={columns}
@@ -181,6 +185,24 @@ export function Table() {
 				showTotal: (total, range) => {
 					return `${range[0]}-${range[1]} sur ${total} établissements`
 				},
+			}}
+			expandable={{
+				expandedRowRender: (record) => {
+					return (
+						<Space direction="horizontal" size="large">
+							<span>
+								<Typography.Text strong>Email : </Typography.Text>
+								{record.mail}
+							</span>
+							<span>
+								<Typography.Text strong>Téléphone : </Typography.Text> {record.telephone}
+							</span>
+						</Space>
+					)
+				},
+				expandRowByClick: false,
+				showExpandColumn: true,
+				rowExpandable: (record) => !!record,
 			}}
 			onChange={(_pagination, _filters, sorter) => {
 				if (!Array.isArray(sorter) && Object.entries(sorter).length > 0) {

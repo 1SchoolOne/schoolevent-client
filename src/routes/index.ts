@@ -1,4 +1,5 @@
 export { loginRoute } from './login/login'
 export { noMatchRoute } from './noMatch/noMatch'
 export { contactsRoute } from './contacts/contacts'
-export { eventFormRoute } from './event/eventForm'
+export { eventFormRoute } from './events/eventForm'
+export { eventsRoute } from './events/events'

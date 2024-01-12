@@ -5,6 +5,7 @@ export interface IEventFormFields {
 	event_background?: { file: File; fileList: FileList }
 	event_time: string
 	event_type: EEventTypes
+	event_description: string
 }
 
 export enum EEventTypes {

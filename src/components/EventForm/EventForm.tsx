@@ -18,10 +18,17 @@ export function EventForm() {
 		let backgroundUrl: string | null = null
 
 		if (value.background) {
-			const res = await supabase.storage.from('pictures').upload('c', value.background.file)
-			backgroundUrl = res.data?.path ?? null
+			const { data, error } = await supabase.storage
+				.from('pictures')
+				.upload(value.background.file.name, value.background.file)
+			backgroundUrl = error ? null : data?.path
 		}
-		supabase.from('events').insert({ ...value, background: backgroundUrl })
+
+		await supabase.from('events').insert({
+			...value,
+			background: backgroundUrl,
+			time: dayjs(value.time).format(formatTime),
+		})
 	}
 
 	return (

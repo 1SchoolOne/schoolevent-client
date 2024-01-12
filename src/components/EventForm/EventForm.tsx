@@ -1,10 +1,11 @@
 import { UploadOutlined } from '@ant-design/icons'
 import { Button, DatePicker, Form, Input, Select, TimePicker, Upload } from 'antd'
+import { DefaultOptionType } from 'antd/es/select'
 import dayjs from 'dayjs'
 
 import { useSupabase } from '@utils'
 
-import { EEventTypes, IEventFormFields } from './_components/EventForm-types'
+import { IEventFormFields, eventTypesRecord } from './EventForm-types'
 
 export function EventForm() {
 	const [form] = Form.useForm()
@@ -61,15 +62,14 @@ export function EventForm() {
 			<Form.Item<IEventFormFields>
 				label="Type d'événement"
 				name="event_type"
-				rules={[{ required: true, message: 'Veuillez saisir le type de votre événement.' }]}
+				rules={[{ required: true, message: 'Veuillez sélectionner le type de votre événement.' }]}
 			>
-				<Select>
-					{Object.values(EEventTypes).map((type) => (
-						<Select.Option key={type} value={type}>
-							{type}
-						</Select.Option>
-					))}
-				</Select>
+				<Select
+					placeholder="Sélectionner un type d'événement"
+					options={Object.entries(eventTypesRecord).map(
+						([key, label]) => ({ label, value: key }) as DefaultOptionType,
+					)}
+				/>
 			</Form.Item>
 
 			<Form.Item<IEventFormFields>
@@ -97,7 +97,7 @@ export function EventForm() {
 			</Form.Item>
 
 			<Form.Item<IEventFormFields>
-				label="heure de l'événement"
+				label="Heure de l'événement"
 				name="event_time"
 				rules={[
 					{

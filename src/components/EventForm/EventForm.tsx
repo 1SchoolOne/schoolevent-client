@@ -17,17 +17,18 @@ export function EventForm() {
 	const createEvent = async (value: IEventFormFields) => {
 		let backgroundUrl: string | null = null
 
-		if (value.background) {
+		if (value.event_background && value.event_background.file) {
 			const { data, error } = await supabase.storage
 				.from('pictures')
-				.upload(value.background.file.name, value.background.file)
-			backgroundUrl = error ? null : data?.path
+				.upload(value.event_background.file.name, value.event_background.file)
+
+			backgroundUrl = error !== null ? null : data?.path
 		}
 
 		await supabase.from('events').insert({
 			...value,
-			background: backgroundUrl,
-			time: dayjs(value.time).format(formatTime),
+			event_background: backgroundUrl,
+			event_time: dayjs(value.event_time).format(formatTime),
 		})
 	}
 
@@ -39,18 +40,18 @@ export function EventForm() {
 			layout="vertical"
 			autoComplete="off"
 			initialValues={{
-				name: '',
-				position: '',
-				background: '',
-				date: date,
-				time: date,
-				eventType: '',
+				event_name: '',
+				event_position: '',
+				event_background: '',
+				event_date: date,
+				event_time: date,
+				event_type: '',
 			}}
 			onFinish={createEvent}
 		>
 			<Form.Item<IEventFormFields>
 				label="Nom de l'événement"
-				name="name"
+				name="event_name"
 				rules={[{ required: true, message: "Veuillez saisir un nom d'évenement." }]}
 			>
 				<Input />
@@ -58,7 +59,7 @@ export function EventForm() {
 
 			<Form.Item<IEventFormFields>
 				label="Type d'événement"
-				name="eventType"
+				name="event_type"
 				rules={[{ required: true, message: 'Veuillez saisir le type de votre événement.' }]}
 			>
 				<Select>
@@ -72,7 +73,7 @@ export function EventForm() {
 
 			<Form.Item<IEventFormFields>
 				label="Lieux"
-				name="position"
+				name="event_position"
 				rules={[{ required: true, message: 'Veuillez saisir le lieux de votre événement.' }]}
 			>
 				<Input />
@@ -80,7 +81,7 @@ export function EventForm() {
 
 			<Form.Item<IEventFormFields>
 				label="Date de l'événement"
-				name="date"
+				name="event_date"
 				rules={[{ required: true, message: 'Veuillez saisir la date de votre événement.' }]}
 			>
 				<DatePicker format={formatDate} />
@@ -88,7 +89,7 @@ export function EventForm() {
 
 			<Form.Item<IEventFormFields>
 				label="heure de l'événement"
-				name="time"
+				name="event_time"
 				rules={[
 					{
 						required: true,
@@ -99,7 +100,7 @@ export function EventForm() {
 				<TimePicker format={formatTime} />
 			</Form.Item>
 
-			<Form.Item<IEventFormFields> label="Image de fond" name="background">
+			<Form.Item<IEventFormFields> label="Image de fond" name="event_background">
 				<Upload beforeUpload={() => false}>
 					<Button icon={<UploadOutlined />}>Sélectionner un fichier</Button>
 				</Upload>

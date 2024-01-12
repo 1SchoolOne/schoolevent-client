@@ -1,10 +1,10 @@
 export interface IEventFormFields {
-	date: Date
-	name: string
-	position: string
-	background?: { file: File; fileList: FileList[] }
-	time: string
-	eventType: EEventTypes
+	event_date: Date
+	event_name: string
+	event_position: string
+	event_background?: { file: File; fileList: FileList }
+	event_time: string
+	event_type: EEventTypes
 }
 
 export enum EEventTypes {

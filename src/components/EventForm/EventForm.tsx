@@ -102,13 +102,13 @@ export function EventForm() {
 
 			<Form.Item<IEventFormFields> label="Image de fond" name="event_background">
 				<Upload beforeUpload={() => false}>
-					<Button icon={<UploadOutlined />}>Sélectionner un fichier</Button>
+					<Button icon={<UploadOutlined />}>Sélectionner une image</Button>
 				</Upload>
 			</Form.Item>
 
 			<Form.Item>
 				<Button htmlType="submit" type="primary" block>
-					Crée
+					Créer l'événement
 				</Button>
 			</Form.Item>
 		</Form>

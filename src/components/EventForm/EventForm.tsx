@@ -46,6 +46,7 @@ export function EventForm() {
 				event_date: date,
 				event_time: date,
 				event_type: '',
+				event_description: '',
 			}}
 			onFinish={createEvent}
 		>
@@ -75,6 +76,14 @@ export function EventForm() {
 				label="Lieux"
 				name="event_position"
 				rules={[{ required: true, message: 'Veuillez saisir le lieux de votre événement.' }]}
+			>
+				<Input />
+			</Form.Item>
+
+			<Form.Item<IEventFormFields>
+				label="Description de l'événement"
+				name="event_description"
+				rules={[{ required: true, message: "Veuillez saisir une description d'évenement." }]}
 			>
 				<Input />
 			</Form.Item>

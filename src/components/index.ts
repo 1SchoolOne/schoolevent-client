@@ -1,4 +1,5 @@
 export { ContactsLayout } from './ContactsLayout/ContactsLayout'
+export { EventForm } from './EventForm/EventForm'
 export { IconButton } from './IconButton/IconButton'
 export { Info } from './Info/Info'
 export { Login } from './Login/Login'

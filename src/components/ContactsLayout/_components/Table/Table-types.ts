@@ -1,3 +1,6 @@
+import { InputRef } from 'antd'
+import { FilterValue } from 'antd/lib/table/interface'
+
 export interface IQueryParams {
 	limit: number
 	offset: number
@@ -13,12 +16,19 @@ export interface ISchool {
 	adresse_1: string
 	code_postal: string
 	nom_commune: string
-	latitude: string
-	longitude: string
+	latitude: number
+	longitude: number
 	mail: string
 	telephone: string
 	favoris: boolean
 }
+
+export type TFilteredFields = keyof Pick<
+	ISchool,
+	'nom_etablissement' | 'type_etablissement' | 'nom_commune' | 'code_postal' | 'adresse_1'
+>
+
+export type TFiltersRecord = Record<TFilteredFields, string[] | null>
 
 export type TReducerActionType =
 	| TSetDataAction
@@ -27,6 +37,11 @@ export type TReducerActionType =
 	| TSetOffsetAction
 	| TSetOrderByAction
 	| TSetTableHeightAction
+	| TSetWhereAction
+	| TResetFiltersAction
+	| TSetFiltersAction
+	| TSetRangeAction
+	| TSetUserLocationAction
 
 export interface IAPIResponse {
 	total_count: number
@@ -77,6 +92,44 @@ type TSetTableHeightAction = {
 	}
 }
 
+type TSetWhereAction = {
+	type: 'SET_WHERE'
+	payload: {
+		where: string
+	}
+}
+
+type TResetFiltersAction = {
+	type: 'RESET_FILTERS'
+}
+
+type TSetFiltersAction = {
+	type: 'SET_FILTERS'
+	payload: {
+		filters: TFiltersRecord
+	}
+}
+
+type TSetRangeAction = {
+	type: 'SET_RANGE'
+	payload: {
+		range: number | null
+	}
+}
+
+type TSetUserLocationAction = {
+	type: 'SET_USER_LOCATION'
+	payload: {
+		location: TUserLocation | undefined
+	}
+}
+
+export interface IQueryStringBuilderParams {
+	range: number | null
+	userLocation?: { lat: number; lng: number }
+	filters?: TTableFilters
+}
+
 export interface ITableConfigState {
 	data: ISchool[]
 	loading: boolean
@@ -85,4 +138,32 @@ export interface ITableConfigState {
 	offset: number
 	orderBy?: string
 	tableHeight: number
+	where?: string
+	filters: TFiltersRecord
+	range: number | null
+	userLocation?: TUserLocation
 }
+
+export interface IGetColumnSearchPropsParams {
+	inputRef: React.RefObject<InputRef>
+}
+
+export interface IGetColumnRadioPropsParams {
+	options: { label: string; value: React.Key }[]
+}
+
+export interface ITableProps {
+	globalSearch: string
+	tableConfigReducer: {
+		tableConfig: ITableConfigState
+		setTableConfig: TSetTableConfig
+	}
+}
+
+export type TUserLocation = { lat: number; lng: number }
+
+export type TSetTableConfig = React.Dispatch<TReducerActionType>
+
+export type TTableFilters = Record<string, FilterValue | null>
+
+export interface ITableControllerParams extends ITableProps {}

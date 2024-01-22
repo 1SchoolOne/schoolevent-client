@@ -5,6 +5,7 @@ import { Outlet, useNavigate } from 'react-router-dom'
 
 import { IconButton } from '@components'
 import { useAuth } from '@contexts'
+import { useLocalStorage } from '@utils'
 
 import { SideMenu, UserMenu } from './_components'
 
@@ -13,11 +14,15 @@ import './MainLayout-styles.less'
 const { Content, Header, Sider } = Layout
 
 export function MainLayout() {
-	const [isCollapsed, setIsCollapsed] = useState<boolean>(false)
+	const localStorage = useLocalStorage()
+	const [isCollapsed, setIsCollapsed] = useState<boolean>(
+		localStorage.get('sidebar.isCollapsed', false) as boolean,
+	)
 	const { user } = useAuth()
 	const navigate = useNavigate()
 
 	const toggleSider = () => {
+		localStorage.set({ key: 'sidebar.isCollapsed', data: !isCollapsed })
 		setIsCollapsed((prevState) => !prevState)
 	}
 
@@ -28,16 +33,25 @@ export function MainLayout() {
 	}, []) // eslint-disable-line react-hooks/exhaustive-deps
 
 	return (
-		<Layout>
-			<Sider trigger={null} width={200} collapsible collapsed={isCollapsed}>
+		<Layout className="main-layout">
+			<Sider
+				className="main-layout__sider"
+				trigger={null}
+				width={200}
+				collapsible
+				collapsed={isCollapsed}
+			>
 				<div className="sider__logo">
-					<img src="schoolevent_logo_white.svg" />
-					<img src="schoolevent_text_white.svg" />
+					<img alt="schoolevent_logo" src="schoolevent_logo_white.svg" />
+					{/* TODO: fix logo layout when collapsed */}
+					{isCollapsed ? null : (
+						<img alt="schoolevent_text_logo" src="schoolevent_text_white.svg" />
+					)}
 				</div>
 				<SideMenu />
 			</Sider>
 			<Layout>
-				<Header>
+				<Header className="main-layout__header">
 					<IconButton
 						icon={<ArrowLeft size="1rem" />}
 						onClick={toggleSider}
@@ -45,7 +59,7 @@ export function MainLayout() {
 					/>
 					<UserMenu />
 				</Header>
-				<Content>
+				<Content className="main-layout__content">
 					<Outlet />
 				</Content>
 			</Layout>

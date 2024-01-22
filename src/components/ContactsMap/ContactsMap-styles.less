@@ -1,0 +1,31 @@
+.leaflet-container {
+	width: 100%;
+	height: 100%;
+	min-height: 100%;
+	z-index: 1;
+
+	.leaflet-control-attribution.leaflet-control {
+		display: none;
+	}
+
+	.map-popup {
+		button.create-btn.ant-btn-primary {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			margin-top: var(--ant-padding);
+		}
+
+		&__dark {
+			.leaflet-popup-content-wrapper {
+				background: var(--ant-color-bg-elevated);
+			}
+		}
+
+		&__light {
+			.leaflet-popup-content-wrapper {
+				background: var(--ant-color-bg-base);
+			}
+		}
+	}
+}

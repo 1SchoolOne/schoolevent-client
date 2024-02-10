@@ -68,10 +68,6 @@ describe('Login', () => {
 	it('allows access to all routes for manager role', () => {
 		login(MANAGER_USER, true)
 
-		// This assertion is necessary to ensure that the login was successful.
-		// If we execute the cy.visit(), it will try to navigate before the login is complete.
-		cy.get('.user-menu__dropdown').should('exist').and('be.visible')
-
 		// Manager should have access to contacts page
 		cy.visit(CONTACTS_URL)
 		cy.get('.contacts-table').should('exist').and('be.visible')

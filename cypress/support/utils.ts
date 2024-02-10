@@ -34,3 +34,41 @@ export function logout() {
 	cy.get('.user-menu__dropdown').click()
 	cy.contains('Déconnexion').click()
 }
+
+export function getTableColumnHeader(label: string | RegExp) {
+	return cy.get('th').contains(label).parents('th')
+}
+
+/**
+ * Should be used in combination with getTableColumnHeader.
+ *
+ * @example
+ * ```ts
+ * getTableColumnHeader(/$Établissement^/).within(() => {
+ *  getTableColumnFilterButton().click()
+ * })
+ * ```
+ */
+export function getTableColumnFilterButton() {
+	return cy.get('.ant-table-filter-trigger')
+}
+
+export function getFilterDropdown() {
+	return cy.get('.ant-table-filter-dropdown')
+}
+
+export function getRadioFromLabel(label: string | RegExp) {
+	return cy.get('.ant-radio-wrapper').contains(label).parents('label')
+}
+
+export function getFilterDropdownInput() {
+	return getFilterDropdown().find('input')
+}
+
+export function checkTableRowsCount(count: number) {
+	cy.get('.ant-table-tbody').find('tr.ant-table-row').should('have.length', count)
+}
+
+export function getAllTableRows() {
+	return cy.get('.ant-table-tbody').find('tr.ant-table-row')
+}

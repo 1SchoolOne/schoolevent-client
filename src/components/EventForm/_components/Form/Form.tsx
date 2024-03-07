@@ -17,7 +17,7 @@ import {
 import dayjs from 'dayjs'
 import timezone from 'dayjs/plugin/timezone'
 import utc from 'dayjs/plugin/utc'
-import { useCallback, useState } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import short from 'short-uuid'
 
@@ -66,7 +66,7 @@ export function Form() {
 		})
 	}
 
-	const removeBackground = useCallback(async () => {
+	const removeBackground = async () => {
 		if (!backgroundUrl) {
 			return true
 		}
@@ -79,8 +79,8 @@ export function Form() {
 			setBackgroundUrl(null)
 		}
 
-		return !!error
-	}, [supabase, backgroundUrl])
+		return error ? false : true
+	}
 
 	return (
 		<AntdForm
@@ -198,7 +198,7 @@ export function Form() {
 							name="event_date"
 							rules={[{ required: true, message: 'Veuillez saisir la date de votre événement.' }]}
 						>
-							<DatePicker format={formatDate} showTime />
+							<DatePicker format={formatDate} showTime={{ minuteStep: 5 }} />
 						</AntdForm.Item>
 					</Col>
 					<Col span={5}>

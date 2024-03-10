@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
 
+import { AppointmentFormProvider } from '../../contexts/AppointmentForm/AppointmentForm'
 import { getIsActionValid, getIsStatusValid } from './AppointmentsLayout-utils'
 import { AppointmentModal } from './_components'
 
@@ -52,17 +53,31 @@ export function useController() {
 		}
 
 		if (action === 'view') {
-			return <AppointmentModal appointmentId={id} mode={action} />
+			return (
+				<AppointmentFormProvider appointmentId={id!} mode={action}>
+					<AppointmentModal appointmentId={id} mode={action} />
+				</AppointmentFormProvider>
+			)
 		} else if (action === 'new') {
 			return (
-				<AppointmentModal
-					schoolId={school_id}
+				<AppointmentFormProvider
+					mode="new"
+					schoolId={school_id ?? undefined}
 					status={isStatusValid ? status : null}
-					mode={action}
-				/>
+				>
+					<AppointmentModal
+						schoolId={school_id}
+						status={isStatusValid ? status : null}
+						mode={action}
+					/>
+				</AppointmentFormProvider>
 			)
 		} else {
-			return <AppointmentModal appointmentId={id} mode={action} />
+			return (
+				<AppointmentFormProvider appointmentId={id!} mode={action}>
+					<AppointmentModal appointmentId={id} mode={action} />
+				</AppointmentFormProvider>
+			)
 		}
 	}
 

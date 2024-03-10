@@ -4,4 +4,31 @@
 		justify-content: center;
 		align-items: center;
 	}
+
+	.ant-modal-content {
+		min-height: 558px;
+		height: calc(100dvh * 0.8);
+		display: grid;
+		grid-template-rows: max-content auto max-content;
+	}
+
+	.ant-modal-body {
+		// Height of the modal container - title height - title margin bottom
+		height: calc(100% - 24px - 8px);
+		overflow: hidden;
+		overflow-y: auto;
+		scrollbar-width: none;
+
+		&:has(.loading-error) {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
+	}
+
+	.ant-modal-footer {
+		display: flex;
+		justify-content: end;
+		align-items: center;
+	}
 }

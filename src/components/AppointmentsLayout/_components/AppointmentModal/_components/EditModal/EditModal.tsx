@@ -1,5 +1,6 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { App, Skeleton } from 'antd'
+import { Check as SaveIcon } from '@phosphor-icons/react'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { Form as AntdForm, App, Skeleton } from 'antd'
 import dayjs from 'dayjs'
 import timezone from 'dayjs/plugin/timezone'
 import utc from 'dayjs/plugin/utc'
@@ -7,7 +8,7 @@ import { useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { LoadingError } from '@components'
-import { useAuth } from '@contexts'
+import { useAppointmentForm, useAuth } from '@contexts'
 import { useSupabase } from '@utils'
 
 import { Modal } from '../../../Modal/Modal'
@@ -17,12 +18,14 @@ import { IFormValues } from '../Form/Form-types'
 dayjs.extend(utc)
 dayjs.extend(timezone)
 
-export function EditModal({ appointmentId }: { appointmentId: string | null }) {
+export function EditModal() {
+	const [formInstance] = AntdForm.useForm()
 	const { user } = useAuth()
 	const supabase = useSupabase()
 	const queryClient = useQueryClient()
 	const navigate = useNavigate()
 	const { notification } = App.useApp()
+	const { appointmentId, isLoading, hasLoaded, initialValues, error } = useAppointmentForm()
 
 	// Update appointment
 	const { mutate, isPending } = useMutation({
@@ -62,58 +65,53 @@ export function EditModal({ appointmentId }: { appointmentId: string | null }) {
 		},
 	})
 
-	// Fetch appointment
-	const {
-		data: appointment,
-		isFetching,
-		error,
-	} = useQuery({
-		queryKey: ['appointment', { appointmentId }],
-		queryFn: async () => {
-			if (!appointmentId) {
-				throw new Error('appointmentId is required')
-			}
-
-			const { data, error } = await supabase
-				.from('appointments')
-				.select()
-				.eq('id', appointmentId)
-				.single()
-
-			if (error) {
-				throw error
-			}
-
-			return data
-		},
-	})
-
 	const formKey = useMemo(() => {
-		return isFetching ? 'new-apt-form-loading' : 'new-apt-form'
-	}, [isFetching])
-
-	const initialValues: Partial<IFormValues> | undefined = useMemo(() => {
-		return {
-			...appointment,
-			contacted_date: appointment?.contacted_date ? dayjs(appointment.contacted_date) : undefined,
-			planned_date: appointment?.planned_date ? dayjs(appointment.planned_date) : undefined,
-		}
-	}, [appointment])
+		return hasLoaded ? 'new-apt-form' : 'new-apt-form-loading'
+	}, [hasLoaded])
 
 	return (
 		<Modal
 			className="appointment-modal appointment-modal--edit"
-			title={isFetching ? <Skeleton.Input active /> : appointment?.school_name}
+			title={hasLoaded ? initialValues?.school_name : error ? 'Erreur' : <Skeleton.Input active />}
+			footer={(_, { CancelBtn, OkBtn }) => (
+				<>
+					<CancelBtn />
+					{!error && <OkBtn />}
+				</>
+			)}
+			cancelText="Annuler"
+			okText="Enregistrer"
+			okButtonProps={{
+				htmlType: 'submit',
+				type: 'primary',
+				icon: <SaveIcon size={16} weight="bold" />,
+				disabled: isLoading,
+				loading: isPending,
+			}}
+			onOk={() => {
+				formInstance.submit()
+			}}
+			closable={false}
+			destroyOnClose
 		>
 			{error ? (
-				<LoadingError error={error.message} />
+				<LoadingError error={error} />
 			) : (
 				<Form
 					key={formKey}
-					isLoading={isFetching}
+					formInstance={formInstance}
+					isLoading={isLoading}
 					isPending={isPending}
 					onFinish={mutate}
-					initialValues={initialValues}
+					initialValues={{
+						...initialValues,
+						contacted_date: initialValues?.contacted_date
+							? dayjs(initialValues.contacted_date)
+							: undefined,
+						planned_date: initialValues?.planned_date
+							? dayjs(initialValues.planned_date)
+							: undefined,
+					}}
 					mode="edit"
 				/>
 			)}

@@ -1,14 +1,21 @@
 .appointment-modal {
-	&__form__footer {
-		.ant-form-item {
-			margin-top: var(--ant-margin-lg);
-			margin-bottom: 0;
-		}
+	&__form {
+		height: 100%;
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
 
-		&__submit-button {
-			display: flex;
-			justify-content: center;
-			align-items: center;
+		&__footer {
+			.ant-form-item {
+				margin-top: var(--ant-margin-lg);
+				margin-bottom: 0;
+			}
+
+			&__submit-button {
+				display: flex;
+				justify-content: center;
+				align-items: center;
+			}
 		}
 	}
 }

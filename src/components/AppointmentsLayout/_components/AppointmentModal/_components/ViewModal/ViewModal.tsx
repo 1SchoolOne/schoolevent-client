@@ -1,83 +1,51 @@
-import { useQuery } from '@tanstack/react-query'
-import { Skeleton } from 'antd'
+import { Form as AntdForm, Skeleton } from 'antd'
+import dayjs from 'dayjs'
+import timezone from 'dayjs/plugin/timezone'
+import utc from 'dayjs/plugin/utc'
 import { useMemo } from 'react'
 
 import { LoadingError } from '@components'
-import { useSupabase } from '@utils'
+import { useAppointmentForm } from '@contexts'
 
 import { Modal } from '../../../Modal/Modal'
 import { Form } from '../Form/Form'
-import { IFormValues } from '../Form/Form-types'
-import { IViewModalProps } from './ViewModal-types'
 
-export function ViewModal(props: IViewModalProps) {
-	const { appointmentId } = props
+dayjs.extend(utc)
+dayjs.extend(timezone)
 
-	const supabase = useSupabase()
-
-	// Fetch appointment
-	const {
-		data: appointment,
-		isLoading,
-		isSuccess,
-		error,
-	} = useQuery({
-		queryKey: ['appointment', { appointmentId }],
-		queryFn: async () => {
-			if (!appointmentId) {
-				throw new Error('appointmentId is required')
-			}
-
-			const { data, error } = await supabase
-				.from('appointments')
-				.select()
-				.eq('id', appointmentId)
-				.single()
-
-			if (error) {
-				throw error
-			}
-
-			return data
-		},
-	})
+export function ViewModal() {
+	const { initialValues, hasLoaded, isLoading, error } = useAppointmentForm()
+	const [formInstance] = AntdForm.useForm()
 
 	const formKey = useMemo(() => {
-		return isSuccess ? 'view-apt-form' : 'view-apt-form-loading'
-	}, [isSuccess])
-
-	const initialValues: Partial<IFormValues> | undefined = useMemo(() => {
-		if (appointment) {
-			return {
-				apt_status: appointment.apt_status,
-				apt_type: appointment.apt_type,
-				school_name: appointment.school_name,
-				school_address: appointment.school_address,
-				school_postal_code: appointment.school_postal_code,
-				school_city: appointment.school_city,
-				contact_name: appointment.contact_name,
-				contact_phone: appointment.contact_phone,
-				contact_email: appointment.contact_email,
-				assignee: appointment.assignee,
-				note: appointment.note,
-				attachements: appointment.attachements,
-				contacted_date: appointment.contacted_date ?? undefined,
-				planned_date: appointment.planned_date ?? undefined,
-			} as Partial<IFormValues>
-		} else {
-			return undefined
-		}
-	}, [appointment])
+		return hasLoaded ? 'view-apt-form' : 'view-apt-form-loading'
+	}, [hasLoaded])
 
 	return (
 		<Modal
 			className="appointment-modal appointment-modal--view"
-			title={isLoading ? <Skeleton.Input active /> : appointment?.school_name}
+			title={hasLoaded ? initialValues?.school_name : error ? 'Erreur' : <Skeleton.Input active />}
+			footer={(_, { CancelBtn }) => <CancelBtn />}
+			destroyOnClose
 		>
 			{error ? (
-				<LoadingError error={error.message} />
+				<LoadingError error={error} />
 			) : (
-				<Form key={formKey} isLoading={isLoading} initialValues={initialValues} mode="view" />
+				<Form
+					key={formKey}
+					formInstance={formInstance}
+					isLoading={isLoading}
+					initialValues={{
+						...initialValues,
+						contacted_date: initialValues?.contacted_date
+							? dayjs(initialValues.contacted_date)
+							: undefined,
+						planned_date: initialValues?.planned_date
+							? dayjs(initialValues.planned_date)
+							: undefined,
+					}}
+					mode="view"
+				/>
 			)}
 		</Modal>
 	)

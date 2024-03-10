@@ -34,7 +34,10 @@ function App() {
 	}, [faviconHref, theme])
 
 	return (
-		<AppProvider notification={{ placement: 'bottomRight', maxCount: 3, stack: { threshold: 2 } }}>
+		<AppProvider
+			notification={{ placement: 'bottomRight', maxCount: 3, stack: { threshold: 2 } }}
+			message={{ maxCount: 3, duration: 5 }}
+		>
 			<ConfigProvider
 				theme={{
 					cssVar: true,

@@ -1,21 +1,9 @@
-import { Plus as PlusIcon, Check as SaveIcon } from '@phosphor-icons/react'
 import { useQuery } from '@tanstack/react-query'
-import {
-	Form as AntdForm,
-	Button,
-	Col,
-	Divider,
-	Input,
-	Row,
-	Skeleton,
-	Tabs,
-	Typography,
-} from 'antd'
+import { Form as AntdForm, Col, Divider, Input, Row, Skeleton, Tabs, Typography } from 'antd'
 import dayjs from 'dayjs'
 import timezone from 'dayjs/plugin/timezone'
 import utc from 'dayjs/plugin/utc'
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 
 import { AutoCompleteField, Info, SelectField } from '@components'
 import {
@@ -27,21 +15,20 @@ import {
 } from '@utils'
 
 import { appointmentStatusRecord } from '../../../../../../types/appointments'
+import { Attachments } from '../Attachments/Attachments'
 import { DateField } from '../DateField/DateField'
-import { IFormValues, TFormProps, submitButtonLabel } from './Form-types'
+import { IFormValues, TFormProps } from './Form-types'
 
 dayjs.extend(utc)
 dayjs.extend(timezone)
 
 export function Form(props: TFormProps) {
-	const { isLoading, isPending, onFinish, initialValues, mode } = props
+	const { formInstance, isLoading, onFinish, initialValues, mode } = props
 
-	const [form] = AntdForm.useForm()
 	const [addressSearch, setAddressSearch] = useState(initialValues?.school_address ?? '')
 	const debouncedSearch = useDebounce(addressSearch, 500)
 
 	const supabase = useSupabase()
-	const navigate = useNavigate()
 
 	const { data: userLocation } = useQuery({ queryKey: ['user-geoip'], queryFn: fetchGeoIP })
 
@@ -51,7 +38,7 @@ export function Form(props: TFormProps) {
 			await fetchAddressCompletion(
 				debouncedSearch,
 				userLocation,
-				form.getFieldValue('school_postal_code'),
+				formInstance.getFieldValue('school_postal_code'),
 			),
 		enabled: !!debouncedSearch && !!userLocation,
 		initialData: [],
@@ -90,12 +77,12 @@ export function Form(props: TFormProps) {
 			// need to force it to re-render by changing its key.
 			className="appointment-modal__form"
 			layout="vertical"
-			form={form}
+			form={formInstance}
 			onFinish={onFinish}
 			initialValues={initialValues}
 		>
-			<Row>
-				<Col span={12}>
+			<Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
+				<Col span={13}>
 					<Tabs
 						defaultActiveKey="1"
 						items={[
@@ -215,7 +202,7 @@ export function Form(props: TFormProps) {
 				</Col>
 
 				<Col
-					span={2}
+					span={1}
 					style={{
 						padding: 'var(--ant-padding-sm) 0',
 						display: 'flex',
@@ -257,8 +244,8 @@ export function Form(props: TFormProps) {
 					</AntdForm.Item>
 					<AntdForm.Item
 						name="apt_status"
-						label="Status"
-						rules={[{ required: true, message: 'Veuillez sélectionner un status.' }]}
+						label="Statut"
+						rules={[{ required: true, message: 'Veuillez sélectionner un statut.' }]}
 					>
 						{isLoading ? (
 							<Skeleton.Input active block />
@@ -327,43 +314,16 @@ export function Form(props: TFormProps) {
 				</Col>
 			</Row>
 
-			<Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }} className="appointment-modal__form__footer">
-				<Col span={mode !== 'view' ? 10 : 24}>
-					<AntdForm.Item>
-						<Button
-							onClick={() => {
-								navigate('/appointments')
-							}}
-							block
-						>
-							Annuler
-						</Button>
-					</AntdForm.Item>
-				</Col>
-				{mode !== 'view' && (
-					<Col span={14}>
-						<AntdForm.Item>
-							<Button
-								className="appointment-modal__form__footer__submit-button"
-								htmlType="submit"
-								type="primary"
-								icon={
-									mode === 'new' ? (
-										<PlusIcon size={16} weight="bold" />
-									) : (
-										<SaveIcon size={16} weight="bold" />
-									)
-								}
-								disabled={isLoading}
-								loading={isPending}
-								block
-							>
-								{submitButtonLabel[mode]}
-							</Button>
-						</AntdForm.Item>
+			{mode !== 'new' && (
+				<Row
+					gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}
+					className="appointment-modal__form__attachments"
+				>
+					<Col span={24}>
+						<Attachments />
 					</Col>
-				)}
-			</Row>
+				</Row>
+			)}
 		</AntdForm>
 	)
 }

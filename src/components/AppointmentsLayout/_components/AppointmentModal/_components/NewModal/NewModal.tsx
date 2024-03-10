@@ -1,24 +1,25 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { App } from 'antd'
+import { Plus as PlusIcon } from '@phosphor-icons/react'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { Form as AntdForm, App } from 'antd'
+import dayjs from 'dayjs'
+import timezone from 'dayjs/plugin/timezone'
+import utc from 'dayjs/plugin/utc'
 import { useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-import { useAuth } from '@contexts'
+import { useAppointmentForm, useAuth } from '@contexts'
 import { useSupabase } from '@utils'
 
-import {
-	GOUV_API_URL,
-	SELECTED_FIELDS,
-} from '../../../../../ContactsLayout/_components/Table/Table-constants'
-import { ISchool } from '../../../../../ContactsLayout/_components/Table/Table-types'
-import { INewModalProps } from '../../../../AppointmentsLayout-types'
 import { Modal } from '../../../Modal/Modal'
 import { Form } from '../Form/Form'
 import { IFormValues } from '../Form/Form-types'
 
-export function NewModal(props: INewModalProps) {
-	const { schoolId, status } = props
+dayjs.extend(utc)
+dayjs.extend(timezone)
 
+export function NewModal() {
+	const { initialValues, isLoading, hasLoaded, status } = useAppointmentForm()
+	const [formInstance] = AntdForm.useForm()
 	const { user } = useAuth()
 	const supabase = useSupabase()
 	const queryClient = useQueryClient()
@@ -53,45 +54,37 @@ export function NewModal(props: INewModalProps) {
 		},
 	})
 
-	// Fetch appointment
-	const { data, isLoading, isSuccess } = useQuery({
-		queryKey: ['school', { schoolId }],
-		queryFn: async () =>
-			fetch(
-				`${GOUV_API_URL}?timezone=Europe%2FParis&where=identifiant_de_l_etablissement="${schoolId}"&select=${SELECTED_FIELDS}`,
-			).then((res) => res.json()),
-	})
-
 	const formKey = useMemo(() => {
-		return isSuccess ? 'new-apt-form' : 'new-apt-form-loading'
-	}, [isSuccess])
-
-	const initialValues: Partial<IFormValues> | undefined = useMemo(() => {
-		if (data?.results[0]) {
-			const school = data.results[0] as ISchool
-
-			return {
-				apt_status: status ? status : 'to_contact',
-				school_name: school.nom_etablissement,
-				school_address: school.adresse_1,
-				school_postal_code: school.code_postal,
-				school_city: school.nom_commune,
-				contact_phone: school.telephone,
-				contact_email: school.mail,
-			} as Partial<IFormValues>
-		} else {
-			return { apt_status: status ? status : 'to_contact' }
-		}
-	}, [data, status])
+		return hasLoaded ? 'new-apt-form' : 'new-apt-form-loading'
+	}, [hasLoaded])
 
 	return (
-		<Modal className="appointment-modal appointment-modal--new" title="Nouveau rendez-vous">
+		<Modal
+			className="appointment-modal appointment-modal--new"
+			title="Nouveau rendez-vous"
+			okText="Créer le rendez-vous"
+			okButtonProps={{
+				htmlType: 'submit',
+				type: 'primary',
+				icon: <PlusIcon size={16} weight="bold" />,
+				loading: isPending,
+			}}
+			onOk={() => {
+				formInstance.submit()
+			}}
+			closable={false}
+		>
 			<Form
 				key={formKey}
+				formInstance={formInstance}
 				isLoading={isLoading}
 				isPending={isPending}
 				onFinish={mutate}
-				initialValues={initialValues}
+				initialValues={{
+					...initialValues,
+					contacted_date: status === 'contacted' ? dayjs().tz() : undefined,
+					planned_date: status === 'planned' ? dayjs().tz() : undefined,
+				}}
 				mode="new"
 			/>
 		</Modal>

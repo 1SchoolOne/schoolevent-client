@@ -1,0 +1,21 @@
+.divider {
+	display: grid;
+	gap: var(--ant-margin-sm);
+	align-items: center;
+
+	&--1-items {
+		grid-template-columns: var(--ant-padding-xl) max-content auto;
+	}
+
+	&--2-items {
+		grid-template-columns: var(--ant-padding-xl) max-content auto min-content;
+	}
+
+	&--3-items {
+		grid-template-columns: var(--ant-padding-xl) max-content auto min-content min-content;
+	}
+
+	h5 {
+		margin: 0;
+	}
+}

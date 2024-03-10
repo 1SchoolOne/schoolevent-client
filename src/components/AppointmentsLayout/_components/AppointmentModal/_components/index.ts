@@ -1,4 +1,6 @@
+export { Attachments } from './Attachments/Attachments'
 export { EditModal } from './EditModal/EditModal'
+export { FileCard } from './FileCard/FileCard'
 export { Form } from './Form/Form'
 export { NewModal } from './NewModal/NewModal'
 export { ViewModal } from './ViewModal/ViewModal'

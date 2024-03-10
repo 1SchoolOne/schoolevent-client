@@ -47,8 +47,3 @@ interface IViewAppointmentModalProps {
 	schoolId?: never
 	status?: never
 }
-
-export interface INewModalProps {
-	schoolId: string | null
-	status: Database['public']['Enums']['apt_status'] | null
-}

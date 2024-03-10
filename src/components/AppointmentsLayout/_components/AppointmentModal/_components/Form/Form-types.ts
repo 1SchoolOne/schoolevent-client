@@ -1,3 +1,5 @@
+import type { GetRef } from 'antd'
+import { Form } from 'antd'
 import dayjs from 'dayjs'
 
 import { TAppointment } from '@types'
@@ -8,17 +10,30 @@ export interface IFormValues
 	planned_date?: dayjs.Dayjs
 }
 
-export type TFormProps = IFormEditOrNewModeProps | IFormViewModeProps
+export type TFormProps = IFormEditModeProps | IFormNewModeProps | IFormViewModeProps
 
-interface IFormEditOrNewModeProps {
+type FormInstance = GetRef<typeof Form<IFormValues>>
+
+interface IFormEditModeProps {
+	formInstance: FormInstance
 	initialValues?: Partial<IFormValues>
 	isLoading: boolean
 	isPending?: boolean
 	onFinish: (values: IFormValues) => void
-	mode: 'edit' | 'new'
+	mode: 'edit'
+}
+
+interface IFormNewModeProps {
+	formInstance: FormInstance
+	initialValues?: Partial<IFormValues>
+	isLoading: boolean
+	isPending?: boolean
+	onFinish: (values: IFormValues) => void
+	mode: 'new'
 }
 
 interface IFormViewModeProps {
+	formInstance: FormInstance
 	initialValues: Partial<IFormValues> | undefined
 	isLoading: boolean
 	isPending?: never

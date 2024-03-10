@@ -1,0 +1,48 @@
+.file-list-container {
+	white-space: nowrap;
+	overflow: auto;
+	scrollbar-width: none;
+	display: flex;
+	align-items: center;
+
+	&:has(.file-list--no-data) {
+		justify-content: center;
+	}
+
+	.file-list {
+		display: flex;
+		flex-direction: row;
+		width: max-content;
+		gap: var(--ant-margin);
+		max-height: 222px;
+		height: fit-content;
+	}
+
+	.scroll-shadow {
+		position: absolute;
+		z-index: 20;
+		top: calc(32px + var(--ant-padding-xs)); /* Adjust top position as needed */
+		bottom: 0; /* Adjust bottom position as needed */
+		width: 20px; /* Adjust width as needed */
+		background: linear-gradient(
+			to right,
+			rgba(0, 0, 0, 0.2) 0%,
+			rgba(0, 0, 0, 0) 100%
+		); /* Adjust gradient as needed */
+		opacity: 0;
+		transition: opacity 100ms ease-in-out;
+
+		&.visible {
+			opacity: 1;
+		}
+
+		&.left {
+			left: var(--ant-padding);
+		}
+
+		&.right {
+			right: var(--ant-padding);
+			transform: scaleX(-1); /* Reverse the gradient for right shadow */
+		}
+	}
+}

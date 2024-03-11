@@ -74,7 +74,7 @@ export function FileCard(props: IFileCardProps) {
 		queryFn: async () => {
 			const { data, error } = await supabase.storage
 				.from('attachments')
-				.createSignedUrl(path, 60 * 10)
+				.createSignedUrl(path, 60 * 10, { transform: { width: 300, height: 160, resize: 'cover' } })
 
 			if (error) {
 				console.error(error)
@@ -88,7 +88,7 @@ export function FileCard(props: IFileCardProps) {
 
 	const getCover = () => {
 		if (!displayCover) {
-			return <div className="file-icon">{getFileIcon(fileType)}</div>
+			return <div className="file-icon">{getFileIcon(file.name)}</div>
 		}
 
 		return isLoading ? (

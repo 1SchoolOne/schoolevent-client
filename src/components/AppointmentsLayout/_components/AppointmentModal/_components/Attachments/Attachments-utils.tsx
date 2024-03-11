@@ -17,6 +17,13 @@ export function getFormatedError(error: string) {
 				<Typography.Text>Ce fichier existe déjà.</Typography.Text>
 			</Space>
 		)
+	} else if (error === 'The object name contains invalid characters') {
+		return (
+			<Space direction="horizontal" size={gap}>
+				<Typography.Text strong>Ajout impossible.</Typography.Text>
+				<Typography.Text>Le nom du fichier contient des caractères non supportés.</Typography.Text>
+			</Space>
+		)
 	}
 
 	return null
@@ -70,7 +77,7 @@ export async function downloadAllAttachments(params: IDownloadAllAttachmentsPara
 	const link = document.createElement('a')
 
 	link.href = url
-	link.setAttribute('download', 'pièces_jointes.zip')
+	link.setAttribute('download', 'pieces_jointes.zip')
 
 	document.body.appendChild(link)
 

@@ -16,7 +16,7 @@ import './DragItem-styles.less'
 
 dayjs.extend(utc)
 dayjs.extend(timezone)
-// TODO delete column 'attachements' from table 'appointments'
+
 export function DragItem({ appointment }: IDragItemProps) {
 	const navigate = useNavigate()
 	const supabase = useSupabase()

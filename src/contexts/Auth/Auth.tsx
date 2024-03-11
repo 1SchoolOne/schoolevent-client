@@ -15,16 +15,16 @@ export function AuthProvider({ children }: PropsWithChildren) {
 	const [session, setSession] = useState<Session | null>(null)
 	const [user, setUser] = useState<User | null>(null)
 	const [role, setRole] = useState<TRole | null>(null)
-	const [approved, setApproved] = useState(false)
+	const [approved, setApproved] = useState<boolean | null>(null)
 	const [loading, setLoading] = useState(true)
 	const supabase = useSupabase()
 	const navigate = useNavigate()
 
 	useEffect(() => {
-		if (role) {
+		if (role && approved !== null) {
 			setLoading(false)
 		}
-	}, [role])
+	}, [role, approved])
 
 	useQuery({
 		queryKey: ['user-role'],
@@ -122,7 +122,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
 			session,
 			user,
 			role,
-			approved,
+			approved: !!approved,
 		}),
 		[session, user, role, approved],
 	)

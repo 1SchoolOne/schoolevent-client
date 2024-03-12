@@ -59,12 +59,51 @@ export type Database = {
   }
   public: {
     Tables: {
+      appointment_comments: {
+        Row: {
+          appointment_id: number
+          author_id: string
+          content: string
+          created_at: string
+          id: number
+          updated_at: string | null
+        }
+        Insert: {
+          appointment_id: number
+          author_id: string
+          content: string
+          created_at?: string
+          id?: number
+          updated_at?: string | null
+        }
+        Update: {
+          appointment_id?: number
+          author_id?: string
+          content?: string
+          created_at?: string
+          id?: number
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "appointment_comments_appointment_id_fkey"
+            columns: ["appointment_id"]
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "appointment_comments_author_id_fkey"
+            columns: ["author_id"]
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       appointments: {
         Row: {
           apt_status: Database["public"]["Enums"]["apt_status"]
           apt_type: string | null
           assignee: string | null
-          attachements: string[] | null
           author_id: string
           contact_email: string | null
           contact_name: string | null
@@ -83,7 +122,6 @@ export type Database = {
           apt_status: Database["public"]["Enums"]["apt_status"]
           apt_type?: string | null
           assignee?: string | null
-          attachements?: string[] | null
           author_id: string
           contact_email?: string | null
           contact_name?: string | null
@@ -102,7 +140,6 @@ export type Database = {
           apt_status?: Database["public"]["Enums"]["apt_status"]
           apt_type?: string | null
           assignee?: string | null
-          attachements?: string[] | null
           author_id?: string
           contact_email?: string | null
           contact_name?: string | null
@@ -173,16 +210,19 @@ export type Database = {
       }
       events_participants: {
         Row: {
+          approved: boolean
           event_id: number
           id: number
           user_id: string
         }
         Insert: {
+          approved?: boolean
           event_id: number
           id?: number
           user_id: string
         }
         Update: {
+          approved?: boolean
           event_id?: number
           id?: number
           user_id?: string

@@ -1,12 +1,12 @@
 import { Info as InfoIcon } from '@phosphor-icons/react'
-import { Space, Tooltip } from 'antd'
+import { Tooltip } from 'antd'
 
 import { TInfoProps } from './Info-types'
 
 import './Info-styles.less'
 
 export function Info(props: TInfoProps) {
-	const { direction = 'horizontal', children, tooltip, tooltipProps } = props
+	const { children, tooltip, tooltipProps } = props
 
 	if (tooltip) {
 		return (
@@ -17,9 +17,9 @@ export function Info(props: TInfoProps) {
 	}
 
 	return (
-		<Space direction={direction} className="info__container" align="center">
+		<div className="info__container">
 			<InfoIcon className="info__icon" size="16px" />
 			{children}
-		</Space>
+		</div>
 	)
 }

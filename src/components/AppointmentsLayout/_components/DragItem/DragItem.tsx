@@ -38,6 +38,24 @@ export function DragItem({ appointment }: IDragItemProps) {
 		initialData: [],
 	})
 
+	const { data: commentsCount } = useQuery({
+		queryKey: ['comments-count', { appointmentId: appointment.id }],
+		queryFn: async () => {
+			const { count, error } = await supabase
+				.from('appointment_comments')
+				.select('*', { count: 'exact', head: true })
+				.eq('appointment_id', appointment.id)
+
+			if (error) {
+				console.error(error)
+				throw error
+			}
+
+			return count ?? 0
+		},
+		initialData: 0,
+	})
+
 	const userName = appointment.users ? getNameFromEmail(appointment.users.email) : null
 
 	const [{ isDragging }, drag] = useDrag({
@@ -125,7 +143,7 @@ export function DragItem({ appointment }: IDragItemProps) {
 					</div>
 				)}
 				<div className="drag-item__footer__item">
-					<Typography.Text type="secondary">0</Typography.Text>
+					<Typography.Text type="secondary">{commentsCount}</Typography.Text>
 					<MessageIcon size={16} />
 				</div>
 				<div

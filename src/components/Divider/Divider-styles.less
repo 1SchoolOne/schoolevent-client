@@ -9,10 +9,22 @@
 
 	&--2-items {
 		grid-template-columns: var(--ant-padding-xl) max-content auto min-content;
+
+		&.divider--with-icon {
+			grid-template-columns: var(--ant-padding-xl) min-content max-content auto;
+		}
 	}
 
 	&--3-items {
 		grid-template-columns: var(--ant-padding-xl) max-content auto min-content min-content;
+
+		&.divider--with-icon {
+			grid-template-columns: var(--ant-padding-xl) min-content max-content auto min-content;
+		}
+	}
+
+	&--4-items {
+		grid-template-columns: var(--ant-padding-xl) min-content max-content auto min-content min-content;
 	}
 
 	h5 {

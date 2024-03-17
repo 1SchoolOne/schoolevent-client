@@ -62,7 +62,7 @@ export function useController() {
 		} else if (action === 'new') {
 			return (
 				<AppointmentFormProvider
-					mode="new"
+					mode={action}
 					schoolId={school_id ?? undefined}
 					status={isStatusValid ? status : null}
 				>

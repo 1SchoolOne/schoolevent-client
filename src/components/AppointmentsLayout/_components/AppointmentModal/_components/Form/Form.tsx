@@ -6,6 +6,7 @@ import utc from 'dayjs/plugin/utc'
 import { useState } from 'react'
 
 import { AutoCompleteField, Info, SelectField } from '@components'
+import { appointmentStatusRecord } from '@types'
 import {
 	fetchAddressCompletion,
 	fetchGeoIP,
@@ -14,8 +15,6 @@ import {
 	useSupabase,
 } from '@utils'
 
-import { appointmentStatusRecord } from '../../../../../../types/appointments'
-import { Attachments } from '../Attachments/Attachments'
 import { DateField } from '../DateField/DateField'
 import { IFormValues, TFormProps } from './Form-types'
 
@@ -313,17 +312,6 @@ export function Form(props: TFormProps) {
 					</AntdForm.Item>
 				</Col>
 			</Row>
-
-			{mode !== 'new' && (
-				<Row
-					gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}
-					className="appointment-modal__form__attachments"
-				>
-					<Col span={24}>
-						<Attachments />
-					</Col>
-				</Row>
-			)}
 		</AntdForm>
 	)
 }

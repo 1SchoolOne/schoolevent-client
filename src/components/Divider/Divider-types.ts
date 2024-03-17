@@ -4,6 +4,7 @@ import { IIconButtonProps } from '../IconButton/IconButton-types'
 
 export interface IDividerProps {
 	title: string
+	icon?: React.ReactNode
 	/** `IconButton` props + tooltip option. */
 	mainAction?: IMainAction
 	/** `Dropdown` props. */

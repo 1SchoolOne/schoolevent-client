@@ -1,4 +1,8 @@
-import { Plus as AddIcon, DownloadSimple as DownloadIcon } from '@phosphor-icons/react'
+import {
+	Plus as AddIcon,
+	DownloadSimple as DownloadIcon,
+	Paperclip as PaperclipIcon,
+} from '@phosphor-icons/react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { App, Space, Upload } from 'antd'
 
@@ -58,8 +62,9 @@ export function Attachments() {
 	const shouldDisplayMoreActions = mode !== 'new' && attachments.length > 1
 
 	return (
-		<Space direction="vertical" style={{ width: '100%' }}>
+		<Space className="appointment-attachments" direction="vertical" style={{ width: '100%' }}>
 			<Divider
+				icon={<PaperclipIcon size={16} />}
 				title={`Pièces jointes (${attachments?.length ?? 0})`}
 				mainAction={
 					mode === 'view'

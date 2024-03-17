@@ -108,7 +108,7 @@ export function FileCard(props: IFileCardProps) {
 		>
 			<Card.Meta
 				title={
-					<Typography.Text title={file.name} ellipsis={{ tooltip: { title: file.name } }}>
+					<Typography.Text title={file.name} ellipsis>
 						{file.name}
 					</Typography.Text>
 				}

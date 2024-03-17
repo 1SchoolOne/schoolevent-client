@@ -10,3 +10,7 @@ export const appointmentStatusRecord = {
 export type TAppointmentStatus = Database['public']['Enums']['apt_status']
 
 export type TAppointment = Database['public']['Tables']['appointments']['Row']
+
+export type TComment = Database['public']['Tables']['appointment_comments']['Row']
+
+export type TComments = TComment[]

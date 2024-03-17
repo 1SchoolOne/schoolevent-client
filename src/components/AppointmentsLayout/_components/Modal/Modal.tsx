@@ -44,6 +44,7 @@ export function Modal(props: IModalProps) {
 			}}
 			width={width}
 			centered
+			keyboard={false}
 		>
 			{children}
 		</AntdModal>

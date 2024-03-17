@@ -12,6 +12,8 @@ import { useAppointmentForm, useAuth } from '@contexts'
 import { useSupabase } from '@utils'
 
 import { Modal } from '../../../Modal/Modal'
+import { Attachments } from '../Attachments/Attachments'
+import { CommentList } from '../CommentList/CommentList'
 import { Form } from '../Form/Form'
 import { IFormValues } from '../Form/Form-types'
 
@@ -97,23 +99,27 @@ export function EditModal() {
 			{error ? (
 				<LoadingError error={error} />
 			) : (
-				<Form
-					key={formKey}
-					formInstance={formInstance}
-					isLoading={isLoading}
-					isPending={isPending}
-					onFinish={mutate}
-					initialValues={{
-						...initialValues,
-						contacted_date: initialValues?.contacted_date
-							? dayjs(initialValues.contacted_date)
-							: undefined,
-						planned_date: initialValues?.planned_date
-							? dayjs(initialValues.planned_date)
-							: undefined,
-					}}
-					mode="edit"
-				/>
+				<>
+					<Form
+						key={formKey}
+						formInstance={formInstance}
+						isLoading={isLoading}
+						isPending={isPending}
+						onFinish={mutate}
+						initialValues={{
+							...initialValues,
+							contacted_date: initialValues?.contacted_date
+								? dayjs(initialValues.contacted_date)
+								: undefined,
+							planned_date: initialValues?.planned_date
+								? dayjs(initialValues.planned_date)
+								: undefined,
+						}}
+						mode="edit"
+					/>
+					<Attachments />
+					<CommentList />
+				</>
 			)}
 		</Modal>
 	)

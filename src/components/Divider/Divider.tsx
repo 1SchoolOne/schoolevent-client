@@ -25,16 +25,16 @@ function Splitter() {
  * __horizontal mode only__.
  */
 export function Divider(props: IDividerProps) {
-	const { title, mainAction: iconButtonProps, moreActions: dropdownProps } = props
+	const { title, icon, mainAction: iconButtonProps, moreActions: dropdownProps } = props
 
 	const getNumberOfItems = () => {
-		if (iconButtonProps && dropdownProps) {
-			return 3
-		} else if (iconButtonProps || dropdownProps) {
-			return 2
-		} else {
-			return 1
-		}
+		let numberOfItem = 1
+
+		if (icon) numberOfItem++
+		if (iconButtonProps) numberOfItem++
+		if (dropdownProps) numberOfItem++
+
+		return numberOfItem
 	}
 
 	const numberOfItems = getNumberOfItems()
@@ -62,8 +62,13 @@ export function Divider(props: IDividerProps) {
 	}
 
 	return (
-		<div className={classNames('divider', `divider--${numberOfItems}-items`)}>
+		<div
+			className={classNames('divider', `divider--${numberOfItems}-items`, {
+				'divider--with-icon': !!icon,
+			})}
+		>
 			<Splitter />
+			{icon && icon}
 			<Typography.Title level={5}>{title}</Typography.Title>
 			<Splitter />
 			{dropdownProps && (

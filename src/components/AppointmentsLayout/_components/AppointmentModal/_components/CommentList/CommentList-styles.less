@@ -1,0 +1,64 @@
+.appointment-comments {
+	width: 100%;
+
+	&__new-comment {
+		margin-top: var(--ant-margin);
+		width: 100%;
+
+		button {
+			margin-left: auto;
+		}
+	}
+
+	&__sorter {
+		display: flex;
+		width: fit-content;
+		margin-top: var(--ant-margin);
+
+		&__select,
+		&__dropdown {
+			.ant-space-item:has(.appointment-comments__sorter__icon) {
+				display: flex;
+				justify-content: center;
+				align-items: center;
+			}
+		}
+	}
+
+	&__edit-item-container {
+		width: 100%;
+	}
+
+	&__list {
+		&-item {
+			&-container {
+				> .ant-space-item:has(.appointment-comments__list-item__content--edit) {
+					padding-left: calc(var(--ant-padding-xl) + var(--ant-padding-sm));
+				}
+			}
+
+			> .ant-space {
+				width: 100%;
+			}
+
+			&__content {
+				white-space: pre-wrap;
+				padding-left: calc(var(--ant-padding-xl) + var(--ant-padding-sm));
+
+				&.ant-typography {
+					margin-bottom: 0;
+				}
+
+				&--edit {
+					position: relative;
+					padding-left: 11px;
+				}
+			}
+		}
+	}
+
+	.appointment-comments__list .appointment-comments__list-item .ant-list-item-action {
+		padding-left: calc(var(--ant-padding-xl) + var(--ant-padding-sm) - 4px);
+		width: 100%;
+	}
+}

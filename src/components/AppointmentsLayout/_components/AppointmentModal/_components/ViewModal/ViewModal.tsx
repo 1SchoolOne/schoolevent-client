@@ -8,6 +8,8 @@ import { LoadingError } from '@components'
 import { useAppointmentForm } from '@contexts'
 
 import { Modal } from '../../../Modal/Modal'
+import { Attachments } from '../Attachments/Attachments'
+import { CommentList } from '../CommentList/CommentList'
 import { Form } from '../Form/Form'
 
 dayjs.extend(utc)
@@ -31,21 +33,25 @@ export function ViewModal() {
 			{error ? (
 				<LoadingError error={error} />
 			) : (
-				<Form
-					key={formKey}
-					formInstance={formInstance}
-					isLoading={isLoading}
-					initialValues={{
-						...initialValues,
-						contacted_date: initialValues?.contacted_date
-							? dayjs(initialValues.contacted_date)
-							: undefined,
-						planned_date: initialValues?.planned_date
-							? dayjs(initialValues.planned_date)
-							: undefined,
-					}}
-					mode="view"
-				/>
+				<>
+					<Form
+						key={formKey}
+						formInstance={formInstance}
+						isLoading={isLoading}
+						initialValues={{
+							...initialValues,
+							contacted_date: initialValues?.contacted_date
+								? dayjs(initialValues.contacted_date)
+								: undefined,
+							planned_date: initialValues?.planned_date
+								? dayjs(initialValues.planned_date)
+								: undefined,
+						}}
+						mode="view"
+					/>
+					<Attachments />
+					<CommentList />
+				</>
 			)}
 		</Modal>
 	)

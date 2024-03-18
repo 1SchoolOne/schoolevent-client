@@ -1,0 +1,24 @@
+.keyboard {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--ant-padding-xxs);
+
+  > p {
+    margin: 0;
+    height: fit-content;
+  }
+
+  .ant-typography {
+      kbd {
+        margin: 0;
+        height: calc(16px + (var(--ant-padding-xxs) * 2) + 3px);
+        width: calc(16px + (var(--ant-padding-xxs) * 2) + 2px);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: var(--ant-padding-xxs);
+        border-radius: var(--ant-border-radius);
+      }
+  }
+}

@@ -6,7 +6,7 @@ import timezone from 'dayjs/plugin/timezone'
 import utc from 'dayjs/plugin/utc'
 import { ElementRef, useEffect, useRef, useState } from 'react'
 
-import { Info } from '@components'
+import { Info, Keyboard } from '@components'
 import { useAppointmentForm, useAuth } from '@contexts'
 import { TComment, TComments } from '@types'
 import { getNameFromEmail, useSupabase } from '@utils'
@@ -187,8 +187,8 @@ export function Comment(props: ICommentProps) {
 						/>
 						<Info>
 							<Typography.Text>
-								Appuyez sur <Typography.Text keyboard>Shift + Entrer</Typography.Text> pour
-								sauvegarder les modifications.
+								Appuyez sur <Keyboard combination={['shift', 'return']} />
+								pour sauvegarder les modifications.
 							</Typography.Text>
 						</Info>
 					</Space>

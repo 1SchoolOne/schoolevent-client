@@ -11,6 +11,7 @@ import {
 	AppointmentsLayout,
 	AuthLayout,
 	CalendarLayout,
+	HomeLayout,
 	ContactsLayout,
 	EventForm,
 	LoginForm,
@@ -60,6 +61,7 @@ function App() {
 										<FavoriteContactsProvider>
 											<MainLayout />
 										</FavoriteContactsProvider>
+
 									}
 								>
 									<Route
@@ -75,6 +77,7 @@ function App() {
 											</ProtectedRoute>
 										}
 									/>
+									<Route index element={<HomeLayout />} />
 									<Route
 										path="calendar"
 										element={

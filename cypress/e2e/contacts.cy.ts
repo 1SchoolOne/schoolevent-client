@@ -13,12 +13,15 @@ import {
 	login,
 	openMap,
 	toggleMapMode,
+	waitForMainPageToLoad,
 	waitForTableDataToLoad,
 } from '../support/utils'
 
 describe('Contacts', () => {
 	beforeEach(() => {
 		login(undefined, true)
+
+		waitForMainPageToLoad()
 
 		cy.visit(CONTACTS_URL, {
 			onBeforeLoad({ navigator }) {
@@ -30,6 +33,7 @@ describe('Contacts', () => {
 				})
 			},
 		})
+
 		waitForTableDataToLoad()
 	})
 
@@ -42,7 +46,7 @@ describe('Contacts', () => {
 			'Académie Internationale des Métiers du Golf, Ecole technologique privée{enter}',
 		)
 
-		waitForTableDataToLoad()
+		waitForTableDataToLoad(true)
 
 		// This assertion is necessary to ensure that the filter was applied.
 		cy.get('.ant-pagination-item').last().find('a').invoke('text').should('eq', '1')
@@ -60,7 +64,7 @@ describe('Contacts', () => {
 			getButtonFromLabel('OK').click()
 		})
 
-		waitForTableDataToLoad()
+		waitForTableDataToLoad(true)
 
 		// This assertion is necessary to ensure that the filter was applied.
 		cy.get('.ant-pagination-item')
@@ -91,7 +95,7 @@ describe('Contacts', () => {
 			cy.get('input').type('Cergy{enter}')
 		})
 
-		waitForTableDataToLoad()
+		waitForTableDataToLoad(true)
 
 		getAllTableRows().then((rows) => {
 			cy.wrap(rows).each((row) => {
@@ -110,7 +114,7 @@ describe('Contacts', () => {
 			cy.get('input').type('95310{enter}')
 		})
 
-		waitForTableDataToLoad()
+		waitForTableDataToLoad(true)
 
 		getAllTableRows().then((rows) => {
 			cy.wrap(rows).each((row) => {
@@ -129,7 +133,7 @@ describe('Contacts', () => {
 			cy.get('input').type('2 rue des Egalisses{enter}')
 		})
 
-		waitForTableDataToLoad()
+		waitForTableDataToLoad(true)
 
 		getAllTableRows().then((rows) => {
 			cy.wrap(rows).each((row) => {
@@ -144,7 +148,7 @@ describe('Contacts', () => {
 			.find('input')
 			.type("Section d'enseignement professionnel du lycée polyvalent Jean Perrin")
 
-		waitForTableDataToLoad()
+		waitForTableDataToLoad(true)
 
 		getAllTableRows().then((rows) => {
 			cy.wrap(rows).each((row) => {
@@ -162,7 +166,7 @@ describe('Contacts', () => {
 			'Académie Internationale des Métiers du Golf, Ecole technologique privée{enter}',
 		)
 
-		waitForTableDataToLoad()
+		waitForTableDataToLoad(true)
 
 		cy.get('.ant-table-row-expand-icon').click()
 
@@ -211,9 +215,11 @@ describe('Contacts', () => {
 
 		openMap()
 
-		cy.get('.contacts-global-search').find('input').type(schoolName)
+		cy.get('.contacts-global-search')
+			.find('input')
+			.type(schoolName + '{enter}')
 
-		waitForTableDataToLoad()
+		waitForTableDataToLoad(true)
 
 		getAllTableRows().then((rows) => {
 			cy.wrap(rows).each((row) => {

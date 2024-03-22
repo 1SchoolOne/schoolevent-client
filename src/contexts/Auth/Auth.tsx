@@ -1,5 +1,5 @@
 import { Session, User } from '@supabase/supabase-js'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { Spin } from 'antd'
 import { createContext, useContext, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -19,6 +19,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
 	const [loading, setLoading] = useState(true)
 	const supabase = useSupabase()
 	const navigate = useNavigate()
+	const queryClient = useQueryClient()
 
 	useEffect(() => {
 		if (role && approved !== null) {
@@ -45,6 +46,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
 
 			return userObject
 		},
+		staleTime: 60 * 60_000, // 1 hour
 		enabled: session !== null && role === null,
 	})
 
@@ -59,6 +61,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
 
 			if (event === 'SIGNED_OUT' || (event === 'INITIAL_SESSION' && !newSession)) {
 				setRole(null)
+				queryClient.invalidateQueries({ queryKey: ['user-role'] })
 
 				// Navigate to the login page only when the user is not already on it
 				!pathname.includes('auth') && navigate('/auth/login')
@@ -79,6 +82,8 @@ export function AuthProvider({ children }: PropsWithChildren) {
 								}
 							}
 						})
+				} else {
+					queryClient.invalidateQueries({ queryKey: ['user-role'] })
 				}
 			}
 		})

@@ -1,4 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { App as AppProvider, Card, ConfigProvider, Typography, theme as themeAlg } from 'antd'
 import frFR from 'antd/lib/locale/fr_FR'
 import { useEffect, useState } from 'react'
@@ -23,7 +24,15 @@ import { AuthProvider, FavoriteContactsProvider, MapDisplayProvider, useTheme } 
 
 import './App.less'
 
-const queryClient = new QueryClient()
+const APP_MODE = import.meta.env.MODE
+
+const queryClient = new QueryClient({
+	defaultOptions: {
+		queries: {
+			staleTime: APP_MODE === 'staging' ? 0 : 60_000,
+		},
+	},
+})
 
 function App() {
 	const [faviconHref, setFaviconHref] = useState<string>('')
@@ -136,6 +145,7 @@ function App() {
 								</Route>
 							</Routes>
 						</AuthProvider>
+						<ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-left" />
 					</QueryClientProvider>
 				</BrowserRouter>
 			</ConfigProvider>

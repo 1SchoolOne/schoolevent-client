@@ -1,4 +1,5 @@
 import { defineConfig } from 'cypress'
+import { cypressBrowserPermissionsPlugin } from 'cypress-browser-permissions'
 import { unlinkSync } from 'fs'
 
 export default defineConfig({
@@ -8,6 +9,7 @@ export default defineConfig({
 	requestTimeout: 10_000,
 	viewportWidth: 1600,
 	viewportHeight: 900,
+	chromeWebSecurity: false,
 	e2e: {
 		setupNodeEvents(on, config) {
 			on('after:spec', (_spec, results) => {
@@ -17,6 +19,14 @@ export default defineConfig({
 					unlinkSync(results.video)
 				}
 			})
+
+			return cypressBrowserPermissionsPlugin(on, config)
+		},
+		env: {
+			browserPermissions: {
+				notifications: 'allow',
+				geolocation: 'allow',
+			},
 		},
 	},
 })

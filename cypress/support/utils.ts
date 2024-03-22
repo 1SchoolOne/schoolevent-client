@@ -21,13 +21,15 @@ export function login(params = MANAGER_USER, shouldNavigate = false) {
 	const { email, password } = params
 
 	if (shouldNavigate) {
-		cy.visit(`${BASE_URL}/login`)
+		cy.visit(`${BASE_URL}/auth/login`)
 	}
 
 	getInputFromLabel('Email').type(email)
 	getInputFromLabel('Mot de passe').type(password)
 
 	getButtonFromLabel('Se connecter').click()
+
+	cy.get('.main-layout').should('be.visible')
 }
 
 export function logout() {
@@ -71,4 +73,28 @@ export function checkTableRowsCount(count: number) {
 
 export function getAllTableRows() {
 	return cy.get('.ant-table-tbody').find('tr.ant-table-row')
+}
+
+/**
+ * To use when you need to wait for the table data to load.
+ */
+export function waitForTableDataToLoad() {
+	cy.get('.ant-spin').should('exist')
+	return cy.get('.ant-spin').should('not.exist')
+}
+
+export function getDropdownItem(label: string | RegExp) {
+	return cy.get('li.ant-dropdown-menu-item').contains(label)
+}
+
+export function openMap() {
+	cy.get('.open-map-btn').click()
+}
+
+export function closeMap() {
+	cy.get('.close-map-btn').click()
+}
+
+export function toggleMapMode() {
+	cy.get('.map-btn.toggle-mode-btn').click()
 }

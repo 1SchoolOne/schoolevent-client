@@ -219,6 +219,27 @@ export function Form(props: TFormProps) {
 				</Col>
 
 				<Col span={10}>
+					<AntdForm.Item
+						name="apt_status"
+						label="Statut"
+						rules={[{ required: true, message: 'Veuillez sélectionner le statut.' }]}
+					>
+						{isLoading ? (
+							<Skeleton.Input active block />
+						) : (
+							<SelectField
+								readOnly={mode === 'view'}
+								placeholder="Sélectionner un statut"
+								options={Object.entries(appointmentStatusRecord).map(([key, value]) => ({
+									key,
+									label: value,
+									value: key,
+								}))}
+								allowClear
+							/>
+						)}
+					</AntdForm.Item>
+
 					<AntdForm.Item name="assignee" label="Assigné">
 						{isLoading ? (
 							<Skeleton.Input active block />
@@ -243,25 +264,6 @@ export function Form(props: TFormProps) {
 									}
 								})}
 								showSearch
-								allowClear
-							/>
-						)}
-					</AntdForm.Item>
-					<AntdForm.Item
-						name="apt_status"
-						label="Statut"
-						rules={[{ required: true, message: 'Veuillez sélectionner le statut.' }]}
-					>
-						{isLoading ? (
-							<Skeleton.Input active block />
-						) : (
-							<SelectField
-								readOnly={mode === 'view'}
-								options={Object.entries(appointmentStatusRecord).map(([key, value]) => ({
-									key,
-									label: value,
-									value: key,
-								}))}
 								allowClear
 							/>
 						)}

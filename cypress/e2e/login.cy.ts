@@ -10,11 +10,18 @@ import {
 	SIDE_MENU_LABELS,
 	STUDENT_USER,
 } from '../constants'
-import { getButtonFromLabel, getInputFromLabel, login, logout } from '../support/utils'
+import {
+	getButtonFromLabel,
+	getInputFromLabel,
+	login,
+	logout,
+	waitForMainPageToLoad,
+} from '../support/utils'
 
 describe('Login', () => {
 	it('allows to login with school email', () => {
 		login(MANAGER_USER, true)
+		waitForMainPageToLoad()
 
 		cy.url().should('eq', `${BASE_URL}/`)
 	})
@@ -43,6 +50,8 @@ describe('Login', () => {
 		// As manager
 		login(MANAGER_USER, true)
 
+		waitForMainPageToLoad()
+
 		cy.get('.main-layout__sider').within(() => {
 			SIDE_MENU_LABELS.manager.shouldHaveAccessTo.forEach((label) => {
 				cy.contains(label).should('exist').and('be.visible')
@@ -68,6 +77,8 @@ describe('Login', () => {
 	it('allows access to all routes for manager role', () => {
 		login(MANAGER_USER, true)
 
+		waitForMainPageToLoad()
+
 		// Manager should have access to contacts page
 		cy.visit(CONTACTS_URL)
 		cy.get('.contacts-table').should('exist').and('be.visible')
@@ -91,6 +102,8 @@ describe('Login', () => {
 
 	it('allows access to home and events routes for student role', () => {
 		login(STUDENT_USER, true)
+
+		waitForMainPageToLoad()
 
 		// This assertion is necessary to ensure that the login was successful.
 		// If we execute the cy.visit(), it will try to navigate before the login is complete.

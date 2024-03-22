@@ -28,7 +28,9 @@ export function login(params = MANAGER_USER, shouldNavigate = false) {
 	getInputFromLabel('Mot de passe').type(password)
 
 	getButtonFromLabel('Se connecter').click()
+}
 
+export function waitForMainPageToLoad() {
 	cy.get('.main-layout').should('be.visible')
 }
 
@@ -78,9 +80,16 @@ export function getAllTableRows() {
 /**
  * To use when you need to wait for the table data to load.
  */
-export function waitForTableDataToLoad() {
-	cy.get('.ant-spin').should('exist')
-	return cy.get('.ant-spin').should('not.exist')
+export function waitForTableDataToLoad(filtered = false) {
+	cy.get('.table-container').within(() => {
+		cy.get('.ant-spin-blur').should('not.exist')
+	})
+
+	if (filtered) {
+		cy.get('.ant-pagination').within(() => {
+			cy.get('li[title="536"]').should('not.exist')
+		})
+	}
 }
 
 export function getDropdownItem(label: string | RegExp) {

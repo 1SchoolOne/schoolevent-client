@@ -133,16 +133,17 @@ export function CommentList() {
 			return data
 		},
 		enabled: !!appointmentId,
-		initialData: [],
+		placeholderData: [],
 	})
 
-	const sortedComments = comments.sort((a, b) => {
-		if (sort === 'asc') {
-			return dayjs(a.created_at).isAfter(dayjs(b.created_at)) ? 1 : -1
-		} else {
-			return dayjs(a.created_at).isBefore(dayjs(b.created_at)) ? 1 : -1
-		}
-	})
+	const sortedComments =
+		comments?.sort((a, b) => {
+			if (sort === 'asc') {
+				return dayjs(a.created_at).isAfter(dayjs(b.created_at)) ? 1 : -1
+			} else {
+				return dayjs(a.created_at).isBefore(dayjs(b.created_at)) ? 1 : -1
+			}
+		}) ?? []
 
 	return (
 		<Space className="appointment-comments" direction="vertical">
@@ -167,7 +168,7 @@ export function CommentList() {
 					Commenter
 				</Button>
 			</Space>
-			{comments.length > 0 && (
+			{comments && comments.length > 0 && (
 				<Space className="appointment-comments__sorter" direction="horizontal">
 					<Typography.Text>Trier :</Typography.Text>
 					<Select

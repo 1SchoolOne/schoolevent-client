@@ -34,7 +34,7 @@ export function Attachments() {
 
 			return data
 		},
-		initialData: [],
+		placeholderData: [],
 	})
 
 	const { mutate: uploadFile } = useMutation({
@@ -59,7 +59,7 @@ export function Attachments() {
 		},
 	})
 
-	const shouldDisplayMoreActions = mode !== 'new' && attachments.length > 1
+	const shouldDisplayMoreActions = mode !== 'new' && attachments && attachments.length > 1
 
 	return (
 		<Space className="appointment-attachments" direction="vertical" style={{ width: '100%' }}>
@@ -101,11 +101,12 @@ export function Attachments() {
 											label: 'Tout télécharger',
 											icon: <DownloadIcon size={16} />,
 											onClick: () => {
-												downloadAllAttachments({
-													attachments,
-													supabase,
-													path: `appointment_${appointmentId}`,
-												})
+												attachments &&
+													downloadAllAttachments({
+														attachments,
+														supabase,
+														path: `appointment_${appointmentId}`,
+													})
 											},
 										},
 									],
@@ -114,7 +115,7 @@ export function Attachments() {
 						: undefined
 				}
 			/>
-			<FileList files={attachments} loading={isLoading} />
+			<FileList files={attachments ?? []} loading={isLoading} />
 		</Space>
 	)
 }

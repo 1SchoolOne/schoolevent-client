@@ -35,7 +35,7 @@ export function DragItem({ appointment }: IDragItemProps) {
 
 			return data
 		},
-		initialData: [],
+		placeholderData: [],
 	})
 
 	const { data: commentsCount } = useQuery({
@@ -53,7 +53,7 @@ export function DragItem({ appointment }: IDragItemProps) {
 
 			return count ?? 0
 		},
-		initialData: 0,
+		placeholderData: 0,
 	})
 
 	const userName = appointment.users ? getNameFromEmail(appointment.users.email) : null
@@ -148,11 +148,9 @@ export function DragItem({ appointment }: IDragItemProps) {
 				</div>
 				<div
 					className="drag-item__footer__item"
-					title={`${attachments.length} pièce${attachments.length > 1 ? 's' : ''} jointe${
-						attachments.length > 1 ? 's' : ''
-					}`}
+					title={`${attachments?.length ?? 0} pièces jointes`}
 				>
-					<Typography.Text type="secondary">{attachments.length}</Typography.Text>
+					<Typography.Text type="secondary">{attachments?.length ?? 0}</Typography.Text>
 					<PaperclipIcon size={16} />
 				</div>
 			</div>

@@ -53,7 +53,7 @@ export function Form() {
 		queryKey: ['addresse-completion', { search: debouncedSearch }],
 		queryFn: async () => await fetchAddressCompletion(debouncedSearch, userLocation),
 		enabled: !!debouncedSearch && !!userLocation,
-		initialData: [],
+		placeholderData: [],
 	})
 
 	const createEvent = async (value: IEventFormFields) => {
@@ -242,7 +242,7 @@ export function Form() {
 					<AutoCompleteField
 						onSearch={(value) => setAddressSearch(value)}
 						onSelect={(value) => setAddressSearch(value)}
-						options={addressCompletion.map((address) => ({
+						options={addressCompletion?.map((address) => ({
 							label: `${address.name}, ${address.postcode} ${address.city}`,
 							value: `${address.name}, ${address.postcode} ${address.city}`,
 						}))}

@@ -28,11 +28,11 @@ export function AuthProvider({ children }: PropsWithChildren) {
 	}, [role, approved])
 
 	useQuery({
-		queryKey: ['user-role'],
+		queryKey: ['user'],
 		queryFn: async () => {
 			const { data: userObject, error } = await supabase
 				.from('users')
-				.select('role')
+				.select('role,approved')
 				.eq('id', session!.user.id)
 				.single()
 
@@ -42,6 +42,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
 
 			if (userObject) {
 				setRole(userObject.role)
+				setApproved(userObject.approved)
 			}
 
 			return userObject
@@ -55,35 +56,22 @@ export function AuthProvider({ children }: PropsWithChildren) {
 			data: { subscription },
 		} = supabase.auth.onAuthStateChange((event, newSession) => {
 			const pathname = window.location.pathname.split('/').filter((i) => i)
+			console.log(event, newSession)
 
 			setSession(newSession)
 			setUser(newSession?.user ?? null)
 
 			if (event === 'SIGNED_OUT' || (event === 'INITIAL_SESSION' && !newSession)) {
 				setRole(null)
-				queryClient.invalidateQueries({ queryKey: ['user-role'] })
+				queryClient.invalidateQueries()
 
 				// Navigate to the login page only when the user is not already on it
 				!pathname.includes('auth') && navigate('/auth/login')
 			} else if (event === 'SIGNED_IN' || (event === 'INITIAL_SESSION' && newSession)) {
 				if (newSession) {
-					supabase
-						.from('users')
-						.select('role,approved')
-						.eq('id', newSession.user.id)
-						.single()
-						.then(({ data: userObject }) => {
-							if (userObject) {
-								setRole(userObject.role)
-								setApproved(userObject.approved ?? false)
-
-								if (pathname.includes('auth')) {
-									navigate('/')
-								}
-							}
-						})
-				} else {
-					queryClient.invalidateQueries({ queryKey: ['user-role'] })
+					if (pathname.includes('auth')) {
+						navigate('/')
+					}
 				}
 			}
 		})

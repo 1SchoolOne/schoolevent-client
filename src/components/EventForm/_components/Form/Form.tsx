@@ -79,7 +79,7 @@ export function Form() {
 			setBackgroundUrl(null)
 		}
 
-		return error ? false : true
+		return !error
 	}
 
 	return (

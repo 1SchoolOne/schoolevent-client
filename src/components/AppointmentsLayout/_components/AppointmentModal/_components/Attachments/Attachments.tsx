@@ -6,10 +6,10 @@ import {
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { App, Space, Upload } from 'antd'
 
+import { Divider } from '@components'
 import { useAppointmentForm } from '@contexts'
 import { useSupabase } from '@utils'
 
-import { Divider } from '../../../../../Divider/Divider'
 import { FileList } from '../FileList/FileList'
 import { ACCEPTED_FILE_TYPES } from './Attachments-constants'
 import { downloadAllAttachments, getFormatedError } from './Attachments-utils'

@@ -4,6 +4,7 @@ import classNames from 'classnames'
 import dayjs from 'dayjs'
 import timezone from 'dayjs/plugin/timezone'
 import utc from 'dayjs/plugin/utc'
+import logger from 'loglevel'
 import { ElementRef, useEffect, useRef, useState } from 'react'
 
 import { Info, Keyboard } from '@components'
@@ -68,7 +69,7 @@ export function Comment(props: ICommentProps) {
 				.eq('id', id)
 
 			if (error) {
-				console.error(error)
+				logger.error(error)
 				throw error
 			}
 
@@ -118,7 +119,7 @@ export function Comment(props: ICommentProps) {
 			const { data, error } = await supabase.from('appointment_comments').delete().eq('id', id)
 
 			if (error) {
-				console.error(error)
+				logger.error(error)
 				throw error
 			}
 

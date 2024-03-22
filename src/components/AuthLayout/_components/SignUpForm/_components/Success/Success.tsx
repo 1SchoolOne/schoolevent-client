@@ -1,5 +1,6 @@
 import { EnvelopeSimple as EnvelopeIcon } from '@phosphor-icons/react'
 import { App, Button, Col, Grid, Row, Space, Typography } from 'antd'
+import logger from 'loglevel'
 import { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 
@@ -45,7 +46,7 @@ export function Success() {
 		})
 
 		if (error) {
-			console.error(error)
+			logger.error(error)
 			message.error(`${error.name}: ${error.message}`, 7.5)
 		} else {
 			setIsButtonDisabled(true)

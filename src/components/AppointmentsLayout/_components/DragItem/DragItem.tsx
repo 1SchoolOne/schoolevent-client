@@ -4,6 +4,7 @@ import { Avatar, Space, Tooltip, Typography } from 'antd'
 import dayjs from 'dayjs'
 import timezone from 'dayjs/plugin/timezone'
 import utc from 'dayjs/plugin/utc'
+import logger from 'loglevel'
 import { useDrag } from 'react-dnd'
 import { useNavigate } from 'react-router-dom'
 
@@ -29,7 +30,7 @@ export function DragItem({ appointment }: IDragItemProps) {
 				.list(`appointment_${appointment.id}`)
 
 			if (error) {
-				console.error(error)
+				logger.error(error)
 				throw error
 			}
 
@@ -47,7 +48,7 @@ export function DragItem({ appointment }: IDragItemProps) {
 				.eq('appointment_id', appointment.id)
 
 			if (error) {
-				console.error(error)
+				logger.error(error)
 				throw error
 			}
 

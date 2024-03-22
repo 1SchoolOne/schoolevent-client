@@ -1,6 +1,7 @@
 import { Session, User } from '@supabase/supabase-js'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { Spin } from 'antd'
+import logger from 'loglevel'
 import { createContext, useContext, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
@@ -20,6 +21,8 @@ export function AuthProvider({ children }: PropsWithChildren) {
 	const supabase = useSupabase()
 	const navigate = useNavigate()
 	const queryClient = useQueryClient()
+
+	const DEV_MODE = import.meta.env.DEV
 
 	useEffect(() => {
 		if (role && approved !== null) {
@@ -56,7 +59,8 @@ export function AuthProvider({ children }: PropsWithChildren) {
 			data: { subscription },
 		} = supabase.auth.onAuthStateChange((event, newSession) => {
 			const pathname = window.location.pathname.split('/').filter((i) => i)
-			console.log(event, newSession)
+
+			DEV_MODE && logger.info(event, newSession)
 
 			setSession(newSession)
 			setUser(newSession?.user ?? null)

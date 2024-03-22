@@ -17,6 +17,7 @@ import {
 import dayjs from 'dayjs'
 import timezone from 'dayjs/plugin/timezone'
 import utc from 'dayjs/plugin/utc'
+import logger from 'loglevel'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import short from 'short-uuid'
@@ -147,7 +148,7 @@ export function Form() {
 									}
 									req.upload.onerror = (event) => {
 										onError?.(event)
-										console.error('error', event)
+										logger.error(event)
 									}
 									req.upload.onload = () => {
 										onSuccess?.('ok')

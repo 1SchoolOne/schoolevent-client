@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import logger from 'loglevel'
 import { createContext, useCallback, useContext, useMemo } from 'react'
 
 import { useAuth } from '@contexts'
@@ -31,7 +32,7 @@ export function FavoriteContactsProvider({ children }: PropsWithChildren) {
 			const { data, error } = await supabase.from('favorites').select('*').eq('user_id', user.id)
 
 			if (error) {
-				console.log(error)
+				logger.error(error)
 				throw error
 			}
 

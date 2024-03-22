@@ -25,7 +25,7 @@ export function fetchTableData(queryParams: IQueryParams) {
 	const { limit, offset, select, where, orderBy } = queryParams
 
 	const selectQuery = select ? `&select=${select}` : ''
-	const whereQuery = where ? `&where=${where}` : ''
+	const whereQuery = where ? `&where=${encodeURIComponent(where)}` : ''
 	const orderByQuery = orderBy ? `&order_by=${orderBy}` : ''
 
 	const url = `${GOUV_API_URL}?timezone=Europe%2FParis&limit=${limit}&offset=${offset}${selectQuery}${whereQuery}${orderByQuery}`
@@ -315,7 +315,7 @@ export function getGlobalSearch(globalSearch: string): string | null {
 		return null
 	}
 
-	return `search(nom_etablissement, '${globalSearch}') OR search(nom_commune, '${globalSearch}') OR search(code_postal, '${globalSearch}') OR search(adresse_1, '${globalSearch}')`
+	return `search(nom_etablissement, "${globalSearch}") OR search(nom_commune, "${globalSearch}") OR search(code_postal, "${globalSearch}") OR search(adresse_1, "${globalSearch}")`
 }
 
 export function getRowClassname(index: number, theme: 'light' | 'dark'): string {

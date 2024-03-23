@@ -11,6 +11,8 @@ import { VisitsMonthWidget } from './_components/Event/visitsmonthWidget';
 
 import { StudentWidget } from './_components/Student/studentWidget';
 
+import { CalendarWidget } from './_components/Calendar/calendarWidget';
+
 export function HomeLayout() {
     return (
         <BasicLayout
@@ -23,6 +25,9 @@ export function HomeLayout() {
                 </Col>
                 <Col span={8}>
                     <FavoritesWidget />
+                </Col>
+                <Col span={6}>
+                    <CalendarWidget />
                 </Col>
                 <Col span={6}>
                     <VisitsWidget />

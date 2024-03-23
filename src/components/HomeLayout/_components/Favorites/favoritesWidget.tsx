@@ -1,14 +1,16 @@
-import { Card, List, Flex } from 'antd';
-import { useFavorites } from '@contexts';
+import { Card, Flex, List } from 'antd'
 
-import './favoritesWidget-styles.less';
+import { useFavorites } from '@contexts'
+
+import './favoritesWidget-styles.less'
+
 export const FavoritesWidget: React.FC = () => {
-	const { favorites } = useFavorites();
-	const firstFourFavorites = favorites.slice(0, 4);
+	const { favorites } = useFavorites()
+	const firstFourFavorites = favorites.slice(0, 4)
 
 	return (
-		<Card title="Écoles favorites" size="small" bordered={true}>
-			<div className="favorites-widget">
+		<Card title="Écoles favorites" size="small" bordered={true} className="favorites-widget">
+			<div>
 				<List
 					className="favorites-widget__list"
 					locale={{
@@ -33,5 +35,5 @@ export const FavoritesWidget: React.FC = () => {
 				/>
 			</div>
 		</Card>
-	);
-};
+	)
+}

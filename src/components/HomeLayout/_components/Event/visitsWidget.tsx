@@ -1,33 +1,43 @@
-import { Card, Typography, Row, Col } from 'antd';
-import { EyeOutlined, LineChartOutlined } from '@ant-design/icons';
+import { Card, Row, Col, Statistic } from 'antd';
+import { valueType } from 'antd/lib/statistic/utils';
+import { EyeOutlined, ArrowUpOutlined, ArrowDownOutlined } from '@ant-design/icons';
 import { useState } from 'react';
+import CountUp from 'react-countup';
 import './visitsWidget-styles.less';
 
-export const VisitsWidget: React.FC = () => {
-    const [visits] = useState(66);
-    const [comparison] = useState(19);
+const formatter = (value: valueType) => {
+  const numberValue = Number(value);
+  return isNaN(numberValue) ? value : <CountUp end={numberValue} separator="," />;
+};
 
-    return (
-        <Card title="Nombre de vue sur le dernier événement " size="small" bordered={true} className="visits-widget">
-            <Row className="visits-widget__item">
-                <Col span={2}>
-                    <EyeOutlined />
-                </Col>
-                <Col span={22}>
-                    <Typography.Text>
-                        <span className="visits-widget__visits-number">{visits}</span> nombre de vues
-                    </Typography.Text>
-                </Col>
-            </Row>
-            <hr className="visits-widget__separator" />
-            <Row className="visits-widget__item">
-                <Col span={24}>
-                    <Typography.Text>
-                      <LineChartOutlined />
-                        <span className="visits-widget__comparison-number"> +{comparison}</span> Comparer au avant-dernier événement
-                    </Typography.Text>
-                </Col>
-            </Row>
-        </Card>
-    );
+export const VisitsWidget: React.FC = () => {
+  const [visits] = useState(134);
+  const [comparison] = useState(12);
+
+
+  return (
+    <Card title="Performances du dernier événement" size="small" bordered={true} className="visits-widget">
+      <Row className="visits-widget__item">
+        <Col span={2}>
+          <EyeOutlined />
+        </Col>
+        <Col span={22}>
+          <Statistic title="Nombre total de participation" value={visits} formatter={formatter} />
+        </Col>
+      </Row>
+      <hr className="visits-widget__separator" />
+      <Row className="visits-widget__item">
+        <Col span={24}>
+          <Statistic
+            title="Comparé à l'avant-dernier événement"
+            value={comparison}
+            formatter={formatter}
+            prefix={comparison > 0 ? <ArrowUpOutlined /> : <ArrowDownOutlined />}
+            valueStyle={{ color: comparison > 0 ? '#3f8600' : '#cf1322' }}
+            suffix="%"
+          />
+        </Col>
+      </Row>
+    </Card>
+  );
 };

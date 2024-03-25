@@ -5,7 +5,7 @@ import { valueType } from 'antd/lib/statistic/utils'
 import { useState } from 'react'
 import CountUp from 'react-countup'
 
-import './visitsmonthWiedget-styles.less'
+import './visitsmonthWidget-styles.less'
 
 const { Title } = Typography
 

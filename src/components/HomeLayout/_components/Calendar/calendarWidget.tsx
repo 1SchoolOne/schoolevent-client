@@ -1,7 +1,7 @@
 import { Card, Timeline } from 'antd'
 import 'dayjs/locale/fr'
 
-import './calendarWidget-styles.less'
+import './CalendarWidget-styles.less'
 
 export const CalendarWidget: React.FC = () => {
 	const appointments = [

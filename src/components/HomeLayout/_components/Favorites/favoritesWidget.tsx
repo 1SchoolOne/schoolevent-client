@@ -2,7 +2,7 @@ import { Card, Flex, List } from 'antd'
 
 import { useFavorites } from '@contexts'
 
-import './favoritesWidget-styles.less'
+import './FavoritesWidget-styles.less'
 
 export const FavoritesWidget: React.FC = () => {
 	const { favorites } = useFavorites()

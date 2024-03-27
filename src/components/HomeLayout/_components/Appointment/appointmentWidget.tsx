@@ -1,6 +1,6 @@
 import { Card, Col, List, Row, Typography } from 'antd'
 
-import './appointmentWidget-styles.less'
+import './AppointmentWidget-styles.less'
 
 export const AppointmentsWidget: React.FC<{ appointments: any[] }> = ({ appointments }) => {
 	const toContactAppointments = appointments.filter(

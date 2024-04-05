@@ -1,5 +1,6 @@
 .home-layout {
-	height: 100%;
+	max-height: 100vh;
+	overflow: auto;
 
 	.ant-layout-sider {
 		margin-top: 16px;
@@ -11,7 +12,6 @@
 			font-weight: bold;
 		}
 	}
-
 	.ant-layout-content {
 		display: flex;
 		background: var(--ant-color-bg-elevated);
@@ -19,14 +19,6 @@
 		margin: 16px 0 0 16px;
 		padding: 16px 16px 16px 16px;
 		box-shadow: 0 0 30px rgba(130, 130, 130, 0.15);
-	}
-
-	.basic-layout__content.chome-layout__content {
-		.ant-picker-calendar {
-			height: 100%;
-			display: grid;
-			grid-template-rows: auto 1fr;
-		}
 	}
 
 	:where(.css-dev-only-do-not-override-u24u6l).ant-row {
@@ -44,6 +36,16 @@
 }
 
 .global-widget {
+	width: 100%;
+	padding: 10px;
+	border-radius: 15px;
+	box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+	background: var(--ant-color-bg-container-disabled);
+}
+
+.global-small-widget {
+	width: 100%;
+	aspect-ratio: 1 / 1;
 	padding: 10px;
 	border-radius: 15px;
 	box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);

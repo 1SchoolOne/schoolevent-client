@@ -1,7 +1,7 @@
 import { Card, Timeline } from 'antd'
 import 'dayjs/locale/fr'
 
-import './CalendarWidget-styles.less'
+import '../../HomeLayout-styles.less'
 
 export const CalendarWidget: React.FC = () => {
 	const appointments = [
@@ -16,7 +16,7 @@ export const CalendarWidget: React.FC = () => {
 	}))
 
 	return (
-		<Card title="Journée" size="small" bordered={false} className="calendar-widget">
+		<Card title="Journée" size="small" bordered={false} className="global-widget">
 			<Timeline mode="left" items={items} />
 		</Card>
 	)

@@ -4,7 +4,7 @@ import { valueType } from 'antd/lib/statistic/utils'
 import { useState } from 'react'
 import CountUp from 'react-countup'
 
-import './StudentWidget-styles.less'
+import '../../HomeLayout-styles.less'
 
 const formatter = (value: valueType) => {
 	const numberValue = Number(value)
@@ -19,20 +19,19 @@ export const StudentWidget: React.FC = () => {
 		<Card
 			title="Nombre d'inscriptions de nouveaux étudiants"
 			size="small"
-			bordered={true}
-			className="student-widget"
+			bordered={false}
+			className="global-widget"
 		>
-			<Row className="student-widget__item">
-				<Statistic
-					className="margin-bottom"
-					title="Nombre d'inscriptions d'étudiants :"
-					value={visits}
-					prefix={<UserAddOutlined />}
-				/>
-			</Row>
-			<hr className="student-widget__separator margin-bottom" />
-			<Row className="student-widget__item">
-				<Col span={24}>
+			<Row gutter={16}>
+				<Col xs={24}>
+					<Statistic
+						className="margin-bottom"
+						title="Nombre d'inscriptions d'étudiants :"
+						value={visits}
+						prefix={<UserAddOutlined />}
+						formatter={formatter}
+					/>
+					<hr className="margin-bottom" />
 					<Statistic
 						title="Comparé au mois dernier :"
 						value={comparison}

@@ -42,3 +42,43 @@
 		font-size: var(--ant-statistic-title-font-size);
 	}
 }
+
+.global-widget {
+	padding: 10px;
+	border-radius: 15px;
+	box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+	background: var(--ant-color-bg-container-disabled);
+}
+
+.margin-bottom {
+	margin-bottom: 1rem;
+}
+
+.event-description {
+	font-weight: bold; // Pour rendre le texte en gras
+	font-size: 15px; // Pour rendre le texte plus grand
+}
+
+// Widget Calendar
+:where(.css-dev-only-do-not-override-u24u6l).ant-timeline.ant-timeline-label
+	.ant-timeline-item-label {
+	position: absolute;
+	inset-block-start: calc(
+		(var(--ant-font-size) * var(--ant-line-height) - var(--ant-font-size)) * -1 +
+			var(--ant-timeline-tail-width)
+	);
+	width: calc(50% - var(--ant-margin-sm));
+	text-align: left;
+}
+
+// Widget EventMonth
+h4:where(.css-dev-only-do-not-override-u24u6l).ant-typography,
+div:where(.css-dev-only-do-not-override-u24u6l).ant-typography-h4,
+div:where(.css-dev-only-do-not-override-u24u6l).ant-typography-h4 > textarea,
+:where(.css-dev-only-do-not-override-u24u6l).ant-typography h4 {
+	margin-bottom: revert;
+	color: var(--ant-color-text-heading);
+	font-weight: var(--ant-font-weight-strong);
+	font-size: var(--ant-font-size-heading-4);
+	line-height: var(--ant-line-height-heading-4);
+}

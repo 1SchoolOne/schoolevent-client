@@ -7,10 +7,15 @@ import './FavoritesWidget-styles.less'
 
 export const FavoritesWidget: React.FC = () => {
 	const { favorites } = useFavorites()
-	const firstFourFavorites = favorites.slice(0, 4)
+	const firstFourFavorites = favorites.slice(0, 3)
 
 	return (
-		<Card title="Écoles favorites" size="small" bordered={false} className="global-widget">
+		<Card
+			title="Dernières écoles mises en favoris"
+			size="small"
+			bordered={false}
+			className="global-small-widget"
+		>
 			<List
 				className="favorites-widget__list"
 				locale={{

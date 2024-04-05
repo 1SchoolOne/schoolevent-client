@@ -2,13 +2,13 @@ import { Col, Row } from 'antd'
 
 import { BasicLayout } from '@components'
 
-import { AppointmentsWidget } from './_components/Appointment/AppointmentWidget'
-import { CalendarWidget } from './_components/Calendar/CalendarWidget'
+import { AppointmentsWidget } from './_components/Appointment/appointmentWidget'
+import { CalendarWidget } from './_components/Calendar/calendarWidget'
 import { NextEventWidget } from './_components/Event/NextEventWidget'
 import { VisitsMonthWidget } from './_components/Event/VisitsMonthWidget'
 import { VisitsWidget } from './_components/Event/VisitsWidget'
-import { FavoritesWidget } from './_components/Favorites/FavoritesWidget'
-import { StudentWidget } from './_components/Student/StudentWidget'
+import { FavoritesWidget } from './_components/Favorites/favoritesWidget'
+import { StudentWidget } from './_components/Student/studentWidget'
 
 import './HomeLayout-styles.less'
 

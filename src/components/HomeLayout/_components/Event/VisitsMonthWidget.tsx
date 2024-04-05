@@ -32,7 +32,7 @@ export const VisitsMonthWidget: React.FC = () => {
 				title="Nombre de participations par mois"
 				size="small"
 				bordered={false}
-				className="global-widget"
+				className="global-small-widget"
 			>
 				<Row gutter={16}>
 					<Col xs={24}>

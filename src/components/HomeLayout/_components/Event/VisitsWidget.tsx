@@ -21,7 +21,7 @@ export const VisitsWidget: React.FC = () => {
 			title="Performances du dernier événement"
 			size="small"
 			bordered={false}
-			className="global-widget"
+			className="global-small-widget"
 		>
 			<Row gutter={16}>
 				<Col xs={24}>

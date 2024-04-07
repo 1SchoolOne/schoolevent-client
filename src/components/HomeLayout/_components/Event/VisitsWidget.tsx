@@ -1,7 +1,7 @@
 import { ArrowDownOutlined, ArrowUpOutlined, EyeOutlined, LikeOutlined } from '@ant-design/icons'
 import { Card, Col, Row, Statistic } from 'antd'
 import { valueType } from 'antd/lib/statistic/utils'
-import { useState } from 'react'
+import { useMemo } from 'react'
 import CountUp from 'react-countup'
 
 import '../../HomeLayout-styles.less'
@@ -12,16 +12,16 @@ const formatter = (value: valueType) => {
 }
 
 export const VisitsWidget: React.FC = () => {
-	const [visits] = useState(134)
-	const [comparison] = useState(13)
-	const [appreciationCount] = useState(64)
+	const visits = useMemo(() => 134, [])
+	const comparison = useMemo(() => 13, [])
+	const appreciationCount = useMemo(() => 64, [])
 
 	return (
 		<Card
 			title="Performances du dernier événement"
 			size="small"
 			bordered={false}
-			className="global-small-widget"
+			className="global-bottom-widget"
 		>
 			<Row gutter={16}>
 				<Col xs={24}>

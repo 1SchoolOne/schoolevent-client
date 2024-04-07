@@ -1,15 +1,15 @@
 import { TeamOutlined, UserOutlined } from '@ant-design/icons'
 import { Card, Col, Row, Statistic, Typography } from 'antd'
-import { useState } from 'react'
+import { useMemo } from 'react'
 
 import '../../HomeLayout-styles.less'
 
 export const NextEventWidget: React.FC = () => {
-	const [participationCount] = useState(134)
-	const [studentCount] = useState(3)
+	const participationCount = useMemo(() => 134, [])
+	const studentCount = useMemo(() => 3, [])
 
 	return (
-		<Card title="Bonjour Mathieu" className={'global-widget'}>
+		<Card title="Bonjour Mathieu" className={'global-top-widget'}>
 			<Row gutter={16}>
 				<Col xs={24} sm={24} md={8} lg={8} xl={8}>
 					<Typography className="ant-statistic-title">Votre prochain événement est :</Typography>

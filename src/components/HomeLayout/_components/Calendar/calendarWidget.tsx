@@ -16,7 +16,7 @@ export const CalendarWidget: React.FC = () => {
 	}))
 
 	return (
-		<Card title="Journée" size="small" bordered={false} className="global-widget">
+		<Card title="Journée" size="small" bordered={false} className="global-middle-widget">
 			<Timeline mode="left" items={items} />
 		</Card>
 	)

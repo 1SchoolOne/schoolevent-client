@@ -14,7 +14,7 @@ export const FavoritesWidget: React.FC = () => {
 			title="Dernières écoles mises en favoris"
 			size="small"
 			bordered={false}
-			className="global-small-widget"
+			className="global-bottom-widget"
 		>
 			<List
 				className="favorites-widget__list"

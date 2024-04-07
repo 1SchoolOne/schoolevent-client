@@ -12,7 +12,7 @@ export const AppointmentsWidget: React.FC<{ appointments: any[] }> = ({ appointm
 	const plannedAppointments = appointments.filter((appointment) => appointment.status === 'planned')
 
 	return (
-		<Card title="Rendez-vous" size="small" bordered={false} className="global-widget">
+		<Card title="Rendez-vous" size="small" bordered={false} className="global-middle-widget">
 			<Row gutter={16}>
 				<Col xs={24} sm={8}>
 					<Typography.Title level={5}>À contacter</Typography.Title>

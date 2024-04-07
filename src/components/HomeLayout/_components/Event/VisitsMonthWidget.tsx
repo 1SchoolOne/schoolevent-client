@@ -2,7 +2,7 @@ import { EyeOutlined, LeftOutlined, RightOutlined } from '@ant-design/icons'
 import { Button, Card, Col, ConfigProvider, Row, Space, Statistic, Typography } from 'antd'
 import frFR from 'antd/lib/locale/fr_FR'
 import { valueType } from 'antd/lib/statistic/utils'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import CountUp from 'react-countup'
 
 import '../../HomeLayout-styles.less'
@@ -15,7 +15,7 @@ const formatter = (value: valueType) => {
 }
 
 export const VisitsMonthWidget: React.FC = () => {
-	const [visits] = useState(334)
+	const visits = useMemo(() => 334, [])
 	const [currentMonth, setCurrentMonth] = useState(new Date())
 
 	const nextMonth = () => {
@@ -32,7 +32,7 @@ export const VisitsMonthWidget: React.FC = () => {
 				title="Nombre de participations par mois"
 				size="small"
 				bordered={false}
-				className="global-small-widget"
+				className="global-bottom-widget"
 			>
 				<Row gutter={16}>
 					<Col xs={24}>

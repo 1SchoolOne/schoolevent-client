@@ -24,6 +24,8 @@ import {
 } from '@components'
 import { AuthProvider, FavoriteContactsProvider, MapDisplayProvider, useTheme } from '@contexts'
 
+import { EventList } from './components/events/EventsList/EventList'
+
 import './App.less'
 
 const APP_MODE = import.meta.env.MODE
@@ -109,7 +111,10 @@ function App() {
 										path="events"
 										element={
 											<ProtectedRoute>
-												<Outlet />
+												<Helmet>
+													<title>SchoolEvent | Events</title>
+												</Helmet>
+												<EventList />
 											</ProtectedRoute>
 										}
 									>

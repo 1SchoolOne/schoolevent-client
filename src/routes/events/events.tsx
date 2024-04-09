@@ -4,7 +4,7 @@ import { Outlet, RouteObject } from 'react-router-dom'
 import { ProtectedRoute } from '@components'
 import { eventFormRoute } from '@routes'
 
-import { EventList } from '../../components/events/eventsList/EventList'
+import { EventList } from '../../components/events/EventsList/EventList'
 
 export const eventsRoute: RouteObject = {
 	path: 'events',

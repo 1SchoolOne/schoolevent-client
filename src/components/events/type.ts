@@ -1,12 +1,12 @@
 import { TEventTypeValue } from './EventForm/EventForm-types'
 
 export interface IEventFormFields {
-	id: string
-	event_date: Date
+	id: number
+	event_date: string
 	event_title: string
-	event_adress: string
-	event_background?: { file: File; fileList: FileList }
-	event_duration: string
+	event_address: string
+	event_background?: string
+	event_duration: number
 	event_type: TEventTypeValue
 	event_description: string
 	event_creator_id: string

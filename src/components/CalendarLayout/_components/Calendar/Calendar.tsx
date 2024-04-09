@@ -1,9 +1,8 @@
 import { LeftOutlined, RightOutlined } from '@ant-design/icons'
-import { Calendar as AntCalendar, Badge, Modal, Select, Space } from 'antd'
-import { BadgeProps } from 'antd/lib/badge'
+import { Calendar as AntCalendar, List, Modal, Select, Space } from 'antd'
 import dayjs, { Dayjs } from 'dayjs'
 import 'dayjs/locale/fr'
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { IconButton } from '@components'
 
@@ -15,6 +14,7 @@ const Calendar = () => {
 	const [isModalVisible, setIsModalVisible] = useState(false)
 	const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null)
 	const [currentDate, setCurrentDate] = useState(dayjs())
+	const [listData, setListData] = useState<Appointment[]>([])
 
 	const currentYear = dayjs().year()
 	const years = useMemo(
@@ -22,11 +22,12 @@ const Calendar = () => {
 		[currentYear],
 	)
 
-	const getListData = (value: Dayjs) => {
-		return appointments.filter((appointment) => {
-			const appointmentDate = dayjs(appointment.date)
-			return appointmentDate.isSame(value, 'day')
-		})
+	useEffect(() => {
+		setListData(appointments)
+	}, [])
+
+	const filterAppointments = (value: Dayjs) => {
+		return listData.filter((appointment) => dayjs(appointment.date).isSame(value, 'day'))
 	}
 
 	const showAppointmentDetails = (appointment: Appointment) => {
@@ -35,25 +36,29 @@ const Calendar = () => {
 	}
 
 	const dateCellRender = (value: Dayjs) => {
-		const listData = getListData(value)
+		const filteredAppointments = filterAppointments(value)
 		return (
-			<ul className="events">
-				{listData.map((item) => (
-					<li key={item.name} onClick={() => showAppointmentDetails(item)}>
-						<Badge status={item.type as BadgeProps['status']} text={item.name} />
-					</li>
-				))}
-			</ul>
+			<List
+				dataSource={filteredAppointments}
+				renderItem={(item) => (
+					<List.Item key={item.name} onClick={() => showAppointmentDetails(item)}>
+						{item.name}
+					</List.Item>
+				)}
+			/>
 		)
 	}
 
-	const handlePrevMonth = useCallback(() => {
-		setCurrentDate((currentDate) => currentDate.subtract(1, 'month'))
-	}, [])
+	const updateCurrentDate = (
+		operation: 'subtract' | 'add',
+		value: number,
+		unit: 'month' | 'year',
+	) => {
+		setCurrentDate((currentDate) => currentDate[operation](value, unit))
+	}
+	const handlePrevMonth = useCallback(() => updateCurrentDate('subtract', 1, 'month'), [])
 
-	const handleNextMonth = useCallback(() => {
-		setCurrentDate((currentDate) => currentDate.add(1, 'month'))
-	}, [])
+	const handleNextMonth = useCallback(() => updateCurrentDate('add', 1, 'month'), [])
 
 	const handleYearSelectChange = useCallback(
 		(newYear: string) => {
@@ -70,6 +75,10 @@ const Calendar = () => {
 		},
 		[currentDate, setCurrentDate],
 	)
+
+	const handleCancel = () => {
+		setIsModalVisible(false)
+	}
 
 	interface HeaderRenderParams {
 		value: Dayjs
@@ -145,10 +154,6 @@ const Calendar = () => {
 			years,
 		],
 	)
-
-	const handleCancel = () => {
-		setIsModalVisible(false)
-	}
 
 	return (
 		<>

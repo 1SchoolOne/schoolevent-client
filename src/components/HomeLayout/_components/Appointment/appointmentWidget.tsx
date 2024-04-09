@@ -4,7 +4,22 @@ import { Card, Col, List, Row, Typography } from 'antd'
 import { useAuth } from '@contexts'
 import { useSupabase } from '@utils'
 
+import { TAppointment } from '../../../../types/appointments'
+
 import '../../HomeLayout-styles.less'
+
+function AppointmentItem({ appointment }: Readonly<{ appointment: TAppointment }>) {
+	return (
+		<List.Item>
+			<div>
+				<h4>{appointment.school_name}</h4>
+				<h4>{appointment.school_city}</h4>
+				<p>{appointment.contacted_date}</p>
+				<p>{appointment.planned_date}</p>
+			</div>
+		</List.Item>
+	)
+}
 
 export function AppointmentsWidget() {
 	const supabase = useSupabase()
@@ -42,21 +57,21 @@ export function AppointmentsWidget() {
 					<Typography.Title level={5}>À contacter</Typography.Title>
 					<List
 						dataSource={toContactAppointments}
-						renderItem={(item) => <List.Item>{JSON.stringify(item)}</List.Item>}
+						renderItem={(item) => <AppointmentItem appointment={item} />}
 					/>
 				</Col>
 				<Col xs={24} sm={8} className="category-container">
 					<Typography.Title level={5}>Contacté</Typography.Title>
 					<List
 						dataSource={contactedAppointments}
-						renderItem={(item) => <List.Item>{JSON.stringify(item)}</List.Item>}
+						renderItem={(item) => <AppointmentItem appointment={item} />}
 					/>
 				</Col>
 				<Col xs={24} sm={8}>
 					<Typography.Title level={5}>Rendez-vous planifié</Typography.Title>
 					<List
 						dataSource={plannedAppointments}
-						renderItem={(item) => <List.Item>{JSON.stringify(item)}</List.Item>}
+						renderItem={(item) => <AppointmentItem appointment={item} />}
 					/>
 				</Col>
 			</Row>

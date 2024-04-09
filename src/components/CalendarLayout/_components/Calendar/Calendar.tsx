@@ -1,5 +1,5 @@
 import { LeftOutlined, RightOutlined } from '@ant-design/icons'
-import { Calendar as AntCalendar, Badge, Button, List, Select, Space } from 'antd'
+import { Calendar as AntCalendar, Button, List, Select, Space } from 'antd'
 import dayjs, { Dayjs } from 'dayjs'
 import 'dayjs/locale/fr'
 import { useCallback, useMemo, useState } from 'react'
@@ -15,71 +15,51 @@ export function Calendar(props: ICalendarProps) {
 	const { events, appointments } = props
 	const navigate = useNavigate()
 	const [currentDate, setCurrentDate] = useState(dayjs())
+	const [listData, setListData] = useState<Appointment[]>([])
+
 	const currentYear = dayjs().year()
 	const years = useMemo(
 		() => Array.from({ length: 7 }, (_, i) => currentYear - 1 + i),
 		[currentYear],
 	)
 
-	const firstDayOfMonth = currentDate.clone().startOf('month')
-	const lastDayOfMonth = currentDate.clone().endOf('month')
-
-	const filterEvents = (value: Dayjs) => {
-		return events.filter((event) => dayjs(event.event_date).isSame(value, 'day'))
-	}
+	useEffect(() => {
+		setListData(appointments)
+	}, [])
 
 	const filterAppointments = (value: Dayjs) => {
-		return appointments.filter((appointment) =>
-			dayjs(appointment.planned_date).isSame(value, 'day'),
-		)
+		return listData.filter((appointment) => dayjs(appointment.date).isSame(value, 'day'))
+	}
+
+	const showAppointmentDetails = (appointment: Appointment) => {
+		setSelectedAppointment(appointment)
+		setIsModalVisible(true)
 	}
 
 	const dateCellRender = (value: Dayjs) => {
-		const filteredAppointments = filterAppointments(value).sort(
-			(a, b) => dayjs(a.planned_date).valueOf() - dayjs(b.planned_date).valueOf(),
-		)
-		const filteredEvents = filterEvents(value).sort(
-			(a, b) => dayjs(a.event_date).valueOf() - dayjs(b.event_date).valueOf(),
-		)
-		if (filteredAppointments.length === 0 && filteredEvents.length === 0) {
-			return null
-		}
-
+		const filteredAppointments = filterAppointments(value)
 		return (
-			<div>
-				<Badge
-					count={filteredAppointments.length}
-					style={{ backgroundColor: 'orange', marginRight: '5px' }}
-				/>
-				<Badge
-					count={filteredEvents.length}
-					style={{ backgroundColor: 'blue', marginRight: '5px' }}
-				/>
-				<div>
-					<List
-						dataSource={filteredAppointments}
-						renderItem={(item) => (
-							<List.Item key={item.school_name}>
-								<Badge dot style={{ backgroundColor: 'orange', marginRight: '10px' }} />
-								<span style={{ fontWeight: 'bold', color: '#4a4a4a' }}>{item.school_name}</span>
-								<div style={{ color: '#4a4a4a' }}>{dayjs(item.planned_date).format('HH:mm')}</div>
-							</List.Item>
-						)}
-					/>
-					<List
-						dataSource={filteredEvents}
-						renderItem={(item) => (
-							<List.Item key={item.event_title}>
-								<Badge dot style={{ backgroundColor: 'blue', marginRight: '10px' }} />
-								<span style={{ fontWeight: 'bold', color: '#4a4a4a' }}>{item.event_title} </span>
-								<div style={{ color: '#4a4a4a' }}>{dayjs(item.event_date).format('HH:mm')}</div>
-							</List.Item>
-						)}
-					/>
-				</div>
-			</div>
+			<List
+				dataSource={filteredAppointments}
+				renderItem={(item) => (
+					<List.Item key={item.name} onClick={() => showAppointmentDetails(item)}>
+						{item.name}
+					</List.Item>
+				)}
+			/>
 		)
 	}
+
+	const updateCurrentDate = (
+		operation: 'subtract' | 'add',
+		value: number,
+		unit: 'month' | 'year',
+	) => {
+		setCurrentDate((currentDate) => currentDate[operation](value, unit))
+	}
+	const handlePrevMonth = useCallback(() => updateCurrentDate('subtract', 1, 'month'), [])
+
+	const handleNextMonth = useCallback(() => updateCurrentDate('add', 1, 'month'), [])
 
 	const updateCurrentDate = useCallback(
 		(operation: 'subtract' | 'add', value: number, unit: 'month' | 'year') => {
@@ -136,7 +116,9 @@ export function Calendar(props: ICalendarProps) {
 		[currentDate, setCurrentDate],
 	)
 
-	const handleTodayClick = useCallback(() => setCurrentDate(dayjs()), [])
+	const handleCancel = () => {
+		setIsModalVisible(false)
+	}
 
 	interface HeaderRenderParams {
 		value: Dayjs

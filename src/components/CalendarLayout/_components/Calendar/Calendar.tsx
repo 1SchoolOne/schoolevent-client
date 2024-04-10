@@ -3,6 +3,7 @@ import { Calendar as AntCalendar, Badge, Button, List, Select, Space } from 'ant
 import dayjs, { Dayjs } from 'dayjs'
 import 'dayjs/locale/fr'
 import { useCallback, useMemo, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 import { IconButton } from '@components'
 
@@ -12,7 +13,7 @@ import './Calendar-styles.less'
 
 export function Calendar(props: ICalendarProps) {
 	const { events, appointments } = props
-
+	const navigate = useNavigate()
 	const [currentDate, setCurrentDate] = useState(dayjs())
 	const currentYear = dayjs().year()
 	const years = useMemo(
@@ -34,8 +35,12 @@ export function Calendar(props: ICalendarProps) {
 	}
 
 	const dateCellRender = (value: Dayjs) => {
-		const filteredAppointments = filterAppointments(value)
-		const filteredEvents = filterEvents(value)
+		const filteredAppointments = filterAppointments(value).sort(
+			(a, b) => dayjs(a.planned_date).valueOf() - dayjs(b.planned_date).valueOf(),
+		)
+		const filteredEvents = filterEvents(value).sort(
+			(a, b) => dayjs(a.event_date).valueOf() - dayjs(b.event_date).valueOf(),
+		)
 		if (filteredAppointments.length === 0 && filteredEvents.length === 0) {
 			return null
 		}
@@ -44,11 +49,11 @@ export function Calendar(props: ICalendarProps) {
 			<div>
 				<Badge
 					count={filteredAppointments.length}
-					style={{ backgroundColor: 'orange', marginRight: '10px' }}
+					style={{ backgroundColor: 'orange', marginRight: '5px' }}
 				/>
 				<Badge
 					count={filteredEvents.length}
-					style={{ backgroundColor: 'blue', marginRight: '10px' }}
+					style={{ backgroundColor: 'blue', marginRight: '5px' }}
 				/>
 				<div>
 					<List
@@ -57,6 +62,7 @@ export function Calendar(props: ICalendarProps) {
 							<List.Item key={item.school_name}>
 								<Badge dot style={{ backgroundColor: 'orange', marginRight: '10px' }} />
 								<span style={{ fontWeight: 'bold', color: '#4a4a4a' }}>{item.school_name}</span>
+								<div style={{ color: '#4a4a4a' }}>{dayjs(item.planned_date).format('HH:mm')}</div>
 							</List.Item>
 						)}
 					/>
@@ -65,7 +71,8 @@ export function Calendar(props: ICalendarProps) {
 						renderItem={(item) => (
 							<List.Item key={item.event_title}>
 								<Badge dot style={{ backgroundColor: 'blue', marginRight: '10px' }} />
-								<span style={{ fontWeight: 'bold', color: '#4a4a4a' }}>{item.event_title}</span>
+								<span style={{ fontWeight: 'bold', color: '#4a4a4a' }}>{item.event_title} </span>
+								<div style={{ color: '#4a4a4a' }}>{dayjs(item.event_date).format('HH:mm')}</div>
 							</List.Item>
 						)}
 					/>
@@ -173,10 +180,10 @@ export function Calendar(props: ICalendarProps) {
 					<Button type="primary" size="small" onClick={handleTodayClick}>
 						Aujourd'hui
 					</Button>
-					<Button type="default" size="small" onClick={handleTodayClick}>
+					<Button type="default" size="small" onClick={() => navigate(`/appointments?action=new`)}>
 						Créer un rendez-vous
 					</Button>
-					<Button type="default" size="small" onClick={handleTodayClick}>
+					<Button type="default" size="small" onClick={() => navigate(`/events/new`)}>
 						Créer un évenement
 					</Button>
 				</Space>

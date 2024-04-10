@@ -12,3 +12,18 @@ export interface IEventFormFields {
 	event_creator_id: string
 	event_school_name: string
 }
+
+export interface IUser {
+	id: string
+	email: string
+	role: TUserTypeValue
+}
+
+export type TUserTypeLabel = 'Manager' | 'Administrateur' | 'Étudiant'
+export type TUserTypeValue = 'manager' | 'admin' | 'student'
+
+export const eventTypesRecord: Record<TUserTypeValue, TUserTypeLabel> = {
+	manager: 'Manager',
+	admin: 'Administrateur',
+	student: 'Étudiant',
+}

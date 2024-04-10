@@ -1,14 +1,11 @@
 import { LeftOutlined, RightOutlined } from '@ant-design/icons'
-import { useQuery } from '@tanstack/react-query'
-import { Calendar as AntCalendar, List, Modal, Select, Space } from 'antd'
+import { Calendar as AntCalendar, Badge, Button, List, Select, Space } from 'antd'
 import dayjs, { Dayjs } from 'dayjs'
 import 'dayjs/locale/fr'
 import { useCallback, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { IconButton } from '@components'
-import { useAuth } from '@contexts'
-import { useSupabase } from '@utils'
 
 import { ICalendarProps } from './Calendar-types'
 
@@ -18,109 +15,65 @@ export function Calendar(props: ICalendarProps) {
 	const { events, appointments } = props
 	const navigate = useNavigate()
 	const [currentDate, setCurrentDate] = useState(dayjs())
-	const [listData, setListData] = useState<Appointment[]>([])
-
-	const supabase = useSupabase()
-	const { user } = useAuth()
-
-	const { dataevents } = useQuery({
-		queryKey: ['events'],
-		queryFn: async () => {
-			const { data, error } = await supabase.from('events').select('*')
-
-			if (error) {
-				console.error('Error fetching events', error)
-				throw error
-			}
-
-			return data
-		},
-	})
-
-	const { dataappointments } = useQuery({
-		queryKey: ['appointments'],
-		queryFn: async () => {
-			const { data, error } = await supabase
-				.from('appointments')
-				.select('*')
-				.or(`assignee.eq.${user!.id},author_id.eq.${user!.id}`)
-
-			if (error) {
-				console.error('Error fetching appointments', error)
-				throw error
-			}
-
-			return data
-		},
-	})
-
 	const currentYear = dayjs().year()
 	const years = useMemo(
 		() => Array.from({ length: 7 }, (_, i) => currentYear - 1 + i),
 		[currentYear],
 	)
 
-	useEffect(() => {
-		setListData(appointments)
-	}, [])
+	const firstDayOfMonth = currentDate.clone().startOf('month')
+	const lastDayOfMonth = currentDate.clone().endOf('month')
 
-	const filterAppointments = (value: Dayjs) => {
-		return listData.filter((appointment) => dayjs(appointment.date).isSame(value, 'day'))
+	const filterEvents = (value: Dayjs) => {
+		return events.filter((event) => dayjs(event.event_date).isSame(value, 'day'))
 	}
 
-	const showAppointmentDetails = (appointment: Appointment) => {
-		setSelectedAppointment(appointment)
-		setIsModalVisible(true)
+	const filterAppointments = (value: Dayjs) => {
+		return appointments.filter((appointment) =>
+			dayjs(appointment.planned_date).isSame(value, 'day'),
+		)
 	}
 
 	const dateCellRender = (value: Dayjs) => {
 		const filteredAppointments = filterAppointments(value)
-		if (filteredAppointments.length === 0) {
-			return null // or return <div></div> or any other component
+		const filteredEvents = filterEvents(value)
+		if (filteredAppointments.length === 0 && filteredEvents.length === 0) {
+			return null
 		}
+
 		return (
-			<List
-				dataSource={filteredAppointments}
-				renderItem={(item) => (
-					<List.Item key={item.name} onClick={() => showAppointmentDetails(item)}>
-						<span style={{ fontWeight: 'bold', color: '#4a4a4a' }}>{item.name}</span>
-					</List.Item>
-				)}
-			/>
+			<div>
+				<Badge
+					count={filteredAppointments.length}
+					style={{ backgroundColor: 'orange', marginRight: '10px' }}
+				/>
+				<Badge
+					count={filteredEvents.length}
+					style={{ backgroundColor: 'blue', marginRight: '10px' }}
+				/>
+				<div>
+					<List
+						dataSource={filteredAppointments}
+						renderItem={(item) => (
+							<List.Item key={item.school_name}>
+								<Badge dot style={{ backgroundColor: 'orange', marginRight: '10px' }} />
+								<span style={{ fontWeight: 'bold', color: '#4a4a4a' }}>{item.school_name}</span>
+							</List.Item>
+						)}
+					/>
+					<List
+						dataSource={filteredEvents}
+						renderItem={(item) => (
+							<List.Item key={item.event_title}>
+								<Badge dot style={{ backgroundColor: 'blue', marginRight: '10px' }} />
+								<span style={{ fontWeight: 'bold', color: '#4a4a4a' }}>{item.event_title}</span>
+							</List.Item>
+						)}
+					/>
+				</div>
+			</div>
 		)
 	}
-
-	const updateCurrentDate = (
-		operation: 'subtract' | 'add',
-		value: number,
-		unit: 'month' | 'year',
-	) => {
-		setCurrentDate((currentDate) => currentDate[operation](value, unit))
-	}
-	const monthOptions = useMemo(() => {
-		const options = []
-		const current = currentDate.clone()
-		const months = []
-		for (let i = 0; i < 12; i++) {
-			months.push(current.locale('fr').month(i).format('MMM'))
-		}
-		for (let index = 0; index < 12; index++) {
-			options.push(
-				<Select.Option className="month-item" key={`${index}`}>
-					{months[index]}
-				</Select.Option>,
-			)
-		}
-		return options
-	}, [currentDate])
-
-	const yearOptions = useMemo(() => {
-		return years.map((year) => (
-			<Select.Option key={year} value={String(year)}>
-				{year}
-			</Select.Option>
-		))
-	}, [years])
 
 	const updateCurrentDate = useCallback(
 		(operation: 'subtract' | 'add', value: number, unit: 'month' | 'year') => {
@@ -177,9 +130,7 @@ export function Calendar(props: ICalendarProps) {
 		[currentDate, setCurrentDate],
 	)
 
-	const handleCancel = () => {
-		setIsModalVisible(false)
-	}
+	const handleTodayClick = useCallback(() => setCurrentDate(dayjs()), [])
 
 	interface HeaderRenderParams {
 		value: Dayjs
@@ -188,13 +139,13 @@ export function Calendar(props: ICalendarProps) {
 	}
 
 	const headerRender = useCallback(
-		({ value }: HeaderRenderParams) => {
+		(_: HeaderRenderParams) => {
 			return (
 				<Space className="events-calendar__header">
 					<IconButton
 						type="primary"
 						size="small"
-						icon={<LeftOutlined style={{ color: '#4a4a4a' }} />} // Use a minimalist icon
+						icon={<LeftOutlined />}
 						onClick={handlePrevMonth}
 					/>
 					<Select
@@ -216,7 +167,7 @@ export function Calendar(props: ICalendarProps) {
 					<IconButton
 						type="primary"
 						size="small"
-						icon={<RightOutlined style={{ color: '#4a4a4a' }} />} // Use a minimalist icon
+						icon={<RightOutlined />}
 						onClick={handleNextMonth}
 					/>
 					<Button type="primary" size="small" onClick={handleTodayClick}>

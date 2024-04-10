@@ -11,7 +11,7 @@ const formatter = (value: valueType) => {
 	return isNaN(numberValue) ? value : <CountUp end={numberValue} separator="," />
 }
 
-export const VisitsWidget: React.FC = () => {
+export function VisitsWidget (){
 	const visits = useMemo(() => 134, [])
 	const comparison = useMemo(() => 13, [])
 	const appreciationCount = useMemo(() => 64, [])
@@ -21,10 +21,10 @@ export const VisitsWidget: React.FC = () => {
 			title="Performances du dernier événement"
 			size="small"
 			bordered={false}
-			className="global-bottom-widget"
+			className="global-large-widget"
 		>
 			<Row gutter={16}>
-				<Col xs={24}>
+				<Col xs={24} sm={12}>
 					<Statistic
 						className="margin-bottom"
 						title="Nombre total de participations :"
@@ -40,6 +40,8 @@ export const VisitsWidget: React.FC = () => {
 						suffix="%"
 						formatter={formatter}
 					/>
+				</Col>
+				<Col xs={24} sm={12}>
 					<Statistic
 						title="Participation comparée à l'avant-dernier événement :"
 						value={comparison}

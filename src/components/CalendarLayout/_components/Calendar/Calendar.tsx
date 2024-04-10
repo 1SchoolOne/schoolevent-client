@@ -1,10 +1,13 @@
 import { LeftOutlined, RightOutlined } from '@ant-design/icons'
+import { useQuery } from '@tanstack/react-query'
 import { Calendar as AntCalendar, List, Modal, Select, Space } from 'antd'
 import dayjs, { Dayjs } from 'dayjs'
 import 'dayjs/locale/fr'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { IconButton } from '@components'
+import { useAuth } from '@contexts'
+import { useSupabase } from '@utils'
 
 import { Appointment, appointments } from '../appointment'
 
@@ -15,6 +18,40 @@ const Calendar = () => {
 	const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null)
 	const [currentDate, setCurrentDate] = useState(dayjs())
 	const [listData, setListData] = useState<Appointment[]>([])
+
+	const supabase = useSupabase()
+	const { user } = useAuth()
+
+	const { dataevents } = useQuery({
+		queryKey: ['events'],
+		queryFn: async () => {
+			const { data, error } = await supabase.from('events').select('*')
+
+			if (error) {
+				console.error('Error fetching events', error)
+				throw error
+			}
+
+			return data
+		},
+	})
+
+	const { dataappointments } = useQuery({
+		queryKey: ['appointments'],
+		queryFn: async () => {
+			const { data, error } = await supabase
+				.from('appointments')
+				.select('*')
+				.or(`assignee.eq.${user!.id},author_id.eq.${user!.id}`)
+
+			if (error) {
+				console.error('Error fetching appointments', error)
+				throw error
+			}
+
+			return data
+		},
+	})
 
 	const currentYear = dayjs().year()
 	const years = useMemo(
@@ -37,12 +74,15 @@ const Calendar = () => {
 
 	const dateCellRender = (value: Dayjs) => {
 		const filteredAppointments = filterAppointments(value)
+		if (filteredAppointments.length === 0) {
+			return null // or return <div></div> or any other component
+		}
 		return (
 			<List
 				dataSource={filteredAppointments}
 				renderItem={(item) => (
 					<List.Item key={item.name} onClick={() => showAppointmentDetails(item)}>
-						{item.name}
+						<span style={{ fontWeight: 'bold', color: '#4a4a4a' }}>{item.name}</span>
 					</List.Item>
 				)}
 			/>
@@ -56,10 +96,39 @@ const Calendar = () => {
 	) => {
 		setCurrentDate((currentDate) => currentDate[operation](value, unit))
 	}
-	const handlePrevMonth = useCallback(() => updateCurrentDate('subtract', 1, 'month'), [])
+	const monthOptions = useMemo(() => {
+		const options = []
+		const current = currentDate.clone()
+		const months = []
+		for (let i = 0; i < 12; i++) {
+			months.push(current.locale('fr').month(i).format('MMM'))
+		}
+		for (let index = 0; index < 12; index++) {
+			options.push(
+				<Select.Option className="month-item" key={`${index}`}>
+					{months[index]}
+				</Select.Option>,
+			)
+		}
+		return options
+	}, [currentDate])
 
-	const handleNextMonth = useCallback(() => updateCurrentDate('add', 1, 'month'), [])
+	const yearOptions = useMemo(() => {
+		return years.map((year) => (
+			<Select.Option key={year} value={String(year)}>
+				{year}
+			</Select.Option>
+		))
+	}, [years])
 
+	const handlePrevMonth = useCallback(
+		() => updateCurrentDate('subtract', 1, 'month'),
+		[updateCurrentDate],
+	)
+	const handleNextMonth = useCallback(
+		() => updateCurrentDate('add', 1, 'month'),
+		[updateCurrentDate],
+	)
 	const handleYearSelectChange = useCallback(
 		(newYear: string) => {
 			const updatedValue = currentDate.clone().year(Number(newYear))
@@ -67,7 +136,6 @@ const Calendar = () => {
 		},
 		[currentDate, setCurrentDate],
 	)
-
 	const handleMonthSelectChange = useCallback(
 		(newMonth: string) => {
 			const updatedValue = currentDate.clone().month(Number(newMonth))
@@ -88,30 +156,12 @@ const Calendar = () => {
 
 	const headerRender = useCallback(
 		({ value }: HeaderRenderParams) => {
-			const start = 0
-			const end = 12
-			const monthOptions = []
-
-			const current = value.clone()
-			const months = []
-			for (let i = 0; i < 12; i++) {
-				months.push(current.locale('fr').month(i).format('MMM'))
-			}
-
-			for (let index = start; index < end; index++) {
-				monthOptions.push(
-					<Select.Option className="month-item" key={`${index}`}>
-						{months[index]}
-					</Select.Option>,
-				)
-			}
-
 			return (
 				<Space className="events-calendar__header">
 					<IconButton
 						type="primary"
 						size="small"
-						icon={<LeftOutlined />}
+						icon={<LeftOutlined style={{ color: '#4a4a4a' }} />} // Use a minimalist icon
 						onClick={handlePrevMonth}
 					/>
 					<Select
@@ -121,11 +171,7 @@ const Calendar = () => {
 						onChange={handleYearSelectChange}
 						value={String(currentDate.year())}
 					>
-						{years.map((year) => (
-							<Select.Option key={year} value={String(year)}>
-								{year}
-							</Select.Option>
-						))}
+						{yearOptions}
 					</Select>
 					<Select
 						size="small"
@@ -139,7 +185,7 @@ const Calendar = () => {
 					<IconButton
 						type="primary"
 						size="small"
-						icon={<RightOutlined />}
+						icon={<RightOutlined style={{ color: '#4a4a4a' }} />} // Use a minimalist icon
 						onClick={handleNextMonth}
 					/>
 				</Space>
@@ -151,7 +197,8 @@ const Calendar = () => {
 			handleYearSelectChange,
 			handleMonthSelectChange,
 			currentDate,
-			years,
+			yearOptions,
+			monthOptions,
 		],
 	)
 

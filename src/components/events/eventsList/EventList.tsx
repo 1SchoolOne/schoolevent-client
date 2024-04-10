@@ -7,6 +7,8 @@ import { useSupabase } from '@utils'
 import { TEventTypeValue } from '../EventForm/EventForm-types'
 import { IEventFormFields } from '../type'
 
+import './EventList-styles.less'
+
 export const EventList = () => {
 	const supabase = useSupabase()
 	const [events, setEvents] = useState<IEventFormFields[]>([])
@@ -44,11 +46,14 @@ export const EventList = () => {
 				{events.map((event) => (
 					<List.Item
 						key={event.id}
-						extra={<img width={200} alt="logo" src={event.event_background} />}
+						extra={
+							<img width={200} alt="logo" src={event.event_background} className="imageList" />
+						}
 						onClick={() => handleEventClick(event.id)}
 					>
 						<Link to={`/events/${event.id}`} key={event.id}></Link>
 						<List.Item.Meta
+							className="event-item"
 							title={event.event_title}
 							description={`${
 								event.event_type === ('open_day' as TEventTypeValue)
@@ -59,11 +64,11 @@ export const EventList = () => {
 							} - ${event.event_school_name} - ${event.event_address}`}
 						/>
 						<h4>
-							{`Rendez-vous le : ${new Date(event.event_date).toLocaleDateString('fr-FR', {
+							{`${new Date(event.event_date).toLocaleDateString('fr-FR', {
 								weekday: 'long',
 								day: 'numeric',
 								month: 'long',
-							})}. Pour une durée de  ${event.event_duration / 3600}h`}
+							})} -  ${event.event_duration / 3600}h`}
 						</h4>
 						{/* voir si on le garde ou pas */}
 						{/* 

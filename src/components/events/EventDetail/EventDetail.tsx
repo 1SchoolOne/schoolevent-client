@@ -15,6 +15,8 @@ export const EventDetail = () => {
 	const { eventId } = useParams()
 	const [event, setEvent] = useState<IEventFormFields>()
 	const [userEmail, setUserEmail] = useState<IUser[]>()
+	// const [selectedReferent, setSelectedReferent] = useState<string>()
+
 	const supabase = useSupabase
 
 	const navigate = useNavigate()
@@ -62,7 +64,7 @@ export const EventDetail = () => {
 
 	//TODO Préparation pour la feature du update d'un envent
 	const handleEditClick = () => {
-		navigate(`/events/${eventId}/edit`)
+		navigate(`/events/update/${eventId}`)
 	}
 
 	return (
@@ -74,15 +76,11 @@ export const EventDetail = () => {
 							<Card
 								className="cardContent"
 								style={{
-									backgroundImage: `url(${event.event_background}) `,
-									backgroundRepeat: 'no-repeat',
-									backgroundSize: 'cover',
-									width: '60%',
-									filter: 'brightness(50%)',
+									backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${event.event_background})`,
 								}}
 							>
 								<Row justify="center" align="middle">
-									<Typography className="header">
+									<Typography className="header" style={{ zIndex: 1 }}>
 										{new Date(event.event_date)
 											.toLocaleDateString('fr-FR', {
 												weekday: 'long',
@@ -97,7 +95,7 @@ export const EventDetail = () => {
 									<Typography className="header"> , {event.event_address}</Typography>
 								</Row>
 								<Row justify="center" align="middle">
-									<Typography.Title level={2} style={{ color: 'white' }}>
+									<Typography.Title level={2} style={{ color: 'white', zIndex: 1 }}>
 										{event.event_title}
 									</Typography.Title>
 								</Row>
@@ -128,6 +126,7 @@ export const EventDetail = () => {
 
 							<Row style={{ flexDirection: 'column', alignItems: 'center' }}>
 								<Card className="referent">
+									<Typography>Contacte de l'événement: </Typography>
 									<Row justify="center">
 										<Select
 											placeholder="Sélectionner référent"
@@ -135,6 +134,8 @@ export const EventDetail = () => {
 												label: getNameFromEmail(user.email).name,
 												value: getNameFromEmail(user.email).name,
 											}))}
+											// value={selectedReferent}
+											// onChange={(value) => setSelectedReferent(value)}
 										/>
 									</Row>
 								</Card>

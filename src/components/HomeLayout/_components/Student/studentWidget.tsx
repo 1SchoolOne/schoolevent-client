@@ -20,7 +20,7 @@ export const StudentWidget: React.FC = () => {
 			title="Nombre d'inscriptions de nouveaux étudiants"
 			size="small"
 			bordered={false}
-			className="global-bottom-widget"
+			className="global-little-widget"
 		>
 			<Row gutter={16}>
 				<Col xs={24}>

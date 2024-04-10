@@ -46,3 +46,4 @@ export interface GeoCodeJSON {
 export * from './localStorage'
 export * from './useCopyToClipboard'
 export * from './appointments'
+export * from './events'

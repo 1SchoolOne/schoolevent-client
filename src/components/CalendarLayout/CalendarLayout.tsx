@@ -47,7 +47,7 @@ export function CalendarLayout() {
 		<BasicLayout
 			className="calendar-layout"
 			contentClassName="calendar-layout__content"
-			sider={<CalendarList />}
+			sider={<CalendarList events={events ?? []} appointments={appointments ?? []} />}
 		>
 			<Calendar events={events ?? []} appointments={appointments ?? []} />
 		</BasicLayout>

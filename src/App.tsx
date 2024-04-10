@@ -8,7 +8,7 @@ import { useEffect, useState } from 'react'
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
 import { Helmet } from 'react-helmet'
-import { BrowserRouter, Link, Navigate, Outlet, Route, Routes } from 'react-router-dom'
+import { BrowserRouter, Navigate, Outlet, Route, Routes } from 'react-router-dom'
 
 import {
 	AppointmentsLayout,
@@ -25,6 +25,8 @@ import {
 } from '@components'
 import { AuthProvider, FavoriteContactsProvider, MapDisplayProvider, useTheme } from '@contexts'
 
+import { EventDetail } from './components/events/EventDetail/EventDetail'
+import { EventUpdateForm } from './components/events/EventUpdate/EventUpdateForm'
 import { EventList } from './components/events/EventsList/EventList'
 
 import './App.less'
@@ -117,12 +119,14 @@ function App() {
 												<Helmet>
 													<title>SchoolEvent | Events</title>
 												</Helmet>
-												<EventList />
+												<Outlet />
 											</ProtectedRoute>
 										}
 									>
-										<Route index element={<Link to="/events/new">new event</Link>} />
+										<Route index element={<EventList />} />
 										<Route path="new" element={<EventForm />} />
+										<Route path=":eventId" element={<EventDetail />} />
+										<Route path="update:eventID/edit" element={<EventUpdateForm />} />
 									</Route>
 									<Route
 										path="appointments"

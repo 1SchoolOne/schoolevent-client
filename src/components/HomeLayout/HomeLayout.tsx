@@ -5,22 +5,58 @@ import { BasicLayout } from '@components'
 import { AppointmentsWidget } from './_components/Appointment/appointmentWidget'
 import { CalendarWidget } from './_components/Calendar/calendarWidget'
 import { NextEventWidget } from './_components/Event/NextEventWidget'
-import { VisitsMonthWidget } from './_components/Event/VisitsMonthWidget'
 import { VisitsWidget } from './_components/Event/VisitsWidget'
 import { FavoritesWidget } from './_components/Favorites/favoritesWidget'
 import { StudentWidget } from './_components/Student/studentWidget'
 
 import './HomeLayout-styles.less'
+import {useSupabase} from "@utils";
+import {useAuth} from "@contexts";
+import {useQuery} from "@tanstack/react-query";
 
 export function HomeLayout() {
+	const supabase = useSupabase()
+	const { user } = useAuth()
+
+	const { data: events } = useQuery({
+		queryKey: ['events'],
+		queryFn: async () => {
+			const { data, error } = await supabase.from('events')
+				.select('*')
+
+			if (error) {
+				console.error('Error fetching events', error)
+				throw error
+			}
+
+			return data
+		},
+	})
+
+	const { data: appointments } = useQuery({
+		queryKey: ['appointments'],
+		queryFn: async () => {
+			const { data, error } = await supabase
+				.from('appointments')
+				.select('*')
+				.or(`assignee.eq.${user!.id},author_id.eq.${user!.id}`)
+
+			if (error) {
+				console.error('Error fetching appointments', error)
+				throw error
+			}
+
+			return data
+		},
+	})
+
 	const widgets = [
-		{ component: <NextEventWidget />, xs: 24, md: 24 },
-		{ component: <AppointmentsWidget appointments={[]} />, xs: 24, md: 18 },
-		{ component: <CalendarWidget />, xs: 24, md: 6 },
+		{ component: <NextEventWidget events={events ?? []} appointments={appointments ?? []}/>, xs: 24, md: 24 },
+		{ component: <AppointmentsWidget appointments={appointments ?? []}/>, xs: 24, md: 18 },
+		{ component: <CalendarWidget events={events ?? []} appointments={appointments ?? []}/>, xs: 24, md: 6, },
 		{ component: <VisitsWidget />, xs: 24, sm: 12, md: 6 },
-		{ component: <VisitsMonthWidget />, xs: 24, sm: 12, md: 6 },
 		{ component: <StudentWidget />, xs: 24, sm: 12, md: 6 },
-		{ component: <FavoritesWidget />, xs: 24, sm: 12, md: 6 },
+		{ component: <FavoritesWidget />, xs: 24, sm: 24, md: 12 },
 	]
 
 	return (

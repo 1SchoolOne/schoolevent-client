@@ -1,18 +1,16 @@
-import { Card, Collapse, List } from 'antd'
+import { Card, List } from 'antd'
 import { useEffect, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 
 import { useSupabase } from '@utils'
 
+import { TEventTypeValue } from '../EventForm/EventForm-types'
 import { IEventFormFields } from '../type'
-
-import './EventList-styles.less'
 
 export const EventList = () => {
 	const supabase = useSupabase()
 	const [events, setEvents] = useState<IEventFormFields[]>([])
-	// const [backgroundUrl, setBackgroundURL] = useState<string>()
-
-	// const [users, setUsers] = useState<any[]>([])
+	const navigate = useNavigate()
 
 	const fetchEvents = async () => {
 		const { data, error } = await supabase.from('events').select('*')
@@ -23,56 +21,15 @@ export const EventList = () => {
 		setEvents(data as IEventFormFields[])
 	}
 
-	// const fetchUsers = async () => {
-	// 	// Add this function
-	// 	const { data, error } = await supabase.from('users').select('email')
-	// 	if (error) {
-	// 		console.error('Error fetching users:', error)
-	// 		return []
-	// 	}
-	// 	setUsers(data)
-	// }
-
 	useEffect(() => {
 		fetchEvents()
-		// fetchUsers()
 	}, [])
 
-	// const getEmailById = (creatorId: string) => {
-	// 	// Add this function
-	// 	const user = users.find((user) => user.id === creatorId)
-	// 	return user ? user.email : ''
-	// }
-	return (
-		// <Card>
-		// 	<List>
-		// 		{events.map((event) => (
-		// 			<List.Item key={event.id}>
-		// 				<Flex justify="space-between">
-		// 					<Row justify="space-between">
-		// 						<Col span={16}>
-		// 							<Col>{event.event_title}</Col>
-		// 							<Col>{event.event_type}</Col>
-		// 							<Col>{`${event.event_date.toString()} - ${event.event_duration.toString()}-
-		// 						${event.event_address}
-		// 						`}</Col>
-		// 							<Col>{event.event_creator_id}</Col>
-		// 							<Card>
-		// 								<Col>{event.event_description}</Col>
-		// 							</Card>
-		// 						</Col>
-		// 					</Row>
+	const handleEventClick = (eventId: number) => {
+		navigate(`/events/${eventId}`)
+	}
 
-		// 					<Row justify="end">
-		// 						<Col span={8}>
-		// 							<img width={200} alt={event.event_background} src={event.event_background} />
-		// 						</Col>
-		// 					</Row>
-		// 				</Flex>
-		// 			</List.Item>
-		// 		))}
-		// 	</List>
-		// </Card>
+	return (
 		<Card>
 			<List
 				itemLayout="vertical"
@@ -85,38 +42,34 @@ export const EventList = () => {
 				}}
 			>
 				{events.map((event) => (
-					<Collapse key={event.id}>
-						<Collapse.Panel
-							header={
-								<List.Item.Meta
-									style={{
-										backgroundImage: `url(${event.event_background})`,
-										backgroundSize: 'contain',
-										backgroundPosition: 'center',
-										backgroundRepeat: 'no-repeat',
-										width: '100%',
-										height: '100%',
-									}}
-									title={event.event_title}
-									description={`${event.event_type} - ${event.event_school_name} - ${
-										event.event_address
-									}
-								${new Date(event.event_date).toLocaleDateString()} - ${Math.floor(
-									Number(event.event_duration) / 3600,
-								)} hours`}
-								/>
-							}
-							key={event.id}
-						>
-							<br />
-							<Card>{`Descriptif : ${event.event_description}`}</Card>
-							<br />
-							{
-								`Contacte de l'évenement : `
-								// `${getEmailById(event.event_creator_id)}`
-							}
-						</Collapse.Panel>
-					</Collapse>
+					<List.Item
+						key={event.id}
+						extra={<img width={200} alt="logo" src={event.event_background} />}
+						onClick={() => handleEventClick(event.id)}
+					>
+						<Link to={`/events/${event.id}`} key={event.id}></Link>
+						<List.Item.Meta
+							title={event.event_title}
+							description={`${
+								event.event_type === ('open_day' as TEventTypeValue)
+									? 'Porte ouverte'
+									: event.event_type === 'presentation'
+									? 'Présentation'
+									: 'Conférence'
+							} - ${event.event_school_name} - ${event.event_address}`}
+						/>
+						<h4>
+							{`Rendez-vous le : ${new Date(event.event_date).toLocaleDateString('fr-FR', {
+								weekday: 'long',
+								day: 'numeric',
+								month: 'long',
+							})}. Pour une durée de  ${event.event_duration / 3600}h`}
+						</h4>
+						{/* voir si on le garde ou pas */}
+						{/* 
+						{event.event_creator_id}
+						<Card>{event.event_description}</Card> */}
+					</List.Item>
 				))}
 			</List>
 		</Card>

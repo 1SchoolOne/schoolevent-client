@@ -1,23 +1,72 @@
-import { Card, Timeline } from 'antd'
+import { Card, List, Flex, Badge } from 'antd'
+import { TEvent, TAppointment } from './CalendarWidget-types'
+import dayjs from 'dayjs'
 import 'dayjs/locale/fr'
 
 import '../../HomeLayout-styles.less'
 
-export const CalendarWidget: React.FC = () => {
-	const appointments = [
-		{ title: 'Rencontre avec plein d étudiants.', time: 10 },
-		{ title: 'Salon avec des entrepreneurs et des patrons.', time: 14 },
-		{ title: 'Salon avec des entrepreneurs et des patrons.', time: 15 },
-	]
+interface CalendarWidgetProps {
+	events: TEvent[];
+	appointments: TAppointment[];
+}
 
-	const items = appointments.map((appointment) => ({
-		label: <div className="timeline-item">{`${appointment.time}:00`}</div>,
-		children: <div className="timeline-item appointment-title">{appointment.title}</div>,
-	}))
+export function CalendarWidget({ events, appointments }: CalendarWidgetProps) {
+
+	const currentDate = dayjs()
+	const plannedAppointments = appointments?.filter((appointment) => appointment.apt_status === 'planned')
+
+	const todaysEvents = events
+		? events
+			.filter((event) => dayjs(event.event_date).isSame(currentDate, 'day'))
+			.sort((a, b) => dayjs(a.event_date).hour() - dayjs(b.event_date).hour())
+		: []
+
+	const todaysAppointments = plannedAppointments
+		? plannedAppointments
+			.filter((appointment) => dayjs(appointment.planned_date).isSame(currentDate, 'day'))
+			.sort((a, b) => dayjs(a.planned_date).hour() - dayjs(b.planned_date).hour())
+		: []
+
+	const combinedEventsAndAppointments = [...todaysEvents, ...todaysAppointments]
+	const sortedEventsAndAppointments = combinedEventsAndAppointments.sort((a, b) => {
+		const aDate = 'event_date' in a ? a.event_date : a.planned_date
+		const bDate = 'event_date' in b ? b.event_date : b.planned_date
+
+		return dayjs(aDate).hour() - dayjs(bDate).hour()
+	})
 
 	return (
-		<Card title="Journée" size="small" bordered={false} className="global-middle-widget">
-			<Timeline mode="left" items={items} />
+		<Card   title={
+			<>
+				Vos <Badge color="orange" /> rendez-vous et
+				<Badge color="blue" style={{ marginLeft: '5px' }} /> événements du jour
+			</>
+		}  size="small" bordered={false} className="global-little-widget">
+			<List
+				dataSource={sortedEventsAndAppointments}
+				renderItem={(item) => (
+					<List.Item key={'event_title' in item ? item.event_title : item.school_name}>
+						<List.Item.Meta
+							className="favorites-list__item"
+							title={
+								<>
+									{'event_title' in item ? <Badge color="blue" /> : <Badge color="orange" />}
+									<span style={{ marginLeft: '5px' }}>
+          {'event_title' in item ? item.event_title : item.school_name}
+         </span>
+								</>
+							}
+							description={
+								<Flex justify="space-between">
+									<i>
+										{'event_date' in item ? dayjs(item.event_date).format('HH:mm') : dayjs(item.planned_date).format('HH:mm')}
+									</i>
+								</Flex>
+							}
+						/>
+					</List.Item>
+				)}
+			/>
 		</Card>
 	)
 }

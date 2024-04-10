@@ -1,91 +1,76 @@
 import { LeftOutlined, RightOutlined } from '@ant-design/icons'
-import { useQuery } from '@tanstack/react-query'
-import { Calendar as AntCalendar, List, Modal, Select, Space } from 'antd'
+import { Calendar as AntCalendar, Badge, Button, List, Select, Space } from 'antd'
 import dayjs, { Dayjs } from 'dayjs'
 import 'dayjs/locale/fr'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 
 import { IconButton } from '@components'
-import { useAuth } from '@contexts'
-import { useSupabase } from '@utils'
 
-import { Appointment, appointments } from '../appointment'
+import { ICalendarProps } from './Calendar-types'
 
 import './Calendar-styles.less'
 
-const Calendar = () => {
-	const [isModalVisible, setIsModalVisible] = useState(false)
-	const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null)
+export function Calendar(props: ICalendarProps) {
+	const { events, appointments } = props
+
 	const [currentDate, setCurrentDate] = useState(dayjs())
-	const [listData, setListData] = useState<Appointment[]>([])
-
-	const supabase = useSupabase()
-	const { user } = useAuth()
-
-	const { dataevents } = useQuery({
-		queryKey: ['events'],
-		queryFn: async () => {
-			const { data, error } = await supabase.from('events').select('*')
-
-			if (error) {
-				console.error('Error fetching events', error)
-				throw error
-			}
-
-			return data
-		},
-	})
-
-	const { dataappointments } = useQuery({
-		queryKey: ['appointments'],
-		queryFn: async () => {
-			const { data, error } = await supabase
-				.from('appointments')
-				.select('*')
-				.or(`assignee.eq.${user!.id},author_id.eq.${user!.id}`)
-
-			if (error) {
-				console.error('Error fetching appointments', error)
-				throw error
-			}
-
-			return data
-		},
-	})
-
 	const currentYear = dayjs().year()
 	const years = useMemo(
 		() => Array.from({ length: 7 }, (_, i) => currentYear - 1 + i),
 		[currentYear],
 	)
 
-	useEffect(() => {
-		setListData(appointments)
-	}, [])
+	const firstDayOfMonth = currentDate.clone().startOf('month')
+	const lastDayOfMonth = currentDate.clone().endOf('month')
 
-	const filterAppointments = (value: Dayjs) => {
-		return listData.filter((appointment) => dayjs(appointment.date).isSame(value, 'day'))
+	const filterEvents = (value: Dayjs) => {
+		return events.filter((event) => dayjs(event.event_date).isSame(value, 'day'))
 	}
 
-	const showAppointmentDetails = (appointment: Appointment) => {
-		setSelectedAppointment(appointment)
-		setIsModalVisible(true)
+	const filterAppointments = (value: Dayjs) => {
+		return appointments.filter((appointment) =>
+			dayjs(appointment.planned_date).isSame(value, 'day'),
+		)
 	}
 
 	const dateCellRender = (value: Dayjs) => {
 		const filteredAppointments = filterAppointments(value)
-		if (filteredAppointments.length === 0) {
-			return null // or return <div></div> or any other component
+		const filteredEvents = filterEvents(value)
+		if (filteredAppointments.length === 0 && filteredEvents.length === 0) {
+			return null
 		}
+
 		return (
-			<List
-				dataSource={filteredAppointments}
-				renderItem={(item) => (
-					<List.Item key={item.name} onClick={() => showAppointmentDetails(item)}>
-						<span style={{ fontWeight: 'bold', color: '#4a4a4a' }}>{item.name}</span>
-					</List.Item>
-				)}
-			/>
+			<div>
+				<Badge
+					count={filteredAppointments.length}
+					style={{ backgroundColor: 'orange', marginRight: '10px' }}
+				/>
+				<Badge
+					count={filteredEvents.length}
+					style={{ backgroundColor: 'blue', marginRight: '10px' }}
+				/>
+				<div>
+					<List
+						dataSource={filteredAppointments}
+						renderItem={(item) => (
+							<List.Item key={item.school_name}>
+								<Badge dot style={{ backgroundColor: 'orange', marginRight: '10px' }} />
+								<span style={{ fontWeight: 'bold', color: '#4a4a4a' }}>{item.school_name}</span>
+							</List.Item>
+						)}
+					/>
+					<List
+						dataSource={filteredEvents}
+						renderItem={(item) => (
+							<List.Item key={item.event_title}>
+								<Badge dot style={{ backgroundColor: 'blue', marginRight: '10px' }} />
+								<span style={{ fontWeight: 'bold', color: '#4a4a4a' }}>{item.event_title}</span>
+							</List.Item>
+						)}
+					/>
+				</div>
+			</div>
 		)
 	}
 
@@ -96,6 +81,7 @@ const Calendar = () => {
 	) => {
 		setCurrentDate((currentDate) => currentDate[operation](value, unit))
 	}
+
 	const monthOptions = useMemo(() => {
 		const options = []
 		const current = currentDate.clone()
@@ -144,9 +130,7 @@ const Calendar = () => {
 		[currentDate, setCurrentDate],
 	)
 
-	const handleCancel = () => {
-		setIsModalVisible(false)
-	}
+	const handleTodayClick = useCallback(() => setCurrentDate(dayjs()), [])
 
 	interface HeaderRenderParams {
 		value: Dayjs
@@ -155,19 +139,18 @@ const Calendar = () => {
 	}
 
 	const headerRender = useCallback(
-		({ value }: HeaderRenderParams) => {
+		(_: HeaderRenderParams) => {
 			return (
 				<Space className="events-calendar__header">
 					<IconButton
 						type="primary"
 						size="small"
-						icon={<LeftOutlined style={{ color: '#4a4a4a' }} />} // Use a minimalist icon
+						icon={<LeftOutlined />}
 						onClick={handlePrevMonth}
 					/>
 					<Select
 						size="small"
 						popupMatchSelectWidth={false}
-						className="my-year-select"
 						onChange={handleYearSelectChange}
 						value={String(currentDate.year())}
 					>
@@ -176,7 +159,6 @@ const Calendar = () => {
 					<Select
 						size="small"
 						popupMatchSelectWidth={false}
-						className="my-month-select"
 						onChange={handleMonthSelectChange}
 						value={String(currentDate.month())}
 					>
@@ -185,9 +167,18 @@ const Calendar = () => {
 					<IconButton
 						type="primary"
 						size="small"
-						icon={<RightOutlined style={{ color: '#4a4a4a' }} />} // Use a minimalist icon
+						icon={<RightOutlined />}
 						onClick={handleNextMonth}
 					/>
+					<Button type="primary" size="small" onClick={handleTodayClick}>
+						Aujourd'hui
+					</Button>
+					<Button type="default" size="small" onClick={handleTodayClick}>
+						Créer un rendez-vous
+					</Button>
+					<Button type="default" size="small" onClick={handleTodayClick}>
+						Créer un évenement
+					</Button>
 				</Space>
 			)
 		},
@@ -209,26 +200,8 @@ const Calendar = () => {
 				headerRender={headerRender}
 				value={currentDate}
 				cellRender={dateCellRender}
+				validRange={[firstDayOfMonth, lastDayOfMonth]}
 			/>
-			<Modal
-				title="Les détails de l'événement :"
-				open={isModalVisible}
-				onCancel={handleCancel}
-				footer={null}
-			>
-				{selectedAppointment && (
-					<div>
-						<p>Type: {selectedAppointment.type}</p>
-						<p>Name: {selectedAppointment.name}</p>
-						<p>Description: {selectedAppointment.description}</p>
-						<p>Position: {selectedAppointment.position}</p>
-						<p>Date: {selectedAppointment.date.format('DD/MM/YYYY')}</p>
-						<p>Participant: {selectedAppointment.participant}</p>
-					</div>
-				)}
-			</Modal>
 		</>
 	)
 }
-
-export { Calendar }

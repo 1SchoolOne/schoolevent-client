@@ -1,121 +1,76 @@
-import { useQuery } from '@tanstack/react-query'
 import { Card, Col, List, Row, Typography } from 'antd'
-
-import { useAuth } from '@contexts'
-import { useSupabase } from '@utils'
+import dayjs from 'dayjs'
+import 'dayjs/locale/fr'
 
 import '../../HomeLayout-styles.less'
+import {TAppointment} from "./AppointmentWidget-types"
 
-export function AppointmentsWidget() {
-	const supabase = useSupabase()
-	const { user } = useAuth()
+interface AppointmentsWidgetProps {
+	appointments: TAppointment[];
+}
 
-	const { data } = useQuery({
-		queryKey: ['appointments'],
-		queryFn: async () => {
-			const { data, error } = await supabase
-				.from('appointments')
-				.select('*')
-				.or(`assignee.eq.${user!.id},author_id.eq.${user!.id}`)
+export function AppointmentsWidget({ appointments }: AppointmentsWidgetProps) {
 
-			if (error) {
-				console.error('Error fetching appointments', error)
-				throw error
-			}
-
-			return data
-		},
-	})
-
-	const toContactAppointments = data?.filter(
+	const toContactAppointments = appointments?.filter(
 		(appointment) => appointment.apt_status === 'to_contact',
-	)
-	const contactedAppointments = data?.filter(
+	).slice(0, 6)
+	const contactedAppointments = appointments?.filter(
 		(appointment) => appointment.apt_status === 'contacted',
-	)
-	const plannedAppointments = data?.filter((appointment) => appointment.apt_status === 'planned')
+	).slice(0, 3)
+	const plannedAppointments = appointments?.filter((appointment) => appointment.apt_status === 'planned').slice(0, 3)
 
 	return (
-		<Card title="Rendez-vous" size="small" bordered={false} className="global-middle-widget">
+		<Card title="Rendez-vous" size="small" bordered={false} className="global-medium-widget">
 			<Row gutter={16}>
 				<Col xs={24} sm={8}>
-					<Typography.Title level={5}>À contacter</Typography.Title>
+					<Typography.Title level={5}>{`À contacter (${toContactAppointments?.length})`}</Typography.Title>
 					<List
 						dataSource={toContactAppointments}
 						renderItem={(item) => (
-							<div
-								style={{
-									border: '1px solid #ccc',
-									borderRadius: '5px',
-									padding: '10px',
-									marginBottom: '10px',
-								}}
-							>
-								<Row>
-									<Col span={8}>
-										<Typography.Text>{item.school_name}</Typography.Text>
-										<Typography.Text>{item.school_city}</Typography.Text>
-									</Col>
-									<Col span={8} offset={8}>
-										<Typography.Text>{item.contacted_date}</Typography.Text>
-										<Typography.Text>{item.planned_date}</Typography.Text>
-									</Col>
-								</Row>
-							</div>
+							<List.Item key={item.school_name}>
+								<List.Item.Meta
+									className="favorites-list__item"
+									title= {item.school_name}
+								/>
+							</List.Item>
 						)}
 					/>
 				</Col>
-
 				<Col xs={24} sm={8}>
-					<Typography.Title level={5}>Contacté</Typography.Title>
+					<Typography.Title level={5}>{`Contacté (${contactedAppointments?.length})`}</Typography.Title>
 					<List
 						dataSource={contactedAppointments}
 						renderItem={(item) => (
-							<div
-								style={{
-									border: '1px solid #ccc',
-									borderRadius: '5px',
-									padding: '10px',
-									marginBottom: '10px',
-								}}
-							>
-								<Row>
-									<Col span={8}>
-										<Typography.Text>{item.school_name}</Typography.Text>
-										<Typography.Text>{item.school_city}</Typography.Text>
-									</Col>
-									<Col span={8} offset={8}>
-										<Typography.Text>{item.contacted_date}</Typography.Text>
-									</Col>
-								</Row>
-							</div>
+							<List.Item key={item.school_name}>
+								<List.Item.Meta
+									className="favorites-list__item"
+									title= {item.school_name}
+									description={
+										<Typography.Text>
+											{"Contacté le : "  + dayjs(item.contacted_date).format('DD/MM/YYYY - HH:mm')}
+										</Typography.Text>
+									}
+								/>
+							</List.Item>
 						)}
 					/>
 				</Col>
-
 				<Col xs={24} sm={8}>
-					<Typography.Title level={5}>Rendez-vous planifié</Typography.Title>
+					<Typography.Title level={5}>{`Rendez-vous planifié (${plannedAppointments?.length})`}</Typography.Title>
 					<List
 						dataSource={plannedAppointments}
 						renderItem={(item) => (
-							<div
-								style={{
-									border: '1px solid #ccc',
-									borderRadius: '5px',
-									padding: '10px',
-									marginBottom: '10px',
-								}}
-							>
-								<Row>
-									<Col span={8}>
-										<Typography.Text>{item.school_name}</Typography.Text>
-										<Typography.Text>{item.school_city}</Typography.Text>
-									</Col>
-									<Col span={8} offset={8}>
-										<Typography.Text>{item.planned_date}</Typography.Text>
-									</Col>
-								</Row>
-							</div>
+							<List.Item key={item.school_name}>
+								<List.Item.Meta
+									className="favorites-list__item"
+									title= {item.school_name}
+									description={
+										<Typography.Text>
+											{"Planifié le : "  + dayjs(item.planned_date).format('DD/MM/YYYY - HH:mm')}
+										</Typography.Text>
+									}
+								/>
+							</List.Item>
 						)}
 					/>
 				</Col>

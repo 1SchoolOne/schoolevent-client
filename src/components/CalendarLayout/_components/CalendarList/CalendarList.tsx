@@ -25,19 +25,12 @@ export function CalendarList(props: ICalendarListProps) {
 	const currentDate = dayjs()
 
 	const sortedAndFilteredEvents = events
-		.filter(
-			(event) => dayjs(event.event_date).isAfter(currentDate) && event.event_title.includes(search),
-		)
+		.filter((event) => dayjs(event.event_date).isAfter(currentDate))
 		.sort((a, b) => dayjs(a.event_date).valueOf() - dayjs(b.event_date).valueOf())
 
 	const sortedAndFilteredAppointments = appointments
-		.filter(
-			(appointment) =>
-				dayjs(appointment.planned_date).isAfter(currentDate) &&
-				appointment.school_name.includes(search),
-		)
+		.filter((appointment) => dayjs(appointment.planned_date).isAfter(currentDate))
 		.sort((a, b) => dayjs(a.planned_date).valueOf() - dayjs(b.planned_date).valueOf())
-
 	const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setSearch(e.target.value)
 	}

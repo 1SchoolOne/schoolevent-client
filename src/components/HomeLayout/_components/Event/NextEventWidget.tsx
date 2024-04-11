@@ -21,7 +21,6 @@ export function NextEventWidget({ events, appointments }: EventWidgetProps) {
 	const plannedAppointments = appointments?.filter((appointment) => appointment.apt_status === 'planned')
 	const studentCount = useMemo(() => 3, [])
 
-
 	const nextEvent = events
 		? events
 			.filter((event) => dayjs(event.event_date).isAfter(currentDate))
@@ -40,7 +39,7 @@ export function NextEventWidget({ events, appointments }: EventWidgetProps) {
 		<Card
 			title={
 				<Space align="center">
-					Bonjour Mathieu
+					Bonjour
 					<Button type="primary" size="small" onClick={() => navigate(`/appointments?action=new`)}>
 						Créer un rendez-vous
 					</Button>

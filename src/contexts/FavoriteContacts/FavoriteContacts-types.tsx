@@ -5,11 +5,6 @@ import { Database, TSupabase } from '@types'
 
 export type TFavorite = Database['public']['Tables']['favorites']['Row']
 
-export interface IFavoritesQueryParams {
-	supabase: TSupabase
-	userId: string | undefined
-}
-
 export interface IAddFavoriteParams {
 	supabase: TSupabase
 	favorite: Omit<TFavorite, 'id' | 'user_id'>

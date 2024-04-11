@@ -5,11 +5,12 @@ import {
 } from '@phosphor-icons/react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { App, Space, Upload } from 'antd'
+import logger from 'loglevel'
 
+import { Divider } from '@components'
 import { useAppointmentForm } from '@contexts'
 import { useSupabase } from '@utils'
 
-import { Divider } from '../../../../../Divider/Divider'
 import { FileList } from '../FileList/FileList'
 import { ACCEPTED_FILE_TYPES } from './Attachments-constants'
 import { downloadAllAttachments, getFormatedError } from './Attachments-utils'
@@ -28,13 +29,13 @@ export function Attachments() {
 				.list(`appointment_${appointmentId}`)
 
 			if (error) {
-				console.error(error)
+				logger.error(error)
 				throw error
 			}
 
 			return data
 		},
-		initialData: [],
+		placeholderData: [],
 	})
 
 	const { mutate: uploadFile } = useMutation({
@@ -44,7 +45,7 @@ export function Attachments() {
 				.upload(`appointment_${appointmentId}/${file.name}`, file)
 
 			if (error) {
-				console.error(error)
+				logger.error(error)
 
 				const defaultError = `${error.name ? error.name + ': ' : ''}${error.message}`
 				const formattedError = getFormatedError(error.message)
@@ -59,7 +60,7 @@ export function Attachments() {
 		},
 	})
 
-	const shouldDisplayMoreActions = mode !== 'new' && attachments.length > 1
+	const shouldDisplayMoreActions = mode !== 'new' && attachments && attachments.length > 1
 
 	return (
 		<Space className="appointment-attachments" direction="vertical" style={{ width: '100%' }}>
@@ -101,11 +102,12 @@ export function Attachments() {
 											label: 'Tout télécharger',
 											icon: <DownloadIcon size={16} />,
 											onClick: () => {
-												downloadAllAttachments({
-													attachments,
-													supabase,
-													path: `appointment_${appointmentId}`,
-												})
+												attachments &&
+													downloadAllAttachments({
+														attachments,
+														supabase,
+														path: `appointment_${appointmentId}`,
+													})
 											},
 										},
 									],
@@ -114,7 +116,7 @@ export function Attachments() {
 						: undefined
 				}
 			/>
-			<FileList files={attachments} loading={isLoading} />
+			<FileList files={attachments ?? []} loading={isLoading} />
 		</Space>
 	)
 }

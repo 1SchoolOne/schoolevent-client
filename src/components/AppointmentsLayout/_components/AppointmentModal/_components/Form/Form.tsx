@@ -40,7 +40,7 @@ export function Form(props: TFormProps) {
 				formInstance.getFieldValue('school_postal_code'),
 			),
 		enabled: !!debouncedSearch && !!userLocation,
-		initialData: [],
+		placeholderData: [],
 	})
 
 	const { data: assignees, isFetching } = useQuery({
@@ -94,7 +94,9 @@ export function Form(props: TFormProps) {
 										<AntdForm.Item
 											name="school_name"
 											label="Établissement"
-											rules={[{ required: true }]}
+											rules={[
+												{ required: true, message: "Veuillez saisir le nom de l'établissement." },
+											]}
 										>
 											{isLoading ? (
 												<Skeleton.Input active block />
@@ -106,7 +108,7 @@ export function Form(props: TFormProps) {
 										<AntdForm.Item
 											name="school_address"
 											label="Adresse"
-											rules={[{ required: true }]}
+											rules={[{ required: true, message: "Veuillez saisir l'adresse." }]}
 										>
 											{isLoading ? (
 												<Skeleton.Input active block />
@@ -128,7 +130,7 @@ export function Form(props: TFormProps) {
 										<AntdForm.Item
 											name="school_postal_code"
 											label="Code postal"
-											rules={[{ required: true }]}
+											rules={[{ required: true, message: 'Veuillez saisir le code postal.' }]}
 										>
 											{isLoading ? (
 												<Skeleton.Input active block />
@@ -136,7 +138,11 @@ export function Form(props: TFormProps) {
 												<Input readOnly={mode === 'view'} allowClear />
 											)}
 										</AntdForm.Item>
-										<AntdForm.Item name="school_city" label="Ville" rules={[{ required: true }]}>
+										<AntdForm.Item
+											name="school_city"
+											label="Ville"
+											rules={[{ required: true, message: 'Veuillez saisir la ville.' }]}
+										>
 											{isLoading ? (
 												<Skeleton.Input active block />
 											) : (
@@ -213,6 +219,27 @@ export function Form(props: TFormProps) {
 				</Col>
 
 				<Col span={10}>
+					<AntdForm.Item
+						name="apt_status"
+						label="Statut"
+						rules={[{ required: true, message: 'Veuillez sélectionner le statut.' }]}
+					>
+						{isLoading ? (
+							<Skeleton.Input active block />
+						) : (
+							<SelectField
+								readOnly={mode === 'view'}
+								placeholder="Sélectionner un statut"
+								options={Object.entries(appointmentStatusRecord).map(([key, value]) => ({
+									key,
+									label: value,
+									value: key,
+								}))}
+								allowClear
+							/>
+						)}
+					</AntdForm.Item>
+
 					<AntdForm.Item name="assignee" label="Assigné">
 						{isLoading ? (
 							<Skeleton.Input active block />
@@ -237,25 +264,6 @@ export function Form(props: TFormProps) {
 									}
 								})}
 								showSearch
-								allowClear
-							/>
-						)}
-					</AntdForm.Item>
-					<AntdForm.Item
-						name="apt_status"
-						label="Statut"
-						rules={[{ required: true, message: 'Veuillez sélectionner un statut.' }]}
-					>
-						{isLoading ? (
-							<Skeleton.Input active block />
-						) : (
-							<SelectField
-								readOnly={mode === 'view'}
-								options={Object.entries(appointmentStatusRecord).map(([key, value]) => ({
-									key,
-									label: value,
-									value: key,
-								}))}
 								allowClear
 							/>
 						)}

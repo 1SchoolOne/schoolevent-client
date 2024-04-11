@@ -17,6 +17,7 @@ import {
 import dayjs from 'dayjs'
 import timezone from 'dayjs/plugin/timezone'
 import utc from 'dayjs/plugin/utc'
+import logger from 'loglevel'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import short from 'short-uuid'
@@ -53,7 +54,7 @@ export function Form() {
 		queryKey: ['addresse-completion', { search: debouncedSearch }],
 		queryFn: async () => await fetchAddressCompletion(debouncedSearch, userLocation),
 		enabled: !!debouncedSearch && !!userLocation,
-		initialData: [],
+		placeholderData: [],
 	})
 
 	const createEvent = async (value: IEventFormFields) => {
@@ -79,7 +80,7 @@ export function Form() {
 			setBackgroundUrl(null)
 		}
 
-		return error ? false : true
+		return !error
 	}
 
 	return (
@@ -147,7 +148,7 @@ export function Form() {
 									}
 									req.upload.onerror = (event) => {
 										onError?.(event)
-										console.error('error', event)
+										logger.error(event)
 									}
 									req.upload.onload = () => {
 										onSuccess?.('ok')
@@ -242,7 +243,7 @@ export function Form() {
 					<AutoCompleteField
 						onSearch={(value) => setAddressSearch(value)}
 						onSelect={(value) => setAddressSearch(value)}
-						options={addressCompletion.map((address) => ({
+						options={addressCompletion?.map((address) => ({
 							label: `${address.name}, ${address.postcode} ${address.city}`,
 							value: `${address.name}, ${address.postcode} ${address.city}`,
 						}))}

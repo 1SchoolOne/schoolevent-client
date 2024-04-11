@@ -4,6 +4,7 @@ import { Avatar, Space, Tooltip, Typography } from 'antd'
 import dayjs from 'dayjs'
 import timezone from 'dayjs/plugin/timezone'
 import utc from 'dayjs/plugin/utc'
+import logger from 'loglevel'
 import { useDrag } from 'react-dnd'
 import { useNavigate } from 'react-router-dom'
 
@@ -29,13 +30,13 @@ export function DragItem({ appointment }: IDragItemProps) {
 				.list(`appointment_${appointment.id}`)
 
 			if (error) {
-				console.error(error)
+				logger.error(error)
 				throw error
 			}
 
 			return data
 		},
-		initialData: [],
+		placeholderData: [],
 	})
 
 	const { data: commentsCount } = useQuery({
@@ -47,13 +48,13 @@ export function DragItem({ appointment }: IDragItemProps) {
 				.eq('appointment_id', appointment.id)
 
 			if (error) {
-				console.error(error)
+				logger.error(error)
 				throw error
 			}
 
 			return count ?? 0
 		},
-		initialData: 0,
+		placeholderData: 0,
 	})
 
 	const userName = appointment.users ? getNameFromEmail(appointment.users.email) : null
@@ -148,11 +149,9 @@ export function DragItem({ appointment }: IDragItemProps) {
 				</div>
 				<div
 					className="drag-item__footer__item"
-					title={`${attachments.length} pièce${attachments.length > 1 ? 's' : ''} jointe${
-						attachments.length > 1 ? 's' : ''
-					}`}
+					title={`${attachments?.length ?? 0} pièces jointes`}
 				>
-					<Typography.Text type="secondary">{attachments.length}</Typography.Text>
+					<Typography.Text type="secondary">{attachments?.length ?? 0}</Typography.Text>
 					<PaperclipIcon size={16} />
 				</div>
 			</div>

@@ -1,18 +1,4 @@
-import {
-	IAddFavoriteParams,
-	IDeleteFavoriteParams,
-	IFavoritesQueryParams,
-} from './FavoriteContacts-types'
-
-export async function fetchFavorites(params: IFavoritesQueryParams) {
-	const { supabase, userId } = params
-
-	if (userId === undefined) {
-		throw new Error('userId is undefined')
-	}
-
-	return await supabase.from('favorites').select('*').eq('user_id', userId)
-}
+import { IAddFavoriteParams, IDeleteFavoriteParams } from './FavoriteContacts-types'
 
 export async function addFavorite(params: IAddFavoriteParams) {
 	const { supabase, favorite, userId } = params

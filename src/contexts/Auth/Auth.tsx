@@ -1,6 +1,7 @@
 import { Session, User } from '@supabase/supabase-js'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { Spin } from 'antd'
+import logger from 'loglevel'
 import { createContext, useContext, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
@@ -19,6 +20,9 @@ export function AuthProvider({ children }: PropsWithChildren) {
 	const [loading, setLoading] = useState(true)
 	const supabase = useSupabase()
 	const navigate = useNavigate()
+	const queryClient = useQueryClient()
+
+	const DEV_MODE = import.meta.env.DEV
 
 	useEffect(() => {
 		if (role && approved !== null) {
@@ -27,11 +31,11 @@ export function AuthProvider({ children }: PropsWithChildren) {
 	}, [role, approved])
 
 	useQuery({
-		queryKey: ['user-role'],
+		queryKey: ['user'],
 		queryFn: async () => {
 			const { data: userObject, error } = await supabase
 				.from('users')
-				.select('role')
+				.select('role,approved')
 				.eq('id', session!.user.id)
 				.single()
 
@@ -41,10 +45,12 @@ export function AuthProvider({ children }: PropsWithChildren) {
 
 			if (userObject) {
 				setRole(userObject.role)
+				setApproved(userObject.approved)
 			}
 
 			return userObject
 		},
+		staleTime: 60 * 60_000, // 1 hour
 		enabled: session !== null && role === null,
 	})
 
@@ -54,31 +60,22 @@ export function AuthProvider({ children }: PropsWithChildren) {
 		} = supabase.auth.onAuthStateChange((event, newSession) => {
 			const pathname = window.location.pathname.split('/').filter((i) => i)
 
+			DEV_MODE && logger.info(event, newSession)
+
 			setSession(newSession)
 			setUser(newSession?.user ?? null)
 
 			if (event === 'SIGNED_OUT' || (event === 'INITIAL_SESSION' && !newSession)) {
 				setRole(null)
+				queryClient.invalidateQueries()
 
 				// Navigate to the login page only when the user is not already on it
 				!pathname.includes('auth') && navigate('/auth/login')
 			} else if (event === 'SIGNED_IN' || (event === 'INITIAL_SESSION' && newSession)) {
 				if (newSession) {
-					supabase
-						.from('users')
-						.select('role,approved')
-						.eq('id', newSession.user.id)
-						.single()
-						.then(({ data: userObject }) => {
-							if (userObject) {
-								setRole(userObject.role)
-								setApproved(userObject.approved ?? false)
-
-								if (pathname.includes('auth')) {
-									navigate('/')
-								}
-							}
-						})
+					if (pathname.includes('auth')) {
+						navigate('/')
+					}
 				}
 			}
 		})

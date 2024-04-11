@@ -66,7 +66,7 @@ export function ContactsMap(props: IContactsMapProps) {
 			<MapReloader userLocation={[userLocation.lat, userLocation.lng]} />
 			<TileLayer attribution={MAP_UTILS.attribution} url={MAP_UTILS.url} />
 			{location.loaded && !location.error && (
-				<Marker position={userLocation} icon={userPinIcon}>
+				<Marker position={userLocation} icon={userPinIcon} title="Vous" alt="user-pin">
 					<Popup>Vous</Popup>
 				</Marker>
 			)}
@@ -81,6 +81,9 @@ export function ContactsMap(props: IContactsMapProps) {
 								position={[school.latitude, school.longitude]}
 								icon={school.type_etablissement === 'Lycée' ? lyceePinIcon : collegePinIcon}
 								title={school.nom_etablissement}
+								alt={
+									school.type_etablissement === 'Collège' ? 'middleschool-pin' : 'highschool-pin'
+								}
 							>
 								<Popup className={`map-popup map-popup__${theme}`}>
 									<Space direction="vertical" size="small">

@@ -1,5 +1,6 @@
 import { SignIn as LoginIcon } from '@phosphor-icons/react'
 import { Alert, Button, Form, Input } from 'antd'
+import logger from 'loglevel'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
@@ -23,7 +24,7 @@ export function LoginForm() {
 		const { error } = await supabase.auth.signInWithPassword({ email, password })
 
 		if (error) {
-			console.error(error)
+			logger.error(error)
 			const parsedMessage = parseLoginError(error.message)
 			parsedMessage && setError(parsedMessage)
 		}

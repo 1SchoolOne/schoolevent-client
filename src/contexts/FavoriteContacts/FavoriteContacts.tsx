@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import logger from 'loglevel'
 import { createContext, useCallback, useContext, useMemo } from 'react'
 
 import { useAuth } from '@contexts'
@@ -6,7 +7,7 @@ import { PropsWithChildren } from '@types'
 import { useSupabase } from '@utils'
 
 import { IFavoriteContactsContext, TFavorite } from './FavoriteContacts-types'
-import { addFavorite, fetchFavorites, removeFavorite } from './FavoriteContacts-utils'
+import { addFavorite, removeFavorite } from './FavoriteContacts-utils'
 
 const FavoriteContactsContext = createContext<IFavoriteContactsContext>(
 	{} as IFavoriteContactsContext,
@@ -18,12 +19,27 @@ export function FavoriteContactsProvider({ children }: PropsWithChildren) {
 	const queryClient = useQueryClient()
 
 	const {
-		data: response,
+		data: favorites,
 		isLoading,
 		refetch,
 	} = useQuery({
 		queryKey: ['favorites', { userId: user?.id }],
-		queryFn: async () => await fetchFavorites({ supabase, userId: user?.id }),
+		queryFn: async () => {
+			if (!user) {
+				throw new Error('user.id is undefined')
+			}
+
+			const { data, error } = await supabase.from('favorites').select('*').eq('user_id', user.id)
+
+			if (error) {
+				logger.error(error)
+				throw error
+			}
+
+			return data
+		},
+		placeholderData: [],
+		enabled: !!user,
 	})
 
 	const addFav = useMutation({
@@ -54,25 +70,21 @@ export function FavoriteContactsProvider({ children }: PropsWithChildren) {
 				.eq('user_id', userId)
 				.eq('school_id', school_id)
 
-			if (data && data.length > 0) {
-				return true
-			}
-
-			return false
+			return !!(data && data?.length > 0)
 		},
 		[supabase],
 	)
 
 	const value: IFavoriteContactsContext = useMemo(
 		() => ({
-			favorites: ((response?.data ?? []) as TFavorite[]) ?? [],
+			favorites: favorites ?? [],
 			loading: isLoading,
 			addFavorite: addFav.mutate,
 			removeFavorite: deleteFav.mutate,
 			doesFavoriteExist,
 			refresh: refetch,
 		}),
-		[response?.data, isLoading, addFav.mutate, deleteFav.mutate, doesFavoriteExist, refetch],
+		[favorites, isLoading, addFav.mutate, deleteFav.mutate, doesFavoriteExist, refetch],
 	)
 
 	return (

@@ -20,13 +20,20 @@ jobs:
       matrix:
         containers: [1, 2]
     steps:
+      - name: Wait for successful build
+        uses: lewagon/wait-on-check-action@v1.3.3
+        with:
+          ref: ${{ github.ref }}
+          check-name: 'Build'
+          repo-token: ${{ secrets.ACCESS_TOKEN }}
+
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: Cypress run
         uses: cypress-io/github-action@v6
         with:
-          start: yarn dev
+          start: yarn dev --mode staging
           wait-on: http://localhost:5173
           record: true
           parallel: true

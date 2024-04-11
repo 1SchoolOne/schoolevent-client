@@ -81,13 +81,12 @@ export function Calendar(props: ICalendarProps) {
 		)
 	}
 
-	const updateCurrentDate = (
-		operation: 'subtract' | 'add',
-		value: number,
-		unit: 'month' | 'year',
-	) => {
-		setCurrentDate((currentDate) => currentDate[operation](value, unit))
-	}
+	const updateCurrentDate = useCallback(
+		(operation: 'subtract' | 'add', value: number, unit: 'month' | 'year') => {
+			setCurrentDate((currentDate) => currentDate[operation](value, unit))
+		},
+		[],
+	)
 
 	const monthOptions = useMemo(() => {
 		const options = []
@@ -194,6 +193,8 @@ export function Calendar(props: ICalendarProps) {
 			handleNextMonth,
 			handleYearSelectChange,
 			handleMonthSelectChange,
+			handleTodayClick,
+			navigate,
 			currentDate,
 			yearOptions,
 			monthOptions,

@@ -9,7 +9,7 @@ import { IEventFormFields } from '../type'
 
 import './EventList-styles.less'
 
-export const EventList = () => {
+export function EventList() {
 	const supabase = useSupabase()
 	const [events, setEvents] = useState<IEventFormFields[]>([])
 	const navigate = useNavigate()

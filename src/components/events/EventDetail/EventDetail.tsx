@@ -2,8 +2,6 @@ import { CheckOutlined, CloseOutlined } from '@ant-design/icons'
 import { Button, Card, Row, Select, Typography } from 'antd'
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import 'react-router-dom'
-import 'react-router-dom'
 
 import { getNameFromEmail } from '../../../utils/getNameFromEmail'
 import { useSupabase } from '../../../utils/useSupabase'
@@ -11,7 +9,7 @@ import { IEventFormFields, IUser } from '../type'
 
 import './EventDetail-styles.less'
 
-export const EventDetail = () => {
+export function EventDetail() {
 	const { eventId } = useParams()
 	const [event, setEvent] = useState<IEventFormFields>()
 	const [userEmail, setUserEmail] = useState<IUser[]>()
@@ -70,101 +68,99 @@ export const EventDetail = () => {
 	return (
 		<div>
 			{event ? (
-				<>
-					<Card>
-						<Row justify="center">
-							<Card
-								className="cardContent"
-								style={{
-									backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${event.event_background})`,
-								}}
-							>
-								<Row justify="center" align="middle">
-									<Typography className="header" style={{ zIndex: 1 }}>
-										{new Date(event.event_date)
-											.toLocaleDateString('fr-FR', {
-												weekday: 'long',
-												day: 'numeric',
-												month: 'long',
-											})
-											.toUpperCase()}
-									</Typography>
+				<Card>
+					<Row justify="center">
+						<Card
+							className="cardContent"
+							style={{
+								backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${event.event_background})`,
+							}}
+						>
+							<Row justify="center" align="middle">
+								<Typography className="header" style={{ zIndex: 1 }}>
+									{new Date(event.event_date)
+										.toLocaleDateString('fr-FR', {
+											weekday: 'long',
+											day: 'numeric',
+											month: 'long',
+										})
+										.toUpperCase()}
+								</Typography>
 
-									<Typography className="header"> , {event.event_school_name} </Typography>
+								<Typography className="header"> , {event.event_school_name} </Typography>
 
-									<Typography className="header"> , {event.event_address}</Typography>
-								</Row>
-								<Row justify="center" align="middle">
-									<Typography.Title level={2} style={{ color: 'white', zIndex: 1 }}>
-										{event.event_title}
-									</Typography.Title>
-								</Row>
-							</Card>
-						</Row>
-						<Row justify="center" className="DetailEvent">
-							<Typography.Title level={3}>
-								{new Date(event.event_date)
-									.toLocaleDateString('fr-FR', {
-										weekday: 'long',
-										day: 'numeric',
-										month: 'long',
-									})
-									.toUpperCase()}{' '}
-								à{' '}
-								{new Date(event.event_date).toLocaleTimeString('fr-FR', {
-									hour: 'numeric',
-									hour12: false,
-								})}
-								. Pour une durée de : {event.event_duration / 3600}h
-							</Typography.Title>
-						</Row>
-
-						<Row justify="space-around" align="middle">
-							<Card className="descriptif">
-								<Typography> {event.event_description}</Typography>
-							</Card>
-
-							<Row style={{ flexDirection: 'column', alignItems: 'center' }}>
-								<Card className="referent">
-									<Typography>Contacte de l'événement: </Typography>
-									<Row justify="center">
-										<Select
-											placeholder="Sélectionner référent"
-											options={userEmail?.map((user) => ({
-												label: getNameFromEmail(user.email).name,
-												value: getNameFromEmail(user.email).name,
-											}))}
-											// value={selectedReferent}
-											// onChange={(value) => setSelectedReferent(value)}
-										/>
-									</Row>
-								</Card>
-
-								<Card className="participants">
-									<Typography>Liste des participants: </Typography>
-									{listUser.map((user) => (
-										<Row justify="center" key={user.name}>
-											<Typography>{user.name}</Typography>
-											<CheckOutlined />
-											<CloseOutlined />
-										</Row>
-									))}
-								</Card>
+								<Typography className="header"> , {event.event_address}</Typography>
 							</Row>
-						</Row>
+							<Row justify="center" align="middle">
+								<Typography.Title level={2} style={{ color: 'white', zIndex: 1 }}>
+									{event.event_title}
+								</Typography.Title>
+							</Row>
+						</Card>
+					</Row>
+					<Row justify="center" className="DetailEvent">
+						<Typography.Title level={3}>
+							{new Date(event.event_date)
+								.toLocaleDateString('fr-FR', {
+									weekday: 'long',
+									day: 'numeric',
+									month: 'long',
+								})
+								.toUpperCase()}{' '}
+							à{' '}
+							{new Date(event.event_date).toLocaleTimeString('fr-FR', {
+								hour: 'numeric',
+								hour12: false,
+							})}
+							. Pour une durée de : {event.event_duration / 3600}h
+						</Typography.Title>
+					</Row>
 
-						<Row justify="center" className="button">
-							<Button
-								type="primary"
-								onClick={() => {
-									handleEditClick()
-								}}
-							>
-								Modifier
-							</Button>
+					<Row justify="space-around" align="middle">
+						<Card className="descriptif">
+							<Typography> {event.event_description}</Typography>
+						</Card>
+
+						<Row style={{ flexDirection: 'column', alignItems: 'center' }}>
+							<Card className="referent">
+								<Typography>Contacte de l'événement: </Typography>
+								<Row justify="center">
+									<Select
+										placeholder="Sélectionner référent"
+										options={userEmail?.map((user) => ({
+											label: getNameFromEmail(user.email).name,
+											value: getNameFromEmail(user.email).name,
+										}))}
+										// value={selectedReferent}
+										// onChange={(value) => setSelectedReferent(value)}
+									/>
+								</Row>
+							</Card>
+
+							<Card className="participants">
+								<Typography>Liste des participants: </Typography>
+								{listUser.map((user) => (
+									<Row justify="center" key={user.name}>
+										<Typography>{user.name}</Typography>
+										<CheckOutlined />
+										<CloseOutlined />
+									</Row>
+								))}
+							</Card>
 						</Row>
-					</Card>
-				</>
+					</Row>
+
+					<Row justify="center" className="button">
+						<Button
+							type="primary"
+							onClick={() => {
+								handleEditClick()
+							}}
+						>
+							Modifier
+						</Button>
+					</Row>
+				</Card>
 			) : (
 				<p>Loading...</p>
 			)}

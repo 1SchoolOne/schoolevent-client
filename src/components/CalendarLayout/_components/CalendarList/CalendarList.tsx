@@ -25,12 +25,19 @@ export function CalendarList(props: ICalendarListProps) {
 	const currentDate = dayjs()
 
 	const sortedAndFilteredEvents = events
-		.filter((event) => dayjs(event.event_date).isAfter(currentDate))
+		.filter(
+			(event) => dayjs(event.event_date).isAfter(currentDate) && event.event_title.includes(search),
+		)
 		.sort((a, b) => dayjs(a.event_date).valueOf() - dayjs(b.event_date).valueOf())
 
 	const sortedAndFilteredAppointments = appointments
-		.filter((appointment) => dayjs(appointment.planned_date).isAfter(currentDate))
+		.filter(
+			(appointment) =>
+				dayjs(appointment.planned_date).isAfter(currentDate) &&
+				appointment.school_name.includes(search),
+		)
 		.sort((a, b) => dayjs(a.planned_date).valueOf() - dayjs(b.planned_date).valueOf())
+
 	const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setSearch(e.target.value)
 	}
@@ -41,7 +48,7 @@ export function CalendarList(props: ICalendarListProps) {
 		}
 	}
 
-	const getMenuAppointments = (id: number): ItemType[] => [
+	const getAppointmentsMenu = (id: number): ItemType[] => [
 		{
 			key: 'create-follow-up',
 			label: 'Modifier le rendez-vous',
@@ -50,7 +57,7 @@ export function CalendarList(props: ICalendarListProps) {
 		},
 	]
 
-	const getMenuEvents = (id: string): ItemType[] => [
+	const getEventsMenu = (_id: string): ItemType[] => [
 		{
 			key: 'create-follow-up',
 			label: "Modifier l'événement",
@@ -59,19 +66,23 @@ export function CalendarList(props: ICalendarListProps) {
 		},
 	]
 
-	const RendezVousOption = () => (
-		<div style={{ display: 'flex', alignItems: 'center' }}>
-			<Badge color="orange" />
-			<div style={{ marginLeft: '5px' }}>Rendez-vous</div>
-		</div>
-	)
+	function RendezVousOption() {
+		return (
+			<div style={{ display: 'flex', alignItems: 'center' }}>
+				<Badge color="orange" />
+				<div style={{ marginLeft: '5px' }}>Rendez-vous</div>
+			</div>
+		)
+	}
 
-	const EvenementOption = () => (
-		<div style={{ display: 'flex', alignItems: 'center' }}>
-			<Badge color="blue" />
-			<div style={{ marginLeft: '5px' }}>Événement</div>
-		</div>
-	)
+	function EvenementOption() {
+		return (
+			<div style={{ display: 'flex', alignItems: 'center' }}>
+				<Badge color="blue" />
+				<div style={{ marginLeft: '5px' }}>Événement</div>
+			</div>
+		)
+	}
 
 	return (
 		<Space className="calendar-list" direction="vertical">
@@ -115,7 +126,7 @@ export function CalendarList(props: ICalendarListProps) {
 											</div>
 											{item.planned_date ? dayjs(item.planned_date).format('DD/MM/YYYY') : 'N/A'}
 										</i>
-										<Dropdown menu={{ items: getMenuAppointments(item.id) }} trigger={['click']}>
+										<Dropdown menu={{ items: getAppointmentsMenu(item.id) }} trigger={['click']}>
 											<IconButton type="text" icon={<MoreIcon size={16} weight="bold" />} />
 										</Dropdown>
 									</Flex>
@@ -144,7 +155,10 @@ export function CalendarList(props: ICalendarListProps) {
 											<div>{item.event_date ? dayjs(item.event_date).format('HH:mm') : 'N/A'}</div>
 											{item.event_date ? dayjs(item.event_date).format('DD/MM/YYYY') : 'N/A'}
 										</i>
-										<Dropdown menu={{ items: getMenuEvents(item.id) }} trigger={['click']}>
+										<Dropdown
+											menu={{ items: getEventsMenu(item.id.toString()) }}
+											trigger={['click']}
+										>
 											<IconButton type="text" icon={<MoreIcon size={16} weight="bold" />} />
 										</Dropdown>
 									</Flex>

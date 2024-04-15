@@ -1,11 +1,14 @@
 #!/bin/bash
 
 yarn audit
+exit_code=$?
 
-if [ $? -eq 0 ]; then
+echo "yarn audit exited with code $exit_code"
+
+if [ $exit_code -eq 0 ]; then
   echo "No critical vulnerabilities found."
   exit 0
-elif [ $? -lt 8 ]; then
+elif [ $exit_code -lt 8 ]; then
   echo "::warning::Moderate vulnerabilities found."
   exit 0
 else

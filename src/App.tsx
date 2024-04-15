@@ -14,9 +14,12 @@ import {
 	AppointmentsLayout,
 	AuthLayout,
 	CalendarLayout,
-	HomeLayout,
 	ContactsLayout,
+	EventDetail,
 	EventForm,
+	EventList,
+	EventUpdateForm,
+	HomeLayout,
 	LoginForm,
 	MainLayout,
 	ProtectedRoute,
@@ -24,10 +27,6 @@ import {
 	Success,
 } from '@components'
 import { AuthProvider, FavoriteContactsProvider, MapDisplayProvider, useTheme } from '@contexts'
-
-import { EventDetail } from './components/events/EventDetail/EventDetail'
-import { EventUpdateForm } from './components/events/EventUpdate/EventUpdateForm'
-import { EventList } from './components/events/EventsList/EventList'
 
 import './App.less'
 
@@ -84,7 +83,6 @@ function App() {
 										<FavoriteContactsProvider>
 											<MainLayout />
 										</FavoriteContactsProvider>
-
 									}
 								>
 									<Route

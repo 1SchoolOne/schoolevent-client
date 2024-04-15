@@ -1,14 +1,14 @@
-import { Card, List, Col, Row } from 'antd'
+import { Card, Col, List, Row } from 'antd'
 
 import { useFavorites } from '@contexts'
 
 import '../../HomeLayout-styles.less'
-import './FavoritesWidget-styles.less'
+import './favoritesWidget-styles.less'
 
 export const FavoritesWidget: React.FC = () => {
 	const { favorites } = useFavorites()
 	const firstThreeFavorites = favorites.slice(0, 2)
-	const nextThreeFavorites = favorites.slice(2,4)
+	const nextThreeFavorites = favorites.slice(2, 4)
 
 	return (
 		<Card

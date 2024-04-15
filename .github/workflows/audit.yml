@@ -1,0 +1,19 @@
+name: Audit
+on:
+  pull_request:
+    branches:
+      - '*'
+    types:
+      - opened
+      - synchronize
+
+jobs:
+  audit:
+    name: yarn audit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Code Checkout
+        uses: actions/checkout@v4
+
+      - name: Check vulnerabilities
+        run: ./scripts/yarn-audit.sh

@@ -1,7 +1,6 @@
 import { Session, User } from '@supabase/supabase-js'
 
 import { Database } from '@types'
-import { useSupabase } from '@utils'
 
 export type TRole = Database['public']['Enums']['user_role']
 
@@ -12,10 +11,37 @@ export interface IAuthContext {
 	approved: boolean
 }
 
-export interface IHandleUserSessionParams {
-	supabase: ReturnType<typeof useSupabase>
+export interface IAuthReducerState {
 	session: Session | null
-	setAuthState: React.Dispatch<
-		React.SetStateAction<Pick<IAuthContext, 'role' | 'user' | 'session'> | null>
-	>
+	user: User | null
+	role: TRole | null
+	approved: boolean | null
+	loading: boolean
+}
+
+export type TAuthReducerActionType =
+	| TSetSessionAction
+	| TSetRoleAndApprovedAction
+	| TResetStateAction
+
+type TSetSessionAction = {
+	type: 'SET_SESSION'
+	payload: {
+		session: Session | null
+	}
+}
+
+// `role` and `approved` are fetched together in one request,
+// it makes more sense to update them together aswell.
+type TSetRoleAndApprovedAction = {
+	type: 'SET_ROLE_AND_APPROVED'
+	payload: {
+		role: TRole
+		approved: boolean | null
+	}
+}
+
+type TResetStateAction = {
+	type: 'RESET'
+	payload?: never
 }

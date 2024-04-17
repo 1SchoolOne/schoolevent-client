@@ -1,34 +1,28 @@
-import { Session, User } from '@supabase/supabase-js'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { Spin } from 'antd'
 import logger from 'loglevel'
-import { createContext, useContext, useEffect, useMemo, useState } from 'react'
+import { createContext, useContext, useEffect, useMemo, useReducer } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { PropsWithChildren } from '@types'
 import { useSupabase } from '@utils'
 
-import { IAuthContext, TRole } from './Auth-types'
+import { INIT_AUTH_STATE } from './Auth-constants'
+import { IAuthContext } from './Auth-types'
+import { authReducer } from './Auth-utils'
 
 const AuthContext = createContext<IAuthContext>({} as IAuthContext)
 
 export function AuthProvider({ children }: PropsWithChildren) {
-	const [session, setSession] = useState<Session | null>(null)
-	const [user, setUser] = useState<User | null>(null)
-	const [role, setRole] = useState<TRole | null>(null)
-	const [approved, setApproved] = useState<boolean | null>(null)
-	const [loading, setLoading] = useState(true)
+	const [authState, setAuthState] = useReducer(authReducer, INIT_AUTH_STATE)
+
 	const supabase = useSupabase()
 	const navigate = useNavigate()
 	const queryClient = useQueryClient()
 
 	const DEV_MODE = import.meta.env.DEV
 
-	useEffect(() => {
-		if (role && approved !== null) {
-			setLoading(false)
-		}
-	}, [role, approved])
+	supabase.auth.getSession()
 
 	useQuery({
 		queryKey: ['user'],
@@ -36,7 +30,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
 			const { data: userObject, error } = await supabase
 				.from('users')
 				.select('role,approved')
-				.eq('id', session!.user.id)
+				.eq('id', authState.session!.user.id)
 				.single()
 
 			if (error) {
@@ -44,17 +38,19 @@ export function AuthProvider({ children }: PropsWithChildren) {
 			}
 
 			if (userObject) {
-				setRole(userObject.role)
-				setApproved(userObject.approved)
+				setAuthState({
+					type: 'SET_ROLE_AND_APPROVED',
+					payload: { role: userObject.role, approved: userObject.approved },
+				})
 			}
 
 			return userObject
 		},
 		staleTime: 60 * 60_000, // 1 hour
-		enabled: session !== null && role === null,
+		enabled: authState.session !== null && authState.role === null,
 	})
 
-	useEffect(() => {
+	useEffect(function handleAuthStateChange() {
 		const {
 			data: { subscription },
 		} = supabase.auth.onAuthStateChange((event, newSession) => {
@@ -62,15 +58,16 @@ export function AuthProvider({ children }: PropsWithChildren) {
 
 			DEV_MODE && logger.info(event, newSession)
 
-			setSession(newSession)
-			setUser(newSession?.user ?? null)
+			setAuthState({ type: 'SET_SESSION', payload: { session: newSession } })
 
 			if (event === 'SIGNED_OUT' || (event === 'INITIAL_SESSION' && !newSession)) {
-				setRole(null)
+				setAuthState({ type: 'RESET' })
 				queryClient.invalidateQueries()
 
 				// Navigate to the login page only when the user is not already on it
-				!pathname.includes('auth') && navigate('/auth/login')
+				if (!pathname.includes('auth')) {
+					navigate('/auth/login')
+				}
 			} else if (event === 'SIGNED_IN' || (event === 'INITIAL_SESSION' && newSession)) {
 				if (newSession) {
 					if (pathname.includes('auth')) {
@@ -80,35 +77,6 @@ export function AuthProvider({ children }: PropsWithChildren) {
 			}
 		})
 
-		const getSession = async () => {
-			const {
-				data: { session },
-				error,
-			} = await supabase.auth.getSession()
-
-			if (error) {
-				throw error
-			}
-
-			if (session) {
-				const { data: userObject } = await supabase
-					.from('users')
-					.select('role')
-					.eq('id', session.user.id)
-					.single()
-
-				if (userObject) {
-					setRole(userObject.role)
-				}
-			}
-
-			setSession(session)
-			setUser(session?.user ?? null)
-			setLoading(false)
-		}
-
-		getSession()
-
 		return () => {
 			subscription.unsubscribe()
 		}
@@ -116,17 +84,17 @@ export function AuthProvider({ children }: PropsWithChildren) {
 
 	const value: IAuthContext = useMemo(
 		() => ({
-			session,
-			user,
-			role,
-			approved: !!approved,
+			session: authState.session,
+			user: authState.user,
+			role: authState.role,
+			approved: !!authState.approved,
 		}),
-		[session, user, role, approved],
+		[authState],
 	)
 
 	return (
 		<AuthContext.Provider value={value}>
-			{loading ? (
+			{authState.loading ? (
 				<div className="auth-loader">
 					<Spin className="auth-loader__spin" size="large" />
 				</div>

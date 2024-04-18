@@ -1,4 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
+import dayjs from 'dayjs'
+import timezone from 'dayjs/plugin/timezone'
+import utc from 'dayjs/plugin/utc'
 import { createContext, useContext, useMemo } from 'react'
 
 import { PropsWithChildren } from '@types'
@@ -9,6 +12,9 @@ import {
 	SELECTED_FIELDS,
 } from '../../components/ContactsLayout/_components/Table/Table-constants'
 import { IAppointmentFormContext, IAppointmentFormProviderProps } from './AppointmentForm-types'
+
+dayjs.extend(utc)
+dayjs.extend(timezone)
 
 const AppointmentFormContext = createContext<IAppointmentFormContext>({} as IAppointmentFormContext)
 
@@ -24,11 +30,19 @@ export function AppointmentFormProvider(props: PropsWithChildren<IAppointmentFor
 		error: schoolError,
 	} = useQuery({
 		queryKey: ['school', { schoolId }],
-		queryFn: async () =>
-			fetch(
+		queryFn: async () => {
+			const response = await fetch(
 				`${GOUV_API_URL}?timezone=Europe%2FParis&where=identifiant_de_l_etablissement="${schoolId}"&select=${SELECTED_FIELDS}`,
-			).then((res) => res.json()),
+			)
+
+			if (!response.ok) {
+				throw new Error(`Failed to fetch school data. school_id=${schoolId}`)
+			}
+
+			return response.json()
+		},
 		enabled: mode === 'new' && schoolId !== undefined,
+		staleTime: 1000 * 60 * 2,
 	})
 
 	const {
@@ -56,14 +70,21 @@ export function AppointmentFormProvider(props: PropsWithChildren<IAppointmentFor
 			return data
 		},
 		enabled: mode !== null && mode !== 'new',
+		staleTime: 1000 * 60 * 2,
 	})
 
 	const initialValues = useMemo((): Partial<IAppointmentFormContext['initialValues']> => {
+		const defaultValues: Partial<IAppointmentFormContext['initialValues']> = {
+			apt_status: status ?? 'to_contact',
+			contacted_date: status === 'contacted' ? dayjs().tz().toISOString() : undefined,
+			planned_date: status === 'planned' ? dayjs().tz().toISOString() : undefined,
+		}
+
 		if (mode === 'new' && school?.results[0]) {
 			const result = school.results[0]
 
 			return {
-				apt_status: status ? status : 'to_contact',
+				...defaultValues,
 				school_name: result.nom_etablissement,
 				school_address: result.adresse_1,
 				school_postal_code: result.code_postal,
@@ -74,7 +95,7 @@ export function AppointmentFormProvider(props: PropsWithChildren<IAppointmentFor
 		} else if (mode === 'edit' || mode === 'view') {
 			return appointment
 		} else {
-			return undefined
+			return defaultValues
 		}
 	}, [mode, appointment, school, status])
 

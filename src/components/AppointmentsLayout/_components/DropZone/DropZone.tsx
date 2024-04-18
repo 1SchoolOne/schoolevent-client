@@ -47,6 +47,7 @@ export function DropZone(props: IDropZoneProps) {
 
 			return { appointment: data, count }
 		},
+		staleTime: 1000 * 60 * 5,
 	})
 
 	/**

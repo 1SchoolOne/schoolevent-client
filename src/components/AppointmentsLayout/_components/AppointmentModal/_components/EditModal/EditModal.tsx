@@ -4,7 +4,6 @@ import { Form as AntdForm, App, Skeleton } from 'antd'
 import dayjs from 'dayjs'
 import timezone from 'dayjs/plugin/timezone'
 import utc from 'dayjs/plugin/utc'
-import { useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { LoadingError } from '@components'
@@ -67,10 +66,6 @@ export function EditModal() {
 		},
 	})
 
-	const formKey = useMemo(() => {
-		return hasLoaded ? 'new-apt-form' : 'new-apt-form-loading'
-	}, [hasLoaded])
-
 	return (
 		<Modal
 			className="appointment-modal appointment-modal--edit"
@@ -101,20 +96,10 @@ export function EditModal() {
 			) : (
 				<>
 					<Form
-						key={formKey}
 						formInstance={formInstance}
 						isLoading={isLoading}
 						isPending={isPending}
 						onFinish={mutate}
-						initialValues={{
-							...initialValues,
-							contacted_date: initialValues?.contacted_date
-								? dayjs(initialValues.contacted_date)
-								: undefined,
-							planned_date: initialValues?.planned_date
-								? dayjs(initialValues.planned_date)
-								: undefined,
-						}}
 						mode="edit"
 					/>
 					<Attachments />

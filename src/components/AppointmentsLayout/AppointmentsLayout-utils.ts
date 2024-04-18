@@ -15,5 +15,5 @@ export function getIsStatusValid(
 		return false
 	}
 
-	return ['to_contact', 'contacted', 'planned', 'done'].includes(status)
+	return ['to_contact', 'contacted', 'planned'].includes(status)
 }

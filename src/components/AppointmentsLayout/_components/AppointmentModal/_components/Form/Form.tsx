@@ -3,9 +3,10 @@ import { Form as AntdForm, Col, Divider, Input, Row, Skeleton, Tabs, Typography 
 import dayjs from 'dayjs'
 import timezone from 'dayjs/plugin/timezone'
 import utc from 'dayjs/plugin/utc'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { AutoCompleteField, Info, SelectField } from '@components'
+import { useAppointmentForm } from '@contexts'
 import { appointmentStatusRecord } from '@types'
 import {
 	fetchAddressCompletion,
@@ -22,8 +23,9 @@ dayjs.extend(utc)
 dayjs.extend(timezone)
 
 export function Form(props: TFormProps) {
-	const { formInstance, isLoading, onFinish, initialValues, mode } = props
+	const { formInstance, isLoading, onFinish, mode } = props
 
+	const { initialValues } = useAppointmentForm()
 	const [addressSearch, setAddressSearch] = useState(initialValues?.school_address ?? '')
 	const debouncedSearch = useDebounce(addressSearch, 500)
 
@@ -58,27 +60,31 @@ export function Form(props: TFormProps) {
 		staleTime: 1000 * 10,
 	})
 
-	// If in new mode, set the contacted_date or the planned_date to the current date
-	if (mode === 'new') {
-		if (initialValues?.apt_status === 'contacted' && !initialValues?.contacted_date) {
-			initialValues.contacted_date = dayjs().tz()
-		}
-		if (initialValues?.apt_status === 'planned' && !initialValues?.planned_date) {
-			initialValues.planned_date = dayjs().tz()
-		}
-	}
+	/**
+	 * Antd's Form component uses `initialValues` prop as defaultValue.
+	 * If the value passed has changed it won't update the fields values.
+	 * So we reset the fields when the data has fully loaded.
+	 */
+	useEffect(
+		function refreshForm() {
+			formInstance.resetFields()
+		},
+		[initialValues, formInstance],
+	)
 
 	return (
 		<AntdForm<IFormValues>
-			// Changing the key of an element in React will force it to re-render.
-			//
-			// In our case, the form won't re-render when the data is fetched, so we
-			// need to force it to re-render by changing its key.
 			className="appointment-modal__form"
 			layout="vertical"
 			form={formInstance}
 			onFinish={onFinish}
-			initialValues={initialValues}
+			initialValues={{
+				...initialValues,
+				contacted_date: initialValues?.contacted_date
+					? dayjs(initialValues.contacted_date)
+					: undefined,
+				planned_date: initialValues?.planned_date ? dayjs(initialValues.planned_date) : undefined,
+			}}
 		>
 			<Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
 				<Col span={13}>

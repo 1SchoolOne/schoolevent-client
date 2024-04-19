@@ -75,7 +75,10 @@ export function FileCard(props: IFileCardProps) {
 		queryFn: async () => {
 			const { data, error } = await supabase.storage
 				.from('attachments')
-				.createSignedUrl(path, 60 * 10, { transform: { width: 300, height: 160, resize: 'cover' } })
+				// TODO fix supabase signed url transform issue
+				.createSignedUrl(path, 60 * 10, {
+					transform: { width: 300, height: 160, resize: 'cover' },
+				})
 
 			if (error) {
 				logger.error(error)

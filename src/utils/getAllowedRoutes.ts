@@ -7,7 +7,7 @@ export function getAllowedRoutes(role: Database['public']['Enums']['user_role'])
 	switch (role) {
 		case 'admin':
 		case 'manager':
-			return ['appointments', 'calendar', 'contacts', 'events', 'students', 'stats']
+			return ['appointments', 'calendar', 'contacts', 'events', 'students']
 		case 'student':
 			return ['events']
 	}

@@ -1,93 +1,51 @@
 import {
 	DotsThreeVertical as MoreIcon,
-	PencilSimple as PencilSimpleIcon,
 	MagnifyingGlass as SearchIcon,
 } from '@phosphor-icons/react'
-import { Badge, Dropdown, Flex, Input, List, Segmented, Space } from 'antd'
-import { ItemType } from 'antd/lib/menu/hooks/useItems'
+import { Badge, Dropdown, Flex, Input, List, Segmented, Typography } from 'antd'
 import dayjs from 'dayjs'
 import 'dayjs/locale/fr'
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 
 import { IconButton } from '@components'
 
 import { ICalendarListProps } from './CalendarList-types'
+import { useCalendarList } from './CalendarList-hooks'
 
 import '../../../FavoritesList/FavoritesList-styles.less'
 import './CalendarList-styles.less'
 
 export function CalendarList(props: ICalendarListProps) {
-	const { events, appointments } = props
-	const [search, setSearch] = useState('')
-	const [selectedButton, setSelectedButton] = useState('Rendez-vous')
-	const navigate = useNavigate()
-	const currentDate = dayjs()
+	const {
+		selectedButton,
+		sortedAndFilteredEvents,
+		sortedAndFilteredAppointments,
+		handleSearchChange,
+		handleSegmentChange,
+		getAppointmentsMenu,
+		getEventsMenu
+	} = useCalendarList(props)
 
-	const sortedAndFilteredEvents = events
-		.filter(
-			(event) => dayjs(event.event_date).isAfter(currentDate) && event.event_title.includes(search),
-		)
-		.sort((a, b) => dayjs(a.event_date).valueOf() - dayjs(b.event_date).valueOf())
+	const RendezVousOption = () => (
+		<div style={{ display: 'flex', alignItems: 'center' }}>
+			<Badge color="orange" />
+			<div style={{ marginLeft: '5px' }}>Rendez-vous</div>
+		</div>
+	)
 
-	const sortedAndFilteredAppointments = appointments
-		.filter(
-			(appointment) =>
-				dayjs(appointment.planned_date).isAfter(currentDate) &&
-				appointment.school_name.includes(search),
-		)
-		.sort((a, b) => dayjs(a.planned_date).valueOf() - dayjs(b.planned_date).valueOf())
-
-	const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		setSearch(e.target.value)
-	}
-
-	const handleSegmentChange = (value: string | number) => {
-		if (typeof value === 'string') {
-			setSelectedButton(value)
-		}
-	}
-
-	const getAppointmentsMenu = (id: number): ItemType[] => [
-		{
-			key: 'create-follow-up',
-			label: 'Modifier le rendez-vous',
-			icon: <PencilSimpleIcon size={16} weight="bold" />,
-			onClick: () => navigate(`/appointments?action=edit&id=${id}`),
-		},
-	]
-
-	const getEventsMenu = (_id: string): ItemType[] => [
-		{
-			key: 'create-follow-up',
-			label: "Modifier l'événement",
-			icon: <PencilSimpleIcon size={16} weight="bold" />,
-			// onClick: () => navigate(`/appointments?action=edit&id=${id}`),
-		},
-	]
-
-	function RendezVousOption() {
-		return (
-			<div style={{ display: 'flex', alignItems: 'center' }}>
-				<Badge color="orange" />
-				<div style={{ marginLeft: '5px' }}>Rendez-vous</div>
-			</div>
-		)
-	}
-
-	function EvenementOption() {
-		return (
-			<div style={{ display: 'flex', alignItems: 'center' }}>
-				<Badge color="blue" />
-				<div style={{ marginLeft: '5px' }}>Événement</div>
-			</div>
-		)
-	}
+	const EvenementOption = () => (
+		<div style={{ display: 'flex', alignItems: 'center' }}>
+			<Badge color="blue" />
+			<div style={{ marginLeft: '5px' }}>Événement</div>
+		</div>
+	)
 
 	return (
-		<Space className="calendar-list" direction="vertical">
+		<div className="favorites-list">
+			<Typography.Title className="favorites-list__title" level={5}>
+				Vos rendez-vous et événements
+			</Typography.Title>
 			<Input
-				className="calendar-list__input"
+				className="favorites-list__search"
 				placeholder={
 					selectedButton === 'Rendez-vous'
 						? 'Rechercher mes rendez-vous'
@@ -168,6 +126,6 @@ export function CalendarList(props: ICalendarListProps) {
 					)}
 				/>
 			)}
-		</Space>
+		</div>
 	)
 }

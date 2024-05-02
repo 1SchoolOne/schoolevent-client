@@ -1,5 +1,8 @@
 import { InputRef } from 'antd'
 import { FilterValue } from 'antd/lib/table/interface'
+import { Dispatch, Key, RefObject } from 'react'
+
+import { Database } from '@types'
 
 export interface IQueryParams {
 	limit: number
@@ -10,16 +13,16 @@ export interface IQueryParams {
 }
 
 export interface ISchool {
-	identifiant_de_l_etablissement: string
+	identifiant_de_l_etablissement: string | null
 	nom_etablissement: string
 	type_etablissement: string
 	adresse_1: string
 	code_postal: string
 	nom_commune: string
-	latitude: number
-	longitude: number
-	mail: string
-	telephone: string
+	latitude: number | null
+	longitude: number | null
+	mail: string | null
+	telephone: string | null
 	favoris: boolean
 }
 
@@ -42,18 +45,28 @@ export type TReducerActionType =
 	| TSetFiltersAction
 	| TSetRangeAction
 	| TSetUserLocationAction
+	| TSetDataMode
 
 export interface IAPIResponse {
 	total_count: number
 	results: Omit<ISchool, 'favoris'>[]
 }
 
+type TDataPayload =
+	| {
+			total_count: number
+			source: 'myContactList'
+			data: Database['public']['Tables']['contacts']['Row'][]
+	  }
+	| {
+			total_count: number
+			source: 'govApi'
+			data: ISchool[]
+	  }
+
 type TSetDataAction = {
 	type: 'SET_DATA'
-	payload: {
-		total_count: number
-		results: ISchool[]
-	}
+	payload: TDataPayload
 }
 
 type TSetLoadingAction = {
@@ -124,6 +137,13 @@ type TSetUserLocationAction = {
 	}
 }
 
+type TSetDataMode = {
+	type: 'SET_DATA_MODE'
+	payload: {
+		mode: TTableDataMode
+	}
+}
+
 export interface IQueryStringBuilderParams {
 	range: number | null
 	userLocation?: { lat: number; lng: number }
@@ -142,14 +162,15 @@ export interface ITableConfigState {
 	filters: TFiltersRecord
 	range: number | null
 	userLocation?: TUserLocation
+	dataMode: TTableDataMode
 }
 
 export interface IGetColumnSearchPropsParams {
-	inputRef: React.RefObject<InputRef>
+	inputRef: RefObject<InputRef>
 }
 
 export interface IGetColumnRadioPropsParams {
-	options: { label: string; value: React.Key }[]
+	options: { label: string; value: Key }[]
 }
 
 export interface ITableProps {
@@ -160,9 +181,11 @@ export interface ITableProps {
 	}
 }
 
+export type TTableDataMode = 'my_contacts' | 'gov_api'
+
 export type TUserLocation = { lat: number; lng: number }
 
-export type TSetTableConfig = React.Dispatch<TReducerActionType>
+export type TSetTableConfig = Dispatch<TReducerActionType>
 
 export type TTableFilters = Record<string, FilterValue | null>
 

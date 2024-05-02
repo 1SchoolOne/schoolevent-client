@@ -5,6 +5,8 @@ import { useSupabase } from '@utils'
 export type { Database } from './supabase'
 export type TSupabase = ReturnType<typeof useSupabase>
 
+export type EmptyObject = Record<string, never>
+
 export type PropsWithOptionalChildren<P = object> = P & { children?: ReactNode }
 
 export type PropsWithChildren<P = object> = P & { children: ReactNode }

@@ -1,4 +1,4 @@
-export type TStorageKey = 'contacts.table' | 'sidebar.isCollapsed' | 'comments.sort'
+export type TStorageKey = 'contacts.table' | 'sidebar.isCollapsed' | 'comments.sort' | string
 
 export interface ITableStorage {
 	orderBy: string | null
@@ -24,5 +24,19 @@ export interface ISetCommentSortStorage {
 	data: ICommentSortStorage
 }
 
-export type TSetStorageParams = ISetTableStorage | ISetSidebarStorage | ISetCommentSortStorage
-export type TGetStorageReturn = ITableStorage | ISidebarStorage | ICommentSortStorage | null
+export interface ISetAnyStorage {
+	key: string
+	data: Record<string, unknown>
+}
+
+export type TSetStorageParams =
+	| ISetTableStorage
+	| ISetSidebarStorage
+	| ISetCommentSortStorage
+	| ISetAnyStorage
+export type TGetStorageReturn =
+	| ITableStorage
+	| ISidebarStorage
+	| ICommentSortStorage
+	| Record<string, unknown>
+	| null

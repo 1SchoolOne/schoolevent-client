@@ -1,25 +1,59 @@
-import { Table as AntdTable, Grid, Space, Typography } from 'antd'
-import { TableRef } from 'antd/lib/table'
-import { useRef } from 'react'
+import { Table as AntdTable, Space, Typography } from 'antd'
 
+import { Table as MyTable } from '@components'
 import { useMapDisplay, useTheme } from '@contexts'
 
+import { SELECTED_FIELDS } from './Table-constants'
 import { useController } from './Table-controller'
-import { ISchool, ITableProps, TFiltersRecord } from './Table-types'
-import { QueryStringBuilder, getRowClassname } from './Table-utils'
+import { IAPIResponse, ISchool, ITableProps } from './Table-types'
+import { QueryStringBuilder, fetchTableData, getRowClassname } from './Table-utils'
 
 import './Table-styles.less'
-
-const { useBreakpoint } = Grid
 
 export function Table(props: ITableProps) {
 	const { tableConfigReducer } = props
 	const { tableConfig, setTableConfig } = tableConfigReducer
 	const { setFocusedPin } = useMapDisplay()
-	const tableRef = useRef<TableRef>(null)
-	const screens = useBreakpoint()
 	const { theme } = useTheme()
 	const { columns } = useController(props)
+
+	return (
+		<MyTable<ISchool>
+			tableId="contacts"
+			className="contacts-table"
+			dataSource={async (filters, sorter, pagination) => {
+				// Extract to utils
+				// - - - - - - - - - - - - - - - - -
+				let orderBy
+				let where
+				const queryStringBuilder = new QueryStringBuilder(filters)
+
+				if (sorter && sorter.order) {
+					orderBy = `${sorter.field} ${sorter.order === 'descend' ? 'desc' : 'asc'}`
+				}
+
+				if (!queryStringBuilder.isEmpty()) {
+					where = queryStringBuilder.build()
+				}
+				// - - - - - - - - - - - - - - - - -
+				const res = await fetchTableData({
+					limit: pagination?.size ?? 25,
+					offset: pagination?.offset ?? 0,
+					select: SELECTED_FIELDS,
+					where: where,
+					orderBy,
+				}).then((response) => response.json() as Promise<IAPIResponse>)
+
+				return { data: res.results as ISchool[], totalCount: res.total_count }
+			}}
+			columns={columns}
+			pagination={{
+				showTotal: (total, range) => {
+					return `${range[0]}-${range[1]} sur ${total} établissements`
+				},
+			}}
+		/>
+	)
 
 	return (
 		<AntdTable<ISchool>
@@ -79,25 +113,6 @@ export function Table(props: ITableProps) {
 				expandRowByClick: false,
 				showExpandColumn: true,
 				rowExpandable: (record) => !!record,
-			}}
-			onChange={(_pagination, filters, sorter) => {
-				if (!Array.isArray(sorter) && Object.entries(sorter).length > 0) {
-					const order = sorter.order === 'ascend' ? 'ASC' : 'DESC'
-
-					// The ternary below is used to prevent the column from
-					// being stuck in the 'descend' state
-					setTableConfig({
-						type: 'SET_ORDER_BY',
-						payload: sorter.order ? { field: sorter.field as keyof ISchool, order } : null,
-					})
-				}
-
-				setTableConfig({ type: 'SET_FILTERS', payload: { filters: filters as TFiltersRecord } })
-
-				const queryBuilder = new QueryStringBuilder(filters)
-				const queryString = queryBuilder.build()
-
-				setTableConfig({ type: 'SET_WHERE', payload: { where: queryString } })
 			}}
 			locale={{
 				emptyText: 'Aucun établissement trouvé',

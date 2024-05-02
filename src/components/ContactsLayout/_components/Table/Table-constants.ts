@@ -27,4 +27,5 @@ export const INIT_TABLE_STATE: ITableConfigState = {
 	filters: DEFAULT_FILTER_OBJECT,
 	range: null,
 	userLocation: undefined,
+	dataMode: 'my_contacts',
 }

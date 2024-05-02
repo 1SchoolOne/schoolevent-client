@@ -169,6 +169,58 @@ export type Database = {
           },
         ]
       }
+      contacts: {
+        Row: {
+          address: string | null
+          city: string
+          created_at: string
+          id: number
+          latitude: string | null
+          longitude: string | null
+          mail: string | null
+          postal_code: string
+          school_name: string
+          school_type: string
+          telephone: string | null
+          user_id: string
+        }
+        Insert: {
+          address?: string | null
+          city: string
+          created_at?: string
+          id?: number
+          latitude?: string | null
+          longitude?: string | null
+          mail?: string | null
+          postal_code: string
+          school_name: string
+          school_type: string
+          telephone?: string | null
+          user_id: string
+        }
+        Update: {
+          address?: string | null
+          city?: string
+          created_at?: string
+          id?: number
+          latitude?: string | null
+          longitude?: string | null
+          mail?: string | null
+          postal_code?: string
+          school_name?: string
+          school_type?: string
+          telephone?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contacts_user_id_fkey"
+            columns: ["user_id"]
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       events: {
         Row: {
           event_address: string
@@ -244,6 +296,7 @@ export type Database = {
       }
       favorites: {
         Row: {
+          created_at: string | null
           id: string
           school_city: string
           school_id: string
@@ -252,6 +305,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          created_at?: string | null
           id?: string
           school_city: string
           school_id: string
@@ -260,6 +314,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          created_at?: string | null
           id?: string
           school_city?: string
           school_id?: string
@@ -270,6 +325,43 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "favorites_user_id_fkey"
+            columns: ["user_id"]
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      students: {
+        Row: {
+          created_at: string
+          grade: string | null
+          id: number
+          last_event: string | null
+          phone: string | null
+          points: number | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          grade?: string | null
+          id?: number
+          last_event?: string | null
+          phone?: string | null
+          points?: number | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          grade?: string | null
+          id?: number
+          last_event?: string | null
+          phone?: string | null
+          points?: number | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "students_user_id_fkey"
             columns: ["user_id"]
             referencedRelation: "users"
             referencedColumns: ["id"]

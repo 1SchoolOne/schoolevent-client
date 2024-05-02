@@ -464,10 +464,10 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
-"@phosphor-icons/react@2.0.14":
-  version "2.0.14"
-  resolved "https://registry.yarnpkg.com/@phosphor-icons/react/-/react-2.0.14.tgz#3c8977cc81cc376d0c6afda46882eb5dc9b8b54d"
-  integrity sha512-VaZ7/JEQ7dW+Up23l7t6lqJ3dPJupM03916Pat+ZOLX1vex9OeX9t8RZLJWt0oVrdc/GcrAyRD5FESDeP+M4tQ==
+"@phosphor-icons/react@2.1.5":
+  version "2.1.5"
+  resolved "https://registry.yarnpkg.com/@phosphor-icons/react/-/react-2.1.5.tgz#762c368778a4040d52c5532b8af1692b66e16783"
+  integrity sha512-B7vRm/w+P/+eavWZP5CB5Ul0ffK4Y7fpd/auWKuGvm+8pVgAJzbOK8O0s+DqzR+TwWkh5pHtJTuoAtaSvgCPzg==
 
 "@rc-component/color-picker@~1.5.1":
   version "1.5.2"

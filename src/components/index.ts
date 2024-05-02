@@ -20,3 +20,10 @@ export { ProtectedRoute } from './ProtectedRoute/ProtectedRoute'
 export { SelectField } from './SelectField/SelectField'
 export { ShortEventsList } from './ShortEventsList/ShortEventsList'
 export { Success } from './AuthLayout/_components/SignUpForm/_components/Success/Success'
+export { Table } from './Table/Table'
+export {
+	useGetColumnSearchFilterConfig,
+	useGetStaticColumnSearchFilterConfig,
+	getRadioOrCheckboxFilterConfig,
+	getStaticRadioOrCheckboxFilterConfig,
+} from './Table/Table-utils'

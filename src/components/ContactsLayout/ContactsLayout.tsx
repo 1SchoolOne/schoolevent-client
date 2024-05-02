@@ -1,19 +1,19 @@
 import {
-	Broom as ClearFiltersIcon,
 	XCircle as CloseMapIcon,
 	ArrowsOutSimple as ExpandMapIcon,
-	MapPin,
 	MapTrifold as OpenMapIcon,
 	ArrowsInSimple as ReduceMapIcon,
-	MagnifyingGlass as SearchIcon,
 } from '@phosphor-icons/react'
-import { Button, Divider, Input, Layout, Slider, Space, Typography } from 'antd'
+import { Layout } from 'antd'
 import { useLayoutEffect, useReducer, useState } from 'react'
 
-import { BasicLayout, ContactsMap, FavoritesList, IconButton, Info } from '@components'
-import { useMapDisplay, useTheme } from '@contexts'
+import { BasicLayout, ContactsMap, FavoritesList, IconButton } from '@components'
+import { useMapDisplay } from '@contexts'
 import { useDebounce } from '@utils'
 
+import { useMapContainerClass, useTableContainerClass } from './ContactsLayout-utils'
+import { ContactsLayoutHeader } from './_components/ContactsLayoutHeader/ContactsLayoutHeader'
+import { MapLegend } from './_components/MapLegend/MapLegend'
 import { Table } from './_components/Table/Table'
 import { INIT_TABLE_STATE } from './_components/Table/Table-constants'
 import { reducer } from './_components/Table/Table-utils'
@@ -28,29 +28,8 @@ export function ContactsLayout() {
 	const [globalSearch, setGlobalSearch] = useState<string>('')
 	const debouncedGlobalSearch = useDebounce<string>(globalSearch, 750)
 	const { displayMap, hideMap, toggleMapState, mapDisplayState } = useMapDisplay()
-	const { theme } = useTheme()
-
-	const getMapContainerClass = () => {
-		const defaultCls = 'map-container map-container__' + theme
-
-		if (mapDisplayState.isHidden) {
-			return defaultCls + ' ' + 'map-container__hidden'
-		} else if (mapDisplayState.state === 'full') {
-			return defaultCls + ' ' + 'map-container__full'
-		} else {
-			return defaultCls
-		}
-	}
-
-	const getTableContainerClass = () => {
-		if (mapDisplayState.isHidden) {
-			return 'table-container table-container__full'
-		} else if (mapDisplayState.state === 'full') {
-			return 'table-container table-container__hidden'
-		} else {
-			return 'table-container'
-		}
-	}
+	const tableContainerClass = useTableContainerClass()
+	const mapContainerClass = useMapContainerClass()
 
 	useLayoutEffect(() => {
 		const header = document.querySelector('.contacts-layout__header') as HTMLElement
@@ -65,10 +44,6 @@ export function ContactsLayout() {
 		}
 	}, [])
 
-	const resetTableFilters = () => {
-		setTableConfig({ type: 'RESET_FILTERS' })
-	}
-
 	return (
 		<BasicLayout
 			className="contacts-layout"
@@ -77,72 +52,13 @@ export function ContactsLayout() {
 		>
 			<Layout className="contacts-layout__table-and-global-search">
 				<Header className="contacts-layout__header">
-					<Space direction="horizontal" className="contacts-table__header" size="large">
-						<div className="contacts-range-container">
-							<Typography.Text>Distance maximale :</Typography.Text>
-							<Slider
-								disabled={
-									!tableConfig.userLocation ||
-									(tableConfig.userLocation.lat === 0 && tableConfig.userLocation.lng === 0)
-								}
-								defaultValue={0}
-								step={10}
-								min={0}
-								max={100}
-								onChangeComplete={(value) =>
-									setTableConfig({
-										type: 'SET_RANGE',
-										payload: { range: value === 0 ? null : value },
-									})
-								}
-								marks={{
-									0: 'Illimité',
-									100: '100km',
-								}}
-								tooltip={{ formatter: (value) => (value === 0 ? 'Illimité' : `${value}km`) }}
-								dots
-							/>
-						</div>
-						<Divider type="vertical" />
-						<Space direction="horizontal" className="contacts-global-search">
-							<Info tooltip tooltipProps={{ placement: 'bottom' }}>
-								<Space direction="vertical">
-									<h4>Recherche globale</h4>
-									<div>
-										Ignore les filtres et recherche dans les champs suivants :
-										<ul>
-											<li>Établissement</li>
-											<li>Commune</li>
-											<li>Code postal</li>
-											<li>Adresse</li>
-										</ul>
-									</div>
-								</Space>
-							</Info>
-							<Input
-								placeholder="Recherche globale"
-								allowClear
-								prefix={<SearchIcon />}
-								onChange={(e) => {
-									setGlobalSearch(e.target.value)
-								}}
-							/>
-						</Space>
-						<Divider type="vertical" />
-						<Button
-							className="clear-filters-btn"
-							type="primary"
-							icon={<ClearFiltersIcon size="16px" />}
-							onClick={() => {
-								resetTableFilters()
-							}}
-						>
-							Réinitialiser les filtres
-						</Button>
-					</Space>
+					<ContactsLayoutHeader
+						tableConfigReducer={{ tableConfig, setTableConfig }}
+						setGlobalSearch={setGlobalSearch}
+					/>
 				</Header>
 				<Content className="contacts-table-container">
-					<div className={getTableContainerClass()}>
+					<div className={tableContainerClass}>
 						<Table
 							globalSearch={debouncedGlobalSearch}
 							tableConfigReducer={{ tableConfig, setTableConfig }}
@@ -156,21 +72,8 @@ export function ContactsLayout() {
 							/>
 						)}
 					</div>
-					<div className={getMapContainerClass()}>
-						<Space className="map-container__legend" direction="vertical" size={2}>
-							<div className="map-container__legend__item">
-								<MapPin size={20} weight="fill" color="#4798d0" stroke="black" strokeWidth={10} />
-								<Typography.Text>Votre position</Typography.Text>
-							</div>
-							<div className="map-container__legend__item">
-								<MapPin size={20} weight="fill" color="#fcd6a4" stroke="black" strokeWidth={10} />
-								<Typography.Text>Collège</Typography.Text>
-							</div>
-							<div className="map-container__legend__item">
-								<MapPin size={20} weight="fill" color="#e34336" stroke="black" strokeWidth={10} />
-								<Typography.Text>Lycée</Typography.Text>
-							</div>
-						</Space>
+					<div className={mapContainerClass}>
+						<MapLegend />
 						<ContactsMap data={tableConfig.data} setTableConfig={setTableConfig} />
 						<IconButton
 							className="map-btn toggle-mode-btn"

@@ -1,11 +1,11 @@
 import { MagnifyingGlass as SearchIcon } from '@phosphor-icons/react'
 import { Button, Input, Radio, Space } from 'antd'
-import { ColumnType } from 'antd/lib/table'
 import { SortOrder } from 'antd/lib/table/interface'
 
-import { ITableStorage } from '@types'
+import { Database, ITableStorage } from '@types'
 import { getLocalStorage, isStringEmpty } from '@utils'
 
+import { ColumnType } from '../../../Table/Table-types'
 import {
 	DEFAULT_ETABLISSEMENT_FILTER,
 	DEFAULT_FILTER_OBJECT,
@@ -41,7 +41,10 @@ export function reducer(state: ITableConfigState, action: TReducerActionType): I
 		case 'SET_DATA':
 			return {
 				...state,
-				data: action.payload.results,
+				data:
+					action.payload.source === 'myContactList'
+						? parseContactList(action.payload.data)
+						: action.payload.data,
 				totalCount: action.payload.total_count,
 			}
 		case 'SET_LOADING':
@@ -126,6 +129,11 @@ export function reducer(state: ITableConfigState, action: TReducerActionType): I
 			return {
 				...state,
 				userLocation: action.payload.location,
+			}
+		case 'SET_DATA_MODE':
+			return {
+				...state,
+				dataMode: action.payload.mode,
 			}
 	}
 }
@@ -324,4 +332,22 @@ export function getRowClassname(index: number, theme: 'light' | 'dark'): string 
 	} else {
 		return `odd-row odd-row__${theme}`
 	}
+}
+
+function parseContactList(
+	contactList: Array<Database['public']['Tables']['contacts']['Row']>,
+): Array<ISchool> {
+	return contactList.map((c) => ({
+		identifiant_de_l_etablissement: '',
+		nom_etablissement: c.school_name,
+		adresse_1: c.address ?? '',
+		code_postal: c.postal_code,
+		nom_commune: c.city,
+		type_etablissement: c.school_type,
+		mail: c.mail ?? '',
+		telephone: c.telephone ?? '',
+		latitude: c.latitude ? Number(c.latitude) : 0,
+		longitude: c.longitude ? Number(c.longitude) : 0,
+		favoris: false,
+	}))
 }

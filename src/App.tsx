@@ -20,7 +20,10 @@ import {
 	MainLayout,
 	ProtectedRoute,
 	ProvidersWithAuth,
+	Reward,
 	SignUpForm,
+	StudentEventDetail,
+	StudentEventList,
 	Success,
 } from '@components'
 import { FavoriteContactsProvider, MapDisplayProvider, useTheme } from '@contexts'
@@ -107,6 +110,31 @@ function App() {
 								}
 							/>
 						</Route>
+						<Route
+							path="studentEvents"
+							element={
+								<ProtectedRoute>
+									<Helmet>
+										<title>SchoolEvent | Events</title>
+									</Helmet>
+									<Outlet />
+								</ProtectedRoute>
+							}
+						>
+							<Route index element={<StudentEventList />} />
+							<Route path=":studentEventId" element={<StudentEventDetail />} />
+						</Route>
+						<Route
+							path="rewards"
+							element={
+								<ProtectedRoute>
+									<Helmet>
+										<title>SchoolEvent | Reward</title>
+									</Helmet>
+									<Reward />
+								</ProtectedRoute>
+							}
+						></Route>
 						<Route path="/auth" element={<AuthLayout />}>
 							<Route path="*" element={<Navigate to="/auth/login" />} />
 							<Route

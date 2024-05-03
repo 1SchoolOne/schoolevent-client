@@ -5,6 +5,7 @@ import {
 	Ticket as EventsIcon,
 	House as HomeIcon,
 	Student as StudentsIcon,
+	Coins as CoinIcon,
 } from '@phosphor-icons/react'
 import { Link } from 'react-router-dom'
 
@@ -26,14 +27,14 @@ export function getItems(role: Database['public']['Enums']['user_role'] | null) 
 		case 'student':
 			return [
 				{
-					key: 'menu-home',
-					icon: <HomeIcon size="1rem" />,
-					label: <Link to="/">Accueil</Link>,
+					key: 'menu-studentEvent',
+					icon: <EventsIcon size="1rem" />,
+					label: <Link to="/studentEvents">Événements</Link>,
 				},
 				{
-					key: 'menu-events',
-					icon: <EventsIcon size="1rem" />,
-					label: <Link to="/events">Événements</Link>,
+					key: 'menu-reward',
+					icon: <CoinIcon size="1rem" />,
+					label: <Link to="/rewards">Récompenses</Link>,
 				},
 			]
 		case 'admin':

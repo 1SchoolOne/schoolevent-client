@@ -14,7 +14,15 @@ export function ProtectedRoute({ children }: PropsWithChildren): React.ReactElem
 	const allowedRoutes = getAllowedRoutes(role)
 
 	if (!allowedRoutes.includes(pathname[0])) {
-		return <Navigate to="/" />
+		if (role === 'student') {
+			// Students should not have access to the dashboard
+			return <Navigate to="/studentEvents" />
+		} else if (location.pathname !== '/') {
+			// If the current path equals "/", when parsed it will return undefined and
+			// therefore won't be seen as an allowed route.
+			// That is why we redirect only if the current path is different than "/".
+			return <Navigate to="/" />
+		}
 	}
 
 	return <>{children}</>

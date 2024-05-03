@@ -9,6 +9,6 @@ export function getAllowedRoutes(role: Database['public']['Enums']['user_role'])
 		case 'manager':
 			return ['appointments', 'calendar', 'contacts', 'events', 'students']
 		case 'student':
-			return ['studentEvents', 'reward']
+			return ['studentEvents', 'rewards']
 	}
 }

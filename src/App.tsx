@@ -51,7 +51,9 @@ function App() {
 							path="/"
 							element={
 								<FavoriteContactsProvider>
-									<MainLayout />
+									<ProtectedRoute>
+										<MainLayout />
+									</ProtectedRoute>
 								</FavoriteContactsProvider>
 							}
 						>
@@ -109,32 +111,32 @@ function App() {
 									</ProtectedRoute>
 								}
 							/>
+							<Route
+								path="studentEvents"
+								element={
+									<ProtectedRoute>
+										<Helmet>
+											<title>SchoolEvent | Events</title>
+										</Helmet>
+										<Outlet />
+									</ProtectedRoute>
+								}
+							>
+								<Route index element={<StudentEventList />} />
+								<Route path=":studentEventId" element={<StudentEventDetail />} />
+							</Route>
+							<Route
+								path="rewards"
+								element={
+									<ProtectedRoute>
+										<Helmet>
+											<title>SchoolEvent | Reward</title>
+										</Helmet>
+										<Reward />
+									</ProtectedRoute>
+								}
+							></Route>
 						</Route>
-						<Route
-							path="studentEvents"
-							element={
-								<ProtectedRoute>
-									<Helmet>
-										<title>SchoolEvent | Events</title>
-									</Helmet>
-									<Outlet />
-								</ProtectedRoute>
-							}
-						>
-							<Route index element={<StudentEventList />} />
-							<Route path=":studentEventId" element={<StudentEventDetail />} />
-						</Route>
-						<Route
-							path="rewards"
-							element={
-								<ProtectedRoute>
-									<Helmet>
-										<title>SchoolEvent | Reward</title>
-									</Helmet>
-									<Reward />
-								</ProtectedRoute>
-							}
-						></Route>
 						<Route path="/auth" element={<AuthLayout />}>
 							<Route path="*" element={<Navigate to="/auth/login" />} />
 							<Route

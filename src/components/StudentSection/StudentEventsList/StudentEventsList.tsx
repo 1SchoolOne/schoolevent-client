@@ -1,71 +1,101 @@
-import { useEffect, useState } from "react"
-import { useSupabase } from "../../../utils/useSupabase"
-import { IEventFormFields } from "../../Events/type"
-import { Link, useNavigate } from "react-router-dom"
-import { Card, List } from "antd"
-import { TEventTypeValue } from "../../Events/EventForm/EventForm-types"
+import { Card, Collapse, List } from 'antd'
+import { useEffect, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+
+import { useSupabase } from '../../../utils/useSupabase'
+import { IEventFormFields } from '../../Events/type'
+
+import './StudentEventsList-styles.less'
+import { TEventTypeValue } from '../../Events/EventForm/EventForm-types'
 
 export function StudentEventList() {
-  const supabase = useSupabase()
-  const [events, setEvents] = useState<IEventFormFields[]>([])
-  const navigate = useNavigate()
+	const supabase = useSupabase()
+	const navigate = useNavigate()
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const fetchEvents = async () => {
-    const { data, error } = await supabase.from('events').select('*')
-    if (error) {
-      console.error('Error fetching events:', error)
-      return []
-    }
-    setEvents(data as IEventFormFields[])
-  }
+	const { Panel } = Collapse
 
-  useEffect(() => {
-    fetchEvents()
-  }, [fetchEvents])
+	type EventsByMonth = {
+		[key: number]: IEventFormFields[]
+	}
 
-  const handleEventClick = (studentEventId: number) => {
-    navigate(`/studentEvent/${studentEventId}`)
-  }
+	const [eventsByMonth, setEventsByMonth] = useState<EventsByMonth>({})
 
-  return(
-    <Card>
-      <List
-        itemLayout="vertical"
-        size="large"
-        pagination={{
-          onChange: (page) => {
-            console.log(page)
-          },
-          pageSize: 3,
-        }}
-      >
-        {events.map((event) => (
-          <List.Item
-            key={event.id}
-            onClick={() => handleEventClick(event.id)}
-          >
-            <Link to={`/studentEvent/${event.id}`} key={event.id}></Link>
-            <List.Item.Meta
-              title={event.event_title}
-							description={`${
-								event.event_type === ('open_day' as TEventTypeValue)
-									? 'Porte ouverte'
-									: event.event_type === 'presentation'
-									? 'Présentation'
-									: 'Conférence'
-							} - ${event.event_school_name} - ${event.event_address}`}
-            />
-            <h4>
-							{`${new Date(event.event_date).toLocaleDateString('fr-FR', {
-								weekday: 'long',
-								day: 'numeric',
-								month: 'long',
-							})} -  ${event.event_duration / 3600}h`}
-						</h4>
-          </List.Item>
-        ))}
-      </List>
-    </Card>
-  )
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	const fetchEvents = async () => {
+		const { data, error } = await supabase.from('events').select('*')
+		if (error) {
+			console.error('Error fetching events:', error)
+			return []
+		}
+		const eventsData = data as IEventFormFields[]
+
+		const eventsGroupByMonth: EventsByMonth = eventsData.reduce((acc: EventsByMonth, event) => {
+			const month = new Date(event.event_date).getMonth()
+			acc[month] = acc[month] || []
+			acc[month].push(event)
+			return acc
+		}, {})
+
+		setEventsByMonth(eventsGroupByMonth)
+	}
+
+	useEffect(() => {
+		fetchEvents()
+	}, [fetchEvents])
+
+	const handleEventClick = (studentEventId: number) => {
+		navigate(`/studentEvent/${studentEventId}`)
+	}
+
+	return (
+		<Collapse accordion>
+			{Object.entries(eventsByMonth).map(([month, events]) => (
+				<Panel
+					header={new Date(0, parseInt(month)).toLocaleString('default', { month: 'long' })}
+					key={month}
+				>
+					<List
+						grid={{ gutter: 16, column: 1 }}
+						dataSource={events}
+						renderItem={(event) => (
+							<List.Item key={event.id} onClick={() => handleEventClick(event.id)}>
+								<Link to={`/studentEvent/${event.id}`} key={event.id}></Link>
+								<Card
+									hoverable
+									className="event-card"
+									cover={
+										<img className="img-cover" alt="event-cover" src={event.event_background} />
+									}
+								>
+									<div className="card-title">
+										<p>{event.event_title}</p>
+									</div>
+									<div className="card-date">
+										<p>
+											{`${new Date(event.event_date).toLocaleDateString('fr-FR', {
+												weekday: 'long',
+												day: 'numeric',
+												month: 'long',
+											})} - 10h00`}
+										</p>
+									</div>
+									<p>
+										{event.event_school_name} - {event.event_address}
+									</p>
+									<p>
+										{event.event_type === 'open_day' as TEventTypeValue
+											? 'Porte ouverte'
+											: event.event_type === 'presentation'
+											? 'Présentation'
+											: 'Conférence'}
+									</p>
+									<p>Durée : {event.event_duration / 3600}h</p>
+								</Card>
+							</List.Item>
+						)}
+					></List>
+				</Panel>
+			))}
+		</Collapse>
+	)
 }

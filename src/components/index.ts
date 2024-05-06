@@ -22,8 +22,9 @@ export { ShortEventsList } from './ShortEventsList/ShortEventsList'
 export { Success } from './AuthLayout/_components/SignUpForm/_components/Success/Success'
 export { Table } from './Table/Table'
 export {
-	useGetColumnSearchFilterConfig,
-	useGetStaticColumnSearchFilterConfig,
+	getColumnSearchFilterConfig,
+	getStaticColumnSearchFilterConfig,
 	getRadioOrCheckboxFilterConfig,
 	getStaticRadioOrCheckboxFilterConfig,
 } from './Table/Table-utils'
+export type {ColumnType, ColumnsType, TFilters, TFilterValue,ISorter,IPagination,IDataSourceObject} from './Table/Table-types'

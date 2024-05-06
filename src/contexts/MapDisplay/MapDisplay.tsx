@@ -2,7 +2,7 @@ import { createContext, useCallback, useContext, useMemo, useState } from 'react
 
 import { PropsWithChildren } from '@types'
 
-import { TUserLocation } from '../../components/ContactsLayout/_components/Table/Table-types'
+import { TUserLocation } from '../../components/ContactsLayout/_components/ContactsTable/Table-types'
 import { IMapDisplayContext, IMapDisplayState } from './MapDisplay-types'
 
 const MapDisplayContext = createContext<IMapDisplayContext>({} as IMapDisplayContext)

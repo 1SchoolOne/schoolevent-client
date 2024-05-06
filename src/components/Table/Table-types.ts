@@ -6,6 +6,7 @@ import {
 	ColumnType as AntdColumnType,
 } from 'antd/lib/table'
 import { FilterValue, SortOrder } from 'antd/lib/table/interface'
+import { ReactNode } from 'react'
 
 /**
  * By default, antd's ColumnsType won't autocomplete the `dataIndex` property based on the `DataType`
@@ -33,14 +34,29 @@ export interface ITableProps<T extends AnyObject>
 	tableId: string
 	dataSource: TDataSource<T>
 	columns: ColumnsType<T>
+	renderHeader?: TRenderHeader
+	globalSearch?: {
+		/**
+		 * List of fields that are included in the global search. They will be
+		 * displayed in the global search tooltip. This list is only used for display
+		 * purposes.
+		 */
+		searchedFields: Array<string>
+	}
+	showResetFilters?: true
+	/**
+	 * Values **MUST** be null, not undefined.
+	 */
+	defaultFilters: TFilters<keyof T, null>
 }
 
 export type TDataSource<T> =
 	| IDataSourceObject<T>
 	| ((
-			filters: TFilters | undefined,
+			filters: TFilters<keyof T> | undefined,
 			sorter: ISorter<T> | undefined,
 			pagination: IPagination | undefined,
+			globalSearch: string | null,
 	  ) => Promise<IDataSourceObject<T>>)
 
 export interface IDataSourceObject<T> {
@@ -63,7 +79,9 @@ export interface IGetStaticRadioOrCheckboxFilterConfigParams<T extends AnyObject
 	dataIndex: keyof T
 }
 
-export type TFilters = Record<string, FilterValue | null>
+export type TFilters<K extends string | number | symbol, V = TFilterValue> = Partial<Record<K, V>>
+
+export type TFilterValue = FilterValue | null | undefined
 
 export interface ISorter<T> {
 	field: keyof T
@@ -76,9 +94,20 @@ export interface IPagination {
 }
 
 export interface ITableConfig<T> {
-	filters: TFilters | undefined
+	filters: TFilters<keyof T> | undefined
 	sorter: ISorter<T> | undefined
 	pagination: IPagination | undefined
 }
 
 export interface ILoadStorageReturn<T> extends ITableConfig<T> {}
+
+export type TRenderHeader = (
+	resetFiltersButton?: ReactNode,
+	globalSearchInput?: ReactNode,
+) => ReactNode
+
+export interface IRenderHeaderParams {
+	resetFiltersButton: JSX.Element | null
+	globalSearchInput: JSX.Element | null
+	callback: TRenderHeader
+}

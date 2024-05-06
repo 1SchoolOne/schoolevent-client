@@ -1,0 +1,134 @@
+.se-table {
+	// If the table header is displayed, we substract the header height and
+	// bottom margin to the table height.
+	&--loading {
+		pointer-events: none;
+	}
+
+	.se-table-header + & {
+		height: calc(100% - 32px - var(--ant-padding));
+	}
+
+	// Handles table overflow
+	.ant-spin-nested-loading {
+		height: 100%;
+
+		.ant-spin-container {
+			height: 100%;
+			display: flex;
+			flex-flow: column nowrap;
+
+			.ant-table {
+				flex: auto;
+				overflow: hidden;
+
+				.ant-table-container {
+					height: 100%;
+					display: flex;
+					flex-flow: column nowrap;
+
+					.ant-table-header {
+						flex: none;
+					}
+
+					.ant-table-body {
+						flex: auto;
+						overflow: auto;
+						scrollbar-width: none;
+					}
+				}
+
+				.ant-table-pagination {
+					flex: none;
+				}
+			}
+		}
+	}
+
+	thead.ant-table-thead {
+		.contacts-table__header__light {
+			th {
+				background: #fffbf8;
+			}
+		}
+
+		.contacts-table__header__dark {
+			th {
+				background: var(--ant-color-primary-bg);
+			}
+		}
+	}
+
+	tbody.ant-table-tbody {
+		.favorite-button {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			color: var(--ant-color-primary);
+		}
+
+		.ant-table-expanded-row {
+			.ant-space {
+				margin-left: 2rem;
+			}
+		}
+
+		tr.ant-table-row {
+			&.even-row {
+				&__light td.ant-table-cell.ant-table-cell-row-hover {
+					background: #fdf0e3;
+				}
+
+				&__dark td.ant-table-cell.ant-table-cell-row-hover {
+					background: var(--ant-color-primary-bg-hover);
+				}
+			}
+
+			&.odd-row {
+				&__light td.ant-table-cell {
+					background: #fffbf8;
+
+					&.ant-table-cell-row-hover {
+						background: #fdf0e3;
+					}
+				}
+
+				&__dark td.ant-table-cell {
+					background: var(--ant-color-primary-bg);
+
+					&.ant-table-cell-row-hover {
+						background: var(--ant-color-primary-bg-hover);
+					}
+				}
+			}
+		}
+	}
+}
+
+.se-table-header {
+	width: 100%;
+	display: flex;
+	gap: var(--ant-margin);
+	margin-bottom: var(--ant-margin);
+	padding-right: var(--ant-padding);
+
+	.se-table-global-search {
+		margin-left: auto;
+	}
+
+	&:not(:has(.se-table-global-search)) .se-table-clear-filters-btn {
+		margin-left: auto;
+	}
+}
+
+.se-filter-dropdown {
+	padding: 6px;
+
+	&.search {
+		width: 275px;
+	}
+
+	&__btns-container {
+		float: right;
+	}
+}

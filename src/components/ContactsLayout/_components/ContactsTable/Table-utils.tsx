@@ -1,25 +1,33 @@
-import { MagnifyingGlass as SearchIcon } from '@phosphor-icons/react'
-import { Button, Input, Radio, Space } from 'antd'
+import { Star as FavoriteIcon } from '@phosphor-icons/react'
+import { Button, InputRef, Grid } from 'antd'
 import { SortOrder } from 'antd/lib/table/interface'
-
+import {ColumnsType, getColumnSearchFilterConfig, getRadioOrCheckboxFilterConfig} from '@components'
 import { Database, ITableStorage } from '@types'
 import { getLocalStorage, isStringEmpty } from '@utils'
+import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc'
+import timezone from 'dayjs/plugin/timezone'
 
-import { ColumnType } from '../../../Table/Table-types'
+dayjs.extend(utc)
+dayjs.extend(timezone)
+
+import { IGeoLocationState } from '../../../ContactsMap/ContactsMap-types'
+import { ISorter, TFilterValue, TFilters } from '../../../Table/Table-types'
 import {
 	DEFAULT_ETABLISSEMENT_FILTER,
 	DEFAULT_FILTER_OBJECT,
 	GOUV_API_URL,
 } from './Table-constants'
 import {
-	IGetColumnRadioPropsParams,
-	IGetColumnSearchPropsParams,
 	IQueryParams,
 	ISchool,
 	ITableConfigState,
 	TReducerActionType,
-	TTableFilters,
 } from './Table-types'
+import { useAuth, useFavorites } from '@contexts'
+import { useMemo, useRef } from 'react'
+
+const {useBreakpoint} = Grid
 
 export function fetchTableData(queryParams: IQueryParams) {
 	const { limit, offset, select, where, orderBy } = queryParams
@@ -159,115 +167,113 @@ export function getSortOrder(
 	return undefined
 }
 
-export function getColumnSearchProps(params: IGetColumnSearchPropsParams): ColumnType<ISchool> {
-	const { inputRef } = params
+export function useColumns() {
+	const { user } = useAuth()
+	const { addFavorite, removeFavorite, doesFavoriteExist } = useFavorites()
+	const screens = useBreakpoint()
+	const inputRef = useRef<InputRef>(null)
 
-	// Even though selectedKeys is used as an array, it corresponds to the current
-	// filter value. It allows to have a controlled input value without declaring
-	// a state ourselves.
-	return {
-		filterDropdown: ({ confirm, clearFilters, selectedKeys, setSelectedKeys }) => (
-			<Space className="custom-filter-dropdown search" direction="vertical">
-				<Input
-					ref={inputRef}
-					value={selectedKeys[0]}
-					placeholder="Rechercher"
-					onChange={(e) => {
-						setSelectedKeys(e.target.value ? [e.target.value] : [])
-					}}
-					onPressEnter={() => confirm()}
-				/>
-				<Space className="custom-filter-dropdown__btns-container">
-					<Button
-						type="link"
-						size="small"
-						onClick={() => {
-							clearFilters?.()
-							// confirm() is important here because if we don't call it the input
-							// won't be cleared properly.
-							confirm()
-						}}
-					>
-						Réinitialiser
-					</Button>
-					<Button
-						type="primary"
-						size="small"
-						onClick={() => {
-							confirm()
-						}}
-					>
-						OK
-					</Button>
-				</Space>
-			</Space>
-		),
-		filterIcon: <SearchIcon size="16px" />,
-		onFilterDropdownOpenChange: (visible) => {
-			if (visible) {
-				// We need to delay the focus ever so slightly to make sure the component
-				// is rendered when we focus.
-				setTimeout(() => {
-					inputRef.current?.focus()
-				}, 100)
+	const handleFavorites = async (record: ISchool) => {
+		if (user) {
+			const exists = await doesFavoriteExist(record.identifiant_de_l_etablissement!, user.id)
+
+			if (exists) {
+				removeFavorite(record.identifiant_de_l_etablissement!)
+			} else {
+				addFavorite({
+					school_id: record.identifiant_de_l_etablissement!,
+					school_name: record.nom_etablissement,
+					school_city: record.nom_commune,
+					school_postal_code: record.code_postal,
+					created_at: dayjs().tz().toISOString(),
+				})
 			}
-		},
+		}
 	}
+
+	const columns = useMemo<ColumnsType<ISchool>>(
+		() => [
+			{
+				key: 'nom_etablissement',
+				title: 'Établissement',
+				dataIndex: 'nom_etablissement',
+				...getColumnSearchFilterConfig(inputRef),
+				filterMultiple: true,
+				sorter: true,
+			},
+			{
+				key: 'type_etablissement',
+				title: 'Type',
+				dataIndex: 'type_etablissement',
+				width: screens.xxl ? 110 : 90,
+				...getRadioOrCheckboxFilterConfig({
+					options: [
+						{ label: 'Collège', value: 'Collège' },
+						{ label: 'Lycée', value: 'Lycée' },
+					],
+				}),
+				filterMultiple: true,
+				sorter: true,
+			},
+			{
+				key: 'nom_commune',
+				title: 'Commune',
+				dataIndex: 'nom_commune',
+				...getColumnSearchFilterConfig(inputRef),
+				filterMultiple: true,
+				sorter: true,
+			},
+			{
+				key: 'code_postal',
+				title: 'Code postal',
+				dataIndex: 'code_postal',
+				width: screens.xxl ? 160 : 140,
+				...getColumnSearchFilterConfig(inputRef),
+				filterMultiple: true,
+				sorter: true,
+			},
+			{
+				key: 'adresse_1',
+				title: 'Adresse',
+				dataIndex: 'adresse_1',
+				...getColumnSearchFilterConfig(inputRef),
+				filterMultiple: true,
+				sorter: true,
+			},
+			{
+				key: 'favoris',
+				title: 'Favoris',
+				dataIndex: 'favoris',
+				width: screens.xxl ? 100 : 75,
+				fixed: 'right',
+				render: (value, record) => {
+					return (
+						<Button
+							className="favorite-button"
+							onClick={async () => {
+								await handleFavorites(record)
+							}}
+							icon={<FavoriteIcon size="1rem" weight={value ? 'fill' : 'regular'} />}
+							type="text"
+						/>
+					)
+				},
+			},
+		],
+		[screens.xxl, handleFavorites],
+	)
+
+	return columns
 }
 
-export function getColumnRadioProps(params: IGetColumnRadioPropsParams): ColumnType<ISchool> {
-	const { options } = params
-
-	// Even though selectedKeys is used as an array, it corresponds to the current
-	// filter value. It allows to have a controlled input value without declaring
-	// a state ourselves.
-	return {
-		filterDropdown: ({ confirm, clearFilters, selectedKeys, setSelectedKeys }) => (
-			<Space className="custom-filter-dropdown radio" direction="vertical">
-				<Radio.Group value={selectedKeys[0]} onChange={(e) => setSelectedKeys([e.target.value])}>
-					<Space direction="vertical">
-						{options.map(({ label, value }) => (
-							<Radio key={value} value={value}>
-								{label}
-							</Radio>
-						))}
-					</Space>
-				</Radio.Group>
-				<Space className="custom-filter-dropdown__btns-container">
-					<Button
-						type="link"
-						size="small"
-						onClick={() => {
-							clearFilters?.()
-							// confirm() is important here because if we don't call it the input
-							// won't be cleared properly.
-							confirm()
-						}}
-					>
-						Réinitialiser
-					</Button>
-					<Button
-						type="primary"
-						size="small"
-						onClick={() => {
-							confirm()
-						}}
-					>
-						OK
-					</Button>
-				</Space>
-			</Space>
-		),
-	}
-}
 
 /**
  * This class is a utility class for building SQL WHERE clauses.
  */
-export class QueryStringBuilder {
-	private filters: TTableFilters | undefined
+export class QueryStringBuilder<T> {
+	private filters: TFilters<keyof T> | undefined
 
-	constructor(filters?: TTableFilters) {
+	constructor(filters?: TFilters<keyof T>) {
 		this.filters = filters
 	}
 
@@ -276,15 +282,17 @@ export class QueryStringBuilder {
 	 */
 	public build(): string {
 		if (!this.filters) {
-			return ''
+			return DEFAULT_ETABLISSEMENT_FILTER
 		}
 
 		const where: string[] = []
 
 		for (const [key, value] of Object.entries(this.filters)) {
+			const val = value as TFilterValue
+
 			if (key === 'type_etablissement') {
-				if (value) {
-					where.push(`type_etablissement = '${value}'`)
+				if (val) {
+					where.push(`type_etablissement = '${val}'`)
 				} else {
 					where.push(DEFAULT_ETABLISSEMENT_FILTER)
 				}
@@ -292,18 +300,14 @@ export class QueryStringBuilder {
 				continue
 			}
 
-			if (value === null) {
+			if (!val || val.length === 0) {
 				continue
 			}
 
-			if (value.length === 0) {
-				continue
-			}
-
-			if (value.length === 1) {
-				where.push(`search(${key}, '${value[0]}')`)
+			if (val.length === 1) {
+				where.push(`search(${key}, '${val[0]}')`)
 			} else {
-				where.push(`${key} IN ('${value.join('","')}')`)
+				where.push(`${key} IN ('${val.join('","')}')`)
 			}
 		}
 
@@ -350,4 +354,34 @@ function parseContactList(
 		longitude: c.longitude ? Number(c.longitude) : 0,
 		favoris: false,
 	}))
+}
+
+export function getOrderBy<DataType>(sorter: ISorter<DataType> | undefined) {
+	if (!sorter?.order) {
+		return undefined
+	}
+
+	return `${String(sorter.field)} ${sorter.order === 'descend' ? 'DESC' : 'ASC'}`
+}
+
+export function getWhere<T>(
+	filters: TFilters<keyof T> | undefined,
+	gblSearch: string | null,
+	range: number | null,
+	location: IGeoLocationState,
+) {
+	const { geoLocationCoordinates: userLocation } = location
+
+	const queryStringBuilder = new QueryStringBuilder(filters)
+	const baseQueryString = queryStringBuilder.build()
+
+	// If the global search is set, we use it as the where clause.
+	// Otherwise, we use the base query string.
+	const where = gblSearch ? `${DEFAULT_ETABLISSEMENT_FILTER} AND (${gblSearch})` : baseQueryString
+
+	// If a range is provided, we query only the schools that are within that range.
+	// Otherwise, we use the previous where clause.
+	return range
+		? `${where} AND distance(position, geom'POINT(${userLocation?.lng} ${userLocation?.lat})', ${range}km)`
+		: where
 }

@@ -1,5 +1,4 @@
 import { InputRef } from 'antd'
-import { FilterValue } from 'antd/lib/table/interface'
 import { Dispatch, Key, RefObject } from 'react'
 
 import { Database } from '@types'
@@ -173,20 +172,8 @@ export interface IGetColumnRadioPropsParams {
 	options: { label: string; value: Key }[]
 }
 
-export interface ITableProps {
-	globalSearch: string
-	tableConfigReducer: {
-		tableConfig: ITableConfigState
-		setTableConfig: TSetTableConfig
-	}
-}
-
 export type TTableDataMode = 'my_contacts' | 'gov_api'
 
 export type TUserLocation = { lat: number; lng: number }
 
 export type TSetTableConfig = Dispatch<TReducerActionType>
-
-export type TTableFilters = Record<string, FilterValue | null>
-
-export interface ITableControllerParams extends ITableProps {}

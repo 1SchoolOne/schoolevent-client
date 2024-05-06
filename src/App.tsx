@@ -2,7 +2,6 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import {
 	App as AppProvider,
-	Button,
 	Card,
 	ConfigProvider,
 	Typography,
@@ -32,14 +31,8 @@ import {
 	ProtectedRoute,
 	SignUpForm,
 	Success,
-	useGetColumnSearchFilterConfig,
 } from '@components'
 import { AuthProvider, FavoriteContactsProvider, MapDisplayProvider, useTheme } from '@contexts'
-import { Database } from '@types'
-import { useSupabase } from '@utils'
-
-import { Table } from './components/Table/Table'
-import { parseFiltersForSupabase } from './components/Table/Table-utils'
 
 import './App.less'
 
@@ -64,7 +57,6 @@ prefixLogger.apply(logger, {
 function App() {
 	const [faviconHref, setFaviconHref] = useState<string>('')
 	const { theme } = useTheme()
-	const supabase = useSupabase()
 
 	useEffect(() => {
 		setFaviconHref(`/schoolevent_logo_${theme === 'dark' ? 'white' : 'black'}.svg`)
@@ -151,67 +143,6 @@ function App() {
 													<AppointmentsLayout />
 												</DndProvider>
 											</ProtectedRoute>
-										}
-									/>
-									<Route
-										path="toto"
-										element={
-											<>
-												<Button
-													onClick={() => {
-														queryClient.refetchQueries({ queryKey: ['test-table'] })
-													}}
-												>
-													Refresh
-												</Button>
-												<Table<Database['public']['Tables']['favorites']['Row']>
-													tableId="test-table"
-													// TODO: create a function to parse filters and sorter parameters
-													dataSource={async (filters, sorter) => {
-														const parsedFilters = parseFiltersForSupabase(filters)
-														let response = supabase.from('favorites').select()
-
-														if (parsedFilters) {
-															response = response.or(parsedFilters)
-														}
-
-														if (sorter) {
-															response = response.order(sorter.field, {
-																ascending: sorter.order === 'ascend',
-															})
-														}
-
-														const { data, error } = await response
-
-														if (error) {
-															throw error
-														}
-
-														return data
-													}}
-													columns={[
-														{
-															dataIndex: 'school_name',
-															title: 'École',
-															width: 200,
-															...useGetColumnSearchFilterConfig(),
-															sorter: true,
-														},
-														{
-															dataIndex: 'school_city',
-															title: 'Ville',
-															width: 200,
-															sorter: true,
-															...useGetColumnSearchFilterConfig(),
-														},
-														{
-															dataIndex: 'school_postal_code',
-															title: 'Code postal',
-															...useGetColumnSearchFilterConfig(),
-														},
-													]}
-												/>
-											</>
 										}
 									/>
 								</Route>

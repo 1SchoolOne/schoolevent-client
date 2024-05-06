@@ -8,7 +8,7 @@ import { Button, Divider, Input, Segmented, Select, Space, Typography } from 'an
 
 import { Info } from '@components'
 
-import { TTableDataMode } from '../Table/Table-types'
+import { TTableDataMode } from '../ContactsTable/Table-types'
 import { IContactsLayoutHeaderProps } from './ContactsLayoutHeader-types'
 
 export function ContactsLayoutHeader(props: IContactsLayoutHeaderProps) {

@@ -2,7 +2,7 @@ import { Plus as NewIcon } from '@phosphor-icons/react'
 import { Button, Space, Spin, Typography } from 'antd'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
-import { useEffect, useMemo, useRef } from 'react'
+import { useMemo, useRef } from 'react'
 import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet'
 import MarkerClusterGroup from 'react-leaflet-cluster'
 import { useNavigate } from 'react-router-dom'
@@ -12,13 +12,14 @@ import lyceeMapPin from '@assets/lycee-map-pin.svg'
 import userMapPin from '@assets/user-map-pin.svg'
 import { useTheme } from '@contexts'
 
-import { TUserLocation } from '../ContactsLayout/_components/Table/Table-types'
+import { ISchool, TUserLocation } from '../ContactsLayout/_components/ContactsTable/Table-types'
 import { CopyableText } from '../CopyableText/CopyableText'
-import { IContactsMapProps } from './ContactsMap-types'
 import { MAP_UTILS, useGeoLocation } from './ContactsMap-utils'
 import { MapReloader } from './_components/MapReloader/MapReloader'
 
 import './ContactsMap-styles.less'
+import { useSuspenseQuery } from '@tanstack/react-query'
+import { IDataSourceObject } from '../Table/Table-types'
 
 const userPinIcon = L.icon({
 	iconUrl: userMapPin,
@@ -35,9 +36,7 @@ const collegePinIcon = L.icon({
 	iconSize: [40, 40],
 })
 
-export function ContactsMap(props: IContactsMapProps) {
-	const { data, setTableConfig } = props
-
+export function ContactsMap() {
 	const navigate = useNavigate()
 	const location = useGeoLocation()
 	const mapRef = useRef(null)
@@ -51,9 +50,7 @@ export function ContactsMap(props: IContactsMapProps) {
 		[location.geoLocationCoordinates.lat, location.geoLocationCoordinates.lng],
 	)
 
-	useEffect(() => {
-		setTableConfig({ type: 'SET_USER_LOCATION', payload: { location: userLocation } })
-	}, [userLocation, setTableConfig])
+  // TODO: get data from context
 
 	return (
 		<MapContainer
@@ -71,7 +68,7 @@ export function ContactsMap(props: IContactsMapProps) {
 				</Marker>
 			)}
 			<MarkerClusterGroup chunkedLoading maxClusterRadius={30}>
-				{data.map((school, i) => {
+				{data?.data?.map((school, i) => {
 					if (school.latitude && school.longitude) {
 						return (
 							<Marker

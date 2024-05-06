@@ -9,7 +9,7 @@ export function SearchDropdown(props: ISearchDropdownProps) {
 	// filter value. It allows to have a controlled input value without declaring
 	// a state ourselves.
 	return (
-		<Space className="custom-filter-dropdown search" direction="vertical">
+		<Space className="se-filter-dropdown search" direction="vertical">
 			<Input
 				ref={inputRef}
 				value={selectedKeys[0]}
@@ -19,7 +19,7 @@ export function SearchDropdown(props: ISearchDropdownProps) {
 				}}
 				onPressEnter={() => confirm()}
 			/>
-			<Space className="custom-filter-dropdown__btns-container">
+			<Space className="se-filter-dropdown__btns-container">
 				<Button
 					type="link"
 					size="small"

@@ -64,7 +64,7 @@ export function useColumns() {
 	const inputRef = useRef<InputRef>(null)
 	const handleFavorites = useHandleFavorites()
 
-	const columns = useMemo<ColumnsType<ISchool>>(
+	return useMemo<ColumnsType<ISchool>>(
 		() => [
 			{
 				key: 'nom_etablissement',
@@ -135,8 +135,6 @@ export function useColumns() {
 		],
 		[screens.xxl, handleFavorites],
 	)
-
-	return columns
 }
 
 /**

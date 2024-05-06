@@ -5,8 +5,8 @@ import { useFavorites, useMapDisplay, useTheme } from '@contexts'
 
 import { useGeoLocation } from '../../../ContactsMap/ContactsMap-utils'
 import { formatNumberWithDots } from '../../../Table/Table-utils'
-import { SELECTED_FIELDS } from './ContactsTable-constants'
-import { IAPIResponse, ISchool, ITableProps } from './ContactsTable-types'
+import { DEFAULT_FILTER_OBJECT, SELECTED_FIELDS } from './ContactsTable-constants'
+import { IAPIResponse, ISchool } from './ContactsTable-types'
 import {
 	fetchTableData,
 	getGlobalSearch,
@@ -60,13 +60,7 @@ export function ContactsTable() {
 			globalSearch={{
 				searchedFields: ['Établissement', 'Commune', 'Code postal', 'Adresse'],
 			}}
-			defaultFilters={{
-				nom_etablissement: null,
-				type_etablissement: null,
-				nom_commune: null,
-				code_postal: null,
-				adresse_1: null,
-			}}
+			defaultFilters={DEFAULT_FILTER_OBJECT}
 			columns={columns}
 			pagination={{
 				showTotal: (total, range) => {

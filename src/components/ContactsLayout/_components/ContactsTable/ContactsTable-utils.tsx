@@ -1,6 +1,5 @@
 import { Star as FavoriteIcon } from '@phosphor-icons/react'
 import { Button, Grid, InputRef } from 'antd'
-import { SortOrder } from 'antd/lib/table/interface'
 import dayjs from 'dayjs'
 import timezone from 'dayjs/plugin/timezone'
 import utc from 'dayjs/plugin/utc'
@@ -11,18 +10,14 @@ import {
 	getColumnSearchFilterConfig,
 	getRadioOrCheckboxFilterConfig,
 } from '@components'
+import { ISorter, TFilterValue, TFilters } from '@components'
 import { useAuth, useFavorites } from '@contexts'
-import { Database, ITableStorage } from '@types'
-import { getLocalStorage, isStringEmpty } from '@utils'
+import { Database } from '@types'
+import { isStringEmpty } from '@utils'
 
 import { IGeoLocationState } from '../../../ContactsMap/ContactsMap-types'
-import { ISorter, TFilterValue, TFilters } from '../../../Table/Table-types'
-import {
-	DEFAULT_ETABLISSEMENT_FILTER,
-	DEFAULT_FILTER_OBJECT,
-	GOUV_API_URL,
-} from './ContactsTable-constants'
-import { IQueryParams, ISchool, ITableConfigState, TReducerActionType } from './ContactsTable-types'
+import { DEFAULT_ETABLISSEMENT_FILTER, GOUV_API_URL } from './ContactsTable-constants'
+import { IQueryParams, ISchool } from './ContactsTable-types'
 
 dayjs.extend(utc)
 dayjs.extend(timezone)
@@ -41,139 +36,11 @@ export function fetchTableData(queryParams: IQueryParams) {
 	return fetch(url)
 }
 
-export function reducer(state: ITableConfigState, action: TReducerActionType): ITableConfigState {
-	const localStorage = getLocalStorage()
-	const tableStorage = localStorage.get('contacts.table') as ITableStorage
-
-	switch (action.type) {
-		case 'SET_DATA':
-			return {
-				...state,
-				data:
-					action.payload.source === 'myContactList'
-						? parseContactList(action.payload.data)
-						: action.payload.data,
-				totalCount: action.payload.total_count,
-			}
-		case 'SET_LOADING':
-			return {
-				...state,
-				loading: action.payload.loading,
-			}
-		case 'SET_PAGINATION_SIZE':
-			localStorage.set({
-				key: 'contacts.table',
-				data: {
-					...tableStorage,
-					paginationSize: action.payload.paginationSize,
-				},
-			})
-
-			return {
-				...state,
-				paginationSize: action.payload.paginationSize,
-			}
-		case 'SET_OFFSET':
-			return {
-				...state,
-				offset: action.payload.offset,
-			}
-		case 'SET_ORDER_BY':
-			if (action.payload === null) {
-				localStorage.set({
-					key: 'contacts.table',
-					data: {
-						...tableStorage,
-						orderBy: null,
-					},
-				})
-
-				return {
-					...state,
-					orderBy: undefined,
-				}
-			}
-
-			localStorage.set({
-				key: 'contacts.table',
-				data: {
-					...tableStorage,
-					orderBy: `${action.payload.field} ${action.payload.order}`,
-				},
-			})
-
-			return {
-				...state,
-				orderBy: `${action.payload.field} ${action.payload.order}`,
-			}
-		case 'SET_TABLE_HEIGHT':
-			return {
-				...state,
-				tableHeight: action.payload.height,
-			}
-		case 'SET_WHERE':
-			return {
-				...state,
-				where: action.payload.where,
-			}
-		case 'RESET_FILTERS':
-			return {
-				...state,
-				orderBy: 'nom_etablissement ASC',
-				where: DEFAULT_ETABLISSEMENT_FILTER,
-				filters: DEFAULT_FILTER_OBJECT,
-			}
-		case 'SET_FILTERS':
-			return {
-				...state,
-				filters: action.payload.filters,
-			}
-		case 'SET_RANGE':
-			return {
-				...state,
-				range: action.payload.range,
-			}
-		case 'SET_USER_LOCATION':
-			return {
-				...state,
-				userLocation: action.payload.location,
-			}
-		case 'SET_DATA_MODE':
-			return {
-				...state,
-				dataMode: action.payload.mode,
-			}
-	}
-}
-
-/**
- * Get the sort order of a column from the orderBy string
- */
-export function getSortOrder(
-	index: keyof ISchool,
-	orderBy: string | undefined,
-): SortOrder | undefined {
-	if (!orderBy || orderBy === '') {
-		return undefined
-	}
-
-	const field = orderBy.split(' ')[0]
-	const order = orderBy.split(' ')[1]
-
-	if (field === index) {
-		return order === 'ASC' ? 'ascend' : 'descend'
-	}
-
-	return undefined
-}
-
-export function useColumns() {
-	const { user } = useAuth()
+function useHandleFavorites() {
 	const { addFavorite, removeFavorite, doesFavoriteExist } = useFavorites()
-	const screens = useBreakpoint()
-	const inputRef = useRef<InputRef>(null)
+	const { user } = useAuth()
 
-	const handleFavorites = async (record: ISchool) => {
+	return async (record: ISchool) => {
 		if (user) {
 			const exists = await doesFavoriteExist(record.identifiant_de_l_etablissement!, user.id)
 
@@ -190,6 +57,12 @@ export function useColumns() {
 			}
 		}
 	}
+}
+
+export function useColumns() {
+	const screens = useBreakpoint()
+	const inputRef = useRef<InputRef>(null)
+	const handleFavorites = useHandleFavorites()
 
 	const columns = useMemo<ColumnsType<ISchool>>(
 		() => [
@@ -270,7 +143,7 @@ export function useColumns() {
  * This class is a utility class for building SQL WHERE clauses.
  */
 export class QueryStringBuilder<T> {
-	private filters: TFilters<keyof T> | undefined
+	private readonly filters: TFilters<keyof T> | undefined
 
 	constructor(filters?: TFilters<keyof T>) {
 		this.filters = filters

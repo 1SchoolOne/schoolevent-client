@@ -7,18 +7,22 @@ export async function addFavorite(params: IAddFavoriteParams) {
 		throw new Error('userId is undefined')
 	}
 
-	return await supabase.from('favorites').insert({
+	return supabase.from('favorites').insert({
 		...favorite,
 		user_id: userId,
 	})
 }
 
 export async function removeFavorite(params: IDeleteFavoriteParams) {
-	const { supabase, school_id, userId } = params
+	const { supabase, recordId, userId } = params
 
 	if (userId === undefined) {
 		throw new Error('userId is undefined')
 	}
 
-	return await supabase.from('favorites').delete().eq('school_id', school_id)
+	if (typeof recordId === 'string') {
+		return supabase.from('favorites').delete().eq('school_id', recordId)
+	}
+
+	return supabase.from('favorites').delete().eq('contact_id', recordId)
 }

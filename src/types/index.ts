@@ -2,6 +2,8 @@ import { ReactNode } from 'react'
 
 import { useSupabase } from '@utils'
 
+import { Database } from './supabase'
+
 export type { Database } from './supabase'
 export type TSupabase = ReturnType<typeof useSupabase>
 
@@ -44,6 +46,8 @@ export interface GeoCodeJSON {
 	query: string
 	limit: number
 }
+
+export type TContact = Database['public']['Tables']['contacts']['Row']
 
 export * from './localStorage'
 export * from './useCopyToClipboard'

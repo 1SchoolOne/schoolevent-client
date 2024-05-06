@@ -22,10 +22,7 @@ export function MapReloader(props: IMapReloaderProps) {
 		if (typeof userLocation[0] === 'number' && typeof userLocation[1] === 'number') {
 			!mapDisplayState.isHidden && map.flyTo(userLocation, 12, { duration: 1 })
 		}
-		// We are using JSON.stringify to compare the previous and current userLocation.
-		// This is a hacky way to compare arrays in JavaScript.
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [JSON.stringify(userLocation), map, mapDisplayState.isHidden])
+	}, [userLocation, map, mapDisplayState.isHidden])
 
 	useEffect(() => {
 		if (focusedPin && !mapDisplayState.isHidden) {

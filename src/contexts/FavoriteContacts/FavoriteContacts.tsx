@@ -45,16 +45,18 @@ export function FavoriteContactsProvider({ children }: PropsWithChildren) {
 	const addFav = useMutation({
 		mutationFn: async (favorite: Omit<TFavorite, 'id' | 'user_id'>) =>
 			await addFavorite({ favorite, supabase, userId: user?.id }),
-		onSuccess: () => {
-			queryClient.refetchQueries({ queryKey: ['favorites', { userId: user?.id }] })
+		onSuccess: async () => {
+			await queryClient.refetchQueries({ queryKey: ['favorites', { userId: user?.id }] })
+			await queryClient.refetchQueries({ queryKey: ['my-contacts', 'gov-contacts'] })
 		},
 	})
 
 	const deleteFav = useMutation({
-		mutationFn: async (school_id: string) =>
-			await removeFavorite({ school_id, supabase, userId: user?.id }),
-		onSuccess: () => {
-			queryClient.refetchQueries({ queryKey: ['favorites', { userId: user?.id }] })
+		mutationFn: async (recordId: string | number) =>
+			await removeFavorite({ recordId, supabase, userId: user?.id }),
+		onSuccess: async () => {
+			await queryClient.refetchQueries({ queryKey: ['favorites', { userId: user?.id }] })
+			await queryClient.refetchQueries({ queryKey: ['my-contacts', 'gov-contacts'] })
 		},
 	})
 
@@ -63,12 +65,18 @@ export function FavoriteContactsProvider({ children }: PropsWithChildren) {
 	 * Returns true if it exists, false otherwise.
 	 */
 	const doesFavoriteExist = useCallback(
-		async (school_id: string, userId: string) => {
-			const { data } = await supabase
-				.from('favorites')
-				.select('*')
-				.eq('user_id', userId)
-				.eq('school_id', school_id)
+		async (recordId: string | number, userId: string) => {
+			const isDataFromGov = typeof recordId === 'string'
+
+			let request = supabase.from('favorites').select('*').eq('user_id', userId)
+
+			if (isDataFromGov) {
+				request = request.eq('school_id', recordId)
+			} else {
+				request = request.eq('contact_id', recordId)
+			}
+
+			const { data } = await request
 
 			return !!(data && data?.length > 0)
 		},

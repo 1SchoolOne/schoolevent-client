@@ -1,102 +1,11 @@
-import { Space, Typography } from 'antd'
+import { useContacts } from '@contexts'
 
-import { Table } from '@components'
-import { useFavorites, useMapDisplay, useTheme } from '@contexts'
+import { GovContacts } from '../GovContacts/GovContacts'
+import { MyContacts } from '../MyContacts/MyContacts'
 
-import { useGeoLocation } from '../../../ContactsMap/ContactsMap-utils'
-import { formatNumberWithDots } from '../../../Table/Table-utils'
-import { DEFAULT_FILTER_OBJECT, SELECTED_FIELDS } from './ContactsTable-constants'
-import { IAPIResponse, ISchool } from './ContactsTable-types'
-import {
-	fetchTableData,
-	getGlobalSearch,
-	getOrderBy,
-	getRowClassname,
-	getWhere,
-	useColumns,
-} from './ContactsTable-utils'
-
+// TODO: re-implement range filter
 export function ContactsTable() {
-	const { setFocusedPin } = useMapDisplay()
-	const { theme } = useTheme()
-	const columns = useColumns()
-	const { favorites } = useFavorites()
-	const location = useGeoLocation()
+	const { dataMode } = useContacts()
 
-	return (
-		<Table<ISchool>
-			tableId="contacts"
-			className="contacts-table"
-			onHeaderRow={() => ({ className: `contacts-table__header__${theme}` })}
-			rowClassName={(_record, index) => getRowClassname(index, theme)}
-			dataSource={async (filters, sorter, pagination, globalSearch) => {
-				const gblSearch = getGlobalSearch(globalSearch ?? '')
-				const orderBy = getOrderBy(sorter)
-				const where = getWhere(filters, gblSearch, null, location)
-
-				const res = await fetchTableData({
-					limit: pagination?.size ?? 25,
-					offset: pagination?.offset ?? 0,
-					select: SELECTED_FIELDS,
-					where: where,
-					orderBy,
-				}).then((response) => response.json() as Promise<IAPIResponse>)
-
-				const dataWithFavorites: ISchool[] = res.results.map((record) => ({
-					...record,
-					favoris: favorites.some((fav) => fav.school_id === record.identifiant_de_l_etablissement),
-				}))
-
-				return { data: dataWithFavorites, totalCount: res.total_count }
-			}}
-			onRow={(record) => ({
-				onClick: () => {
-					if (record.latitude && record.longitude) {
-						setFocusedPin({ lat: record.latitude, lng: record.longitude })
-					}
-				},
-			})}
-			showResetFilters
-			globalSearch={{
-				searchedFields: ['Établissement', 'Commune', 'Code postal', 'Adresse'],
-			}}
-			defaultFilters={DEFAULT_FILTER_OBJECT}
-			columns={columns}
-			pagination={{
-				showTotal: (total, range) => {
-					return `${range[0]}-${range[1]} sur ${formatNumberWithDots(total)} établissements`
-				},
-			}}
-			expandable={{
-				expandedRowRender: (record) => {
-					return (
-						<Space direction="horizontal" size="large">
-							<span>
-								<Typography.Text strong>Email : </Typography.Text>
-								{record.mail}
-							</span>
-							<span>
-								<Typography.Text strong>Téléphone : </Typography.Text> {record.telephone}
-							</span>
-						</Space>
-					)
-				},
-				expandRowByClick: false,
-				showExpandColumn: true,
-				rowExpandable: (record) => !!record,
-			}}
-			locale={{
-				emptyText: 'Aucun établissement trouvé',
-				filterConfirm: 'OK',
-				filterReset: 'Réinitialiser',
-				filterTitle: 'Filtres',
-				selectAll: 'Tout sélectionner',
-				selectInvert: 'Inverser la sélection',
-				sortTitle: 'Trier',
-				triggerAsc: 'Trier par ordre croissant',
-				triggerDesc: 'Trier par ordre décroissant',
-				cancelSort: 'Annuler le tri',
-			}}
-		/>
-	)
+	return dataMode === 'my-contacts' ? <MyContacts /> : <GovContacts />
 }

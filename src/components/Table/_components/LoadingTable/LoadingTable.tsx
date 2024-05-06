@@ -1,12 +1,15 @@
-import { Skeleton, Table } from 'antd'
+import { Grid, Skeleton, Table } from 'antd'
 import { AnyObject } from 'antd/lib/_util/type'
 import classNames from 'classnames'
 
 import { generateRowKey } from '../../Table-utils'
 import { ILoadingTableProps } from './LoadingTable-types'
 
+const { useBreakpoint } = Grid
+
 export function LoadingTable<DataType extends AnyObject>(props: ILoadingTableProps<DataType>) {
-	const { className, columns } = props
+	const { className, columns, tableHeader } = props
+	const screens = useBreakpoint()
 
 	const dataIndexes = columns.map((c) => c.dataIndex as string)
 	const fakeData = []
@@ -39,24 +42,26 @@ export function LoadingTable<DataType extends AnyObject>(props: ILoadingTablePro
 		),
 	}))
 
-	// TODO: add skeleton rendering for each row
 	return (
-		<Table<AnyObject>
-			style={{ width: '100%' }}
-			tableLayout="fixed"
-			className={classNames('se-table--loading', className)}
-			columns={cols}
-			rowKey={(record) => {
-				const rowKey = generateRowKey(JSON.stringify(record))
+		<>
+			{tableHeader}
+			<Table<AnyObject>
+				size={screens.xxl ? 'large' : 'small'}
+				tableLayout="fixed"
+				className={classNames('se-table--loading', className)}
+				columns={cols}
+				rowKey={(record) => {
+					const rowKey = generateRowKey(JSON.stringify(record))
 
-				return 'se-loading-table-' + rowKey
-			}}
-			dataSource={fakeData}
-			loading
-			pagination={{
-				pageSize: 25,
-			}}
-			locale={{ emptyText: 'Chargement des données' }}
-		/>
+					return 'se-loading-table-' + rowKey
+				}}
+				dataSource={fakeData}
+				loading
+				pagination={{
+					pageSize: 25,
+				}}
+				locale={{ emptyText: 'Chargement des données' }}
+			/>
+		</>
 	)
 }

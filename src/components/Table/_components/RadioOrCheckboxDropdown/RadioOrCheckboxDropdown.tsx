@@ -1,6 +1,7 @@
 import { Button, Checkbox, Radio, Space } from 'antd'
 import { CheckboxValueType } from 'antd/lib/checkbox/Group'
 import classNames from 'classnames'
+import { Key } from 'react'
 
 import { generateRowKey } from '../../Table-utils'
 import { IRadioOrCheckboxDropdownProps } from './RadioOrCheckboxDropdown-types'
@@ -12,7 +13,7 @@ export function RadioOrCheckboxDropdown(props: IRadioOrCheckboxDropdownProps) {
 		<Checkbox.Group
 			value={selectedKeys as unknown as CheckboxValueType[]}
 			onChange={(values) => {
-				setSelectedKeys(values as any[])
+				setSelectedKeys(values as Key[])
 			}}
 		>
 			<Space direction="vertical" size="small">

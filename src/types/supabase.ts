@@ -296,33 +296,42 @@ export type Database = {
       }
       favorites: {
         Row: {
+          contact_id: number | null
           created_at: string | null
           id: string
           school_city: string
-          school_id: string
+          school_id: string | null
           school_name: string
           school_postal_code: string
           user_id: string
         }
         Insert: {
+          contact_id?: number | null
           created_at?: string | null
           id?: string
           school_city: string
-          school_id: string
+          school_id?: string | null
           school_name: string
           school_postal_code: string
           user_id: string
         }
         Update: {
+          contact_id?: number | null
           created_at?: string | null
           id?: string
           school_city?: string
-          school_id?: string
+          school_id?: string | null
           school_name?: string
           school_postal_code?: string
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "favorites_contact_id_fkey"
+            columns: ["contact_id"]
+            referencedRelation: "contacts"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "favorites_user_id_fkey"
             columns: ["user_id"]

@@ -10,7 +10,7 @@ import { useSupabase } from '@utils'
 import {
 	GOUV_API_URL,
 	SELECTED_FIELDS,
-} from '../../components/ContactsLayout/_components/ContactsTable/Table-constants'
+} from '../../components/ContactsLayout/_components/ContactsTable/ContactsTable-constants'
 import { IAppointmentFormContext, IAppointmentFormProviderProps } from './AppointmentForm-types'
 
 dayjs.extend(utc)

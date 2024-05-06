@@ -1,4 +1,4 @@
-import { TUserLocation } from '../../components/ContactsLayout/_components/ContactsTable/Table-types'
+import { Dispatch, SetStateAction } from 'react'
 
 export interface IMapDisplayState {
 	state: 'split' | 'full'
@@ -10,6 +10,11 @@ export interface IMapDisplayContext {
 	displayMap: () => void
 	hideMap: () => void
 	toggleMapState: () => void
-	focusedPin: TUserLocation | null
-	setFocusedPin: React.Dispatch<React.SetStateAction<TUserLocation | null>>
+	focusedPin: IUserLocation | null
+	setFocusedPin: Dispatch<SetStateAction<IUserLocation | null>>
+}
+
+export interface IUserLocation {
+	lat: number
+	lng: number
 }

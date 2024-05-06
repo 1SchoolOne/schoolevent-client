@@ -1,30 +1,18 @@
-import { Star as FavoriteIcon } from '@phosphor-icons/react'
-import { Button, Grid, InputRef } from 'antd'
 import dayjs from 'dayjs'
 import timezone from 'dayjs/plugin/timezone'
 import utc from 'dayjs/plugin/utc'
-import { useMemo, useRef } from 'react'
 
-import {
-	ColumnsType,
-	getColumnSearchFilterConfig,
-	getRadioOrCheckboxFilterConfig,
-} from '@components'
 import { ISorter, TFilterValue, TFilters } from '@components'
-import { useAuth, useFavorites } from '@contexts'
-import { Database } from '@types'
 import { isStringEmpty } from '@utils'
 
 import { IGeoLocationState } from '../../../ContactsMap/ContactsMap-types'
 import { DEFAULT_ETABLISSEMENT_FILTER, GOUV_API_URL } from './ContactsTable-constants'
-import { IQueryParams, ISchool } from './ContactsTable-types'
+import { IQueryParams } from './ContactsTable-types'
 
 dayjs.extend(utc)
 dayjs.extend(timezone)
 
-const { useBreakpoint } = Grid
-
-export function fetchTableData(queryParams: IQueryParams) {
+export function fetchGovData(queryParams: IQueryParams) {
 	const { limit, offset, select, where, orderBy } = queryParams
 
 	const selectQuery = select ? `&select=${select}` : ''
@@ -34,107 +22,6 @@ export function fetchTableData(queryParams: IQueryParams) {
 	const url = `${GOUV_API_URL}?timezone=Europe%2FParis&limit=${limit}&offset=${offset}${selectQuery}${whereQuery}${orderByQuery}`
 
 	return fetch(url)
-}
-
-function useHandleFavorites() {
-	const { addFavorite, removeFavorite, doesFavoriteExist } = useFavorites()
-	const { user } = useAuth()
-
-	return async (record: ISchool) => {
-		if (user) {
-			const exists = await doesFavoriteExist(record.identifiant_de_l_etablissement!, user.id)
-
-			if (exists) {
-				removeFavorite(record.identifiant_de_l_etablissement!)
-			} else {
-				addFavorite({
-					school_id: record.identifiant_de_l_etablissement!,
-					school_name: record.nom_etablissement,
-					school_city: record.nom_commune,
-					school_postal_code: record.code_postal,
-					created_at: dayjs().tz().toISOString(),
-				})
-			}
-		}
-	}
-}
-
-export function useColumns() {
-	const screens = useBreakpoint()
-	const inputRef = useRef<InputRef>(null)
-	const handleFavorites = useHandleFavorites()
-
-	return useMemo<ColumnsType<ISchool>>(
-		() => [
-			{
-				key: 'nom_etablissement',
-				title: 'Établissement',
-				dataIndex: 'nom_etablissement',
-				...getColumnSearchFilterConfig(inputRef),
-				filterMultiple: true,
-				sorter: true,
-			},
-			{
-				key: 'type_etablissement',
-				title: 'Type',
-				dataIndex: 'type_etablissement',
-				width: screens.xxl ? 110 : 90,
-				...getRadioOrCheckboxFilterConfig({
-					options: [
-						{ label: 'Collège', value: 'Collège' },
-						{ label: 'Lycée', value: 'Lycée' },
-					],
-				}),
-				filterMultiple: true,
-				sorter: true,
-			},
-			{
-				key: 'nom_commune',
-				title: 'Commune',
-				dataIndex: 'nom_commune',
-				...getColumnSearchFilterConfig(inputRef),
-				filterMultiple: true,
-				sorter: true,
-			},
-			{
-				key: 'code_postal',
-				title: 'Code postal',
-				dataIndex: 'code_postal',
-				width: screens.xxl ? 160 : 140,
-				...getColumnSearchFilterConfig(inputRef),
-				filterMultiple: true,
-				sorter: true,
-			},
-			{
-				key: 'adresse_1',
-				title: 'Adresse',
-				dataIndex: 'adresse_1',
-				...getColumnSearchFilterConfig(inputRef),
-				filterMultiple: true,
-				sorter: true,
-			},
-			{
-				key: 'favoris',
-				title: 'Favoris',
-				dataIndex: 'favoris',
-				width: screens.xxl ? 100 : 75,
-				fixed: 'right',
-				render: (value, record) => {
-					return (
-						<Button
-							className="favorite-button"
-							onClick={async () => {
-								await handleFavorites(record)
-							}}
-							icon={<FavoriteIcon size="1rem" weight={value ? 'fill' : 'regular'} />}
-							type="text"
-						/>
-					)
-				},
-			},
-		],
-		[screens.xxl, handleFavorites],
-	)
 }
 
 /**
@@ -206,24 +93,6 @@ export function getRowClassname(index: number, theme: 'light' | 'dark'): string 
 	} else {
 		return `odd-row odd-row__${theme}`
 	}
-}
-
-function parseContactList(
-	contactList: Array<Database['public']['Tables']['contacts']['Row']>,
-): Array<ISchool> {
-	return contactList.map((c) => ({
-		identifiant_de_l_etablissement: '',
-		nom_etablissement: c.school_name,
-		adresse_1: c.address ?? '',
-		code_postal: c.postal_code,
-		nom_commune: c.city,
-		type_etablissement: c.school_type,
-		mail: c.mail ?? '',
-		telephone: c.telephone ?? '',
-		latitude: c.latitude ? Number(c.latitude) : 0,
-		longitude: c.longitude ? Number(c.longitude) : 0,
-		favoris: false,
-	}))
 }
 
 export function getOrderBy<DataType>(sorter: ISorter<DataType> | undefined) {

@@ -42,14 +42,14 @@ export function RadioOrCheckboxDropdown(props: IRadioOrCheckboxDropdownProps) {
 
 	return (
 		<Space
-			className={classNames('custom-filter-dropdown', {
+			className={classNames('se-filter-dropdown', {
 				radio: !useCheckbox,
 				checkbox: useCheckbox,
 			})}
 			direction="vertical"
 		>
 			{radioOrCheckbox}
-			<Space className="custom-filter-dropdown__btns-container">
+			<Space className="se-filter-dropdown__btns-container">
 				<Button
 					type="link"
 					size="small"

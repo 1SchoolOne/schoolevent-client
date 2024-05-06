@@ -2,21 +2,30 @@ import { MagnifyingGlass as SearchIcon } from '@phosphor-icons/react/MagnifyingG
 import { InputRef, TableProps } from 'antd'
 import { AnyObject } from 'antd/lib/_util/type'
 import { TableRef } from 'antd/lib/table'
-import { RefObject, useMemo, useRef } from 'react'
+import { ReactNode, RefObject, useMemo, useState } from 'react'
 
-import { getLocalStorage } from '@utils'
+import { getLocalStorage, useDebounce } from '@utils'
 
 import {
 	ColumnType,
 	IGetRadioOrCheckboxFilterConfigParams,
 	IGetStaticRadioOrCheckboxFilterConfigParams,
 	ILoadStorageReturn,
+	IRenderHeaderParams,
 	TFilters,
 } from './Table-types'
+import { GlobalSearch } from './_components/GlobalSearch/GlobalSearch'
 import { RadioOrCheckboxDropdown } from './_components/RadioOrCheckboxDropdown/RadioOrCheckboxDropdown'
+import { ResetFiltersButton } from './_components/ResetFiltersButton/ResetFiltersButton'
 import { SearchDropdown } from './_components/SearchDropdown/SearchDropdown'
 
-export function loadStorage<DataType>(tableId: string): ILoadStorageReturn<DataType> {
+/**
+ * Either returns the local storage config corresponding to the `tableId` or initialize the config in the local storage based on the defaultFilters.
+ */
+export function loadStorage<DataType>(
+	tableId: string,
+	defaultFilters: TFilters<keyof DataType>,
+): ILoadStorageReturn<DataType> {
 	const storage = getLocalStorage()
 
 	const tableStorageKey = tableId + '.table'
@@ -25,7 +34,7 @@ export function loadStorage<DataType>(tableId: string): ILoadStorageReturn<DataT
 		return storage.get(tableStorageKey) as unknown as ILoadStorageReturn<DataType>
 	} else {
 		const defaultValues = {
-			filters: undefined,
+			filters: defaultFilters,
 			sorter: undefined,
 			pagination: { size: 25, offset: 0 },
 		}
@@ -36,6 +45,11 @@ export function loadStorage<DataType>(tableId: string): ILoadStorageReturn<DataT
 	}
 }
 
+/**
+ * Generates a unique hash based on the input string. Useful to generate React keys.
+ * 
+ * Source: https://stackoverflow.com/a/7616484
+ */
 export function generateRowKey(str: string) {
 	let hash = 0,
 		i,
@@ -56,9 +70,9 @@ export function generateRowKey(str: string) {
  * To be used only when the data source of the table is dynamic. You should handle the filtering and
  * sorting yourself with the API and the table's onChange props.
  */
-export function useGetColumnSearchFilterConfig<DataType extends AnyObject>(): ColumnType<DataType> {
-	const inputRef = useRef<InputRef>(null)
-
+export function getColumnSearchFilterConfig<DataType extends AnyObject>(
+	inputRef: RefObject<InputRef>,
+): ColumnType<DataType> {
 	// Even though selectedKeys is used as an array, it corresponds to the current
 	// filter value. It allows to have a controlled input value without declaring
 	// a state ourselves.
@@ -85,10 +99,14 @@ export function useGetColumnSearchFilterConfig<DataType extends AnyObject>(): Co
 	}
 }
 
-export function useGetStaticColumnSearchFilterConfig<DataType extends AnyObject>(
+/**
+ * To be used only when the data source of the table is static. It handles the filtering process.
+ */
+export function getStaticColumnSearchFilterConfig<DataType extends AnyObject>(
 	dataIndex: keyof DataType,
+	inputRef: RefObject<InputRef>,
 ): ColumnType<DataType> {
-	const baseConfig = useGetColumnSearchFilterConfig<DataType>()
+	const baseConfig = getColumnSearchFilterConfig<DataType>(inputRef)
 
 	return {
 		...baseConfig,
@@ -143,7 +161,12 @@ export function getStaticRadioOrCheckboxFilterConfig<DataType extends AnyObject>
 	}
 }
 
-export function parseFiltersForSupabase(filters: TFilters | undefined) {
+/**
+ * Returns a parsed string to use with `.or()` method from supabase instance base on the filters.
+ * 
+ * @example "school_name.ilike.%filter value%"
+ */
+export function parseFiltersForSupabase<T>(filters: TFilters<keyof T> | undefined) {
 	const queries: Array<string> = []
 
 	if (filters === undefined) {
@@ -151,13 +174,13 @@ export function parseFiltersForSupabase(filters: TFilters | undefined) {
 	}
 
 	Object.keys(filters).forEach((dataIndex) => {
-		const filterValues = filters[dataIndex]
+		const filterValues = filters[dataIndex as keyof T]
 
 		if (filterValues === null) {
 			return
 		}
 
-		if (filterValues.length > 1) {
+		if (filterValues && filterValues.length > 1) {
 			const innerQueries: Array<string> = []
 
 			filterValues.forEach((value) => {
@@ -166,27 +189,50 @@ export function parseFiltersForSupabase(filters: TFilters | undefined) {
 
 			queries.push(`or(${innerQueries.join(',')})`)
 		} else {
-			queries.push(`${dataIndex}.ilike.%${filterValues[0]}%`)
+			queries.push(`${dataIndex}.ilike.%${filterValues![0]}%`)
 		}
 	})
 
 	return queries.length > 0 ? queries.join(',') : null
 }
 
-export function useTableHeight(tableRef: RefObject<TableRef>) {
+/**
+ * Returns a parsed string to use with `.or()` method from supabase instance base on the global search string and included fields.
+ * 
+ * The global search **MUST** override any filters previously applied.
+ * @example "school_name.ilike.%global search value%"
+ */
+export function parseGlobalSearchForSupabase<T>(globalSearch: string, fields: Array<keyof T>) {
+  const queries: Array<string> = []
+
+  fields.forEach((field) => {
+    queries.push(`${String(field)}.ilike.%${globalSearch}%`)
+  })
+
+  return queries.join(',')
+}
+
+/**
+ * Calculate the table height based on its parent's height and the table header height, if displayed.
+ */
+export function useTableHeight(tableRef: RefObject<TableRef>, tableHeader: boolean) {
 	const tableHeight = useMemo(() => {
 		const node = tableRef.current
 		const clientRect = node?.nativeElement.getBoundingClientRect()
 
 		const top = clientRect?.top ?? 0
+		// 32 - 16 is the height of the table header minus the bottom margin
 		const height = window.innerHeight - top - 55
 
-		return height
-	}, [tableRef])
+		return tableHeader ? height - (32 - 16) : height
+	}, [tableRef, tableHeader])
 
 	return tableHeight
 }
 
+/**
+ * @default [25, 50, 75, 100]
+ */
 export function getPaginationSizeOptions(pagination: TableProps['pagination']) {
 	const defaultSizeOptions = [25, 50, 75, 100]
 
@@ -195,4 +241,62 @@ export function getPaginationSizeOptions(pagination: TableProps['pagination']) {
 	}
 
 	return pagination?.pageSizeOptions ?? defaultSizeOptions
+}
+
+/**
+ * Formats given number with dots.
+ *
+ * @example
+ * ```js
+ * formatNumberWithDots(14500) // will output 14.500
+ * ```
+ */
+export function formatNumberWithDots(numberToFormat: number) {
+	return numberToFormat.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+}
+
+export function useGlobalSearch(searchedFields?: Array<string>) {
+	const [value, setValue] = useState('')
+	const debouncedValue = useDebounce(value, 750)
+
+	if (!searchedFields) {
+		return { globalSearchInput: null, globalSearchValue: null }
+	}
+
+	return {
+		globalSearchInput: (
+			<GlobalSearch value={value} onChange={setValue} searchedFields={searchedFields} />
+		),
+		globalSearchValue: debouncedValue,
+	}
+}
+
+export function useResetFiltersButton(onClick: () => void, enabled?: true) {
+	if (!enabled) {
+		return null
+	}
+
+	return <ResetFiltersButton onClick={onClick} />
+}
+
+export function useTableHeader(params: IRenderHeaderParams) {
+	const { resetFiltersButton, globalSearchInput, callback } = params
+
+	if (!resetFiltersButton && !globalSearchInput) {
+		return null
+	}
+
+	return <div className="se-table-header">{callback(resetFiltersButton, globalSearchInput)}</div>
+}
+
+export function defaultRenderHeaderCallback(
+	resetFiltersButton?: ReactNode,
+	globalSearchInput?: ReactNode,
+) {
+	return (
+		<>
+			{globalSearchInput}
+			{resetFiltersButton}
+		</>
+	)
 }

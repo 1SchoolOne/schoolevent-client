@@ -1,4 +1,4 @@
-import { TUserLocation } from '../../components/ContactsLayout/_components/Table/Table-types'
+import { TUserLocation } from '../../components/ContactsLayout/_components/ContactsTable/Table-types'
 
 export interface IMapDisplayState {
 	state: 'split' | 'full'

@@ -2,8 +2,7 @@ import { createContext, useCallback, useContext, useMemo, useState } from 'react
 
 import { PropsWithChildren } from '@types'
 
-import { TUserLocation } from '../../components/ContactsLayout/_components/ContactsTable/Table-types'
-import { IMapDisplayContext, IMapDisplayState } from './MapDisplay-types'
+import { IMapDisplayContext, IMapDisplayState, IUserLocation } from './MapDisplay-types'
 
 const MapDisplayContext = createContext<IMapDisplayContext>({} as IMapDisplayContext)
 
@@ -12,7 +11,7 @@ export function MapDisplayProvider({ children }: PropsWithChildren) {
 		state: 'split',
 		isHidden: true,
 	})
-	const [focusedPin, setFocusedPin] = useState<TUserLocation | null>(null)
+	const [focusedPin, setFocusedPin] = useState<IUserLocation | null>(null)
 
 	const displayMap = useCallback(() => {
 		setMapDisplayState((prevState) => ({ ...prevState, isHidden: false }))

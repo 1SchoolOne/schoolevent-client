@@ -47,7 +47,7 @@ export function loadStorage<DataType>(
 
 /**
  * Generates a unique hash based on the input string. Useful to generate React keys.
- * 
+ *
  * Source: https://stackoverflow.com/a/7616484
  */
 export function generateRowKey(str: string) {
@@ -163,7 +163,7 @@ export function getStaticRadioOrCheckboxFilterConfig<DataType extends AnyObject>
 
 /**
  * Returns a parsed string to use with `.or()` method from supabase instance base on the filters.
- * 
+ *
  * @example "school_name.ilike.%filter value%"
  */
 export function parseFiltersForSupabase<T>(filters: TFilters<keyof T> | undefined) {
@@ -198,18 +198,18 @@ export function parseFiltersForSupabase<T>(filters: TFilters<keyof T> | undefine
 
 /**
  * Returns a parsed string to use with `.or()` method from supabase instance base on the global search string and included fields.
- * 
+ *
  * The global search **MUST** override any filters previously applied.
  * @example "school_name.ilike.%global search value%"
  */
 export function parseGlobalSearchForSupabase<T>(globalSearch: string, fields: Array<keyof T>) {
-  const queries: Array<string> = []
+	const queries: Array<string> = []
 
-  fields.forEach((field) => {
-    queries.push(`${String(field)}.ilike.%${globalSearch}%`)
-  })
+	fields.forEach((field) => {
+		queries.push(`${String(field)}.ilike.%${globalSearch}%`)
+	})
 
-  return queries.join(',')
+	return queries.join(',')
 }
 
 /**
@@ -282,7 +282,7 @@ export function useResetFiltersButton(onClick: () => void, enabled?: true) {
 export function useTableHeader(params: IRenderHeaderParams) {
 	const { resetFiltersButton, globalSearchInput, callback } = params
 
-	if (!resetFiltersButton && !globalSearchInput) {
+	if (!resetFiltersButton && !globalSearchInput && !callback) {
 		return null
 	}
 

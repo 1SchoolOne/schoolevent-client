@@ -1,3 +1,4 @@
+import { QueryKey } from '@tanstack/react-query'
 import { TableProps } from 'antd'
 import { AnyObject } from 'antd/lib/_util/type'
 import { CheckboxValueType } from 'antd/lib/checkbox/Group'
@@ -6,7 +7,7 @@ import {
 	ColumnType as AntdColumnType,
 } from 'antd/lib/table'
 import { FilterValue, SortOrder } from 'antd/lib/table/interface'
-import { ReactNode } from 'react'
+import { Dispatch, ReactNode, SetStateAction } from 'react'
 
 /**
  * By default, antd's ColumnsType won't autocomplete the `dataIndex` property based on the `DataType`
@@ -48,6 +49,15 @@ export interface ITableProps<T extends AnyObject>
 	 * Values **MUST** be null, not undefined.
 	 */
 	defaultFilters: TFilters<keyof T, null>
+	additionalQueryKey?: QueryKey
+}
+
+export interface IInnerTableProps<T extends AnyObject>
+	extends Omit<ITableProps<T>, 'renderHeader' | 'globalSearch'> {
+	tableConfig: ITableConfig<T>
+	setTableConfig: Dispatch<SetStateAction<ITableConfig<T>>>
+	isGlobalSearchEnabled: boolean
+	globalSearchValue: string | null
 }
 
 export type TDataSource<T> =

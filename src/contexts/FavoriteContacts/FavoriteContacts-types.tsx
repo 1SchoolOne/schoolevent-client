@@ -13,7 +13,7 @@ export interface IAddFavoriteParams {
 
 export interface IDeleteFavoriteParams {
 	supabase: TSupabase
-	school_id: string
+	recordId: string | number
 	userId: string | undefined
 }
 
@@ -21,7 +21,7 @@ export interface IFavoriteContactsContext {
 	favorites: TFavorite[]
 	loading: boolean
 	/** Removes a favorite from the database. */
-	removeFavorite: UseMutateFunction<PostgrestSingleResponse<null>, Error, string, unknown>
+	removeFavorite: UseMutateFunction<PostgrestSingleResponse<null>, Error, string | number, unknown>
 	/** Adds a favorite to the database. */
 	addFavorite: UseMutateFunction<
 		PostgrestSingleResponse<null>,
@@ -30,6 +30,6 @@ export interface IFavoriteContactsContext {
 		unknown
 	>
 	/** Verifies if a favorite exists in the database. Returns true if it exists, false otherwise. */
-	doesFavoriteExist: (id: string, userId: string) => Promise<boolean>
+	doesFavoriteExist: (id: string | number, userId: string) => Promise<boolean>
 	refresh: () => void
 }

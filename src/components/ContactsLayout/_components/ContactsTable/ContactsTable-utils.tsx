@@ -1,15 +1,19 @@
 import { Star as FavoriteIcon } from '@phosphor-icons/react'
-import { Button, InputRef, Grid } from 'antd'
+import { Button, Grid, InputRef } from 'antd'
 import { SortOrder } from 'antd/lib/table/interface'
-import {ColumnsType, getColumnSearchFilterConfig, getRadioOrCheckboxFilterConfig} from '@components'
+import dayjs from 'dayjs'
+import timezone from 'dayjs/plugin/timezone'
+import utc from 'dayjs/plugin/utc'
+import { useMemo, useRef } from 'react'
+
+import {
+	ColumnsType,
+	getColumnSearchFilterConfig,
+	getRadioOrCheckboxFilterConfig,
+} from '@components'
+import { useAuth, useFavorites } from '@contexts'
 import { Database, ITableStorage } from '@types'
 import { getLocalStorage, isStringEmpty } from '@utils'
-import dayjs from 'dayjs'
-import utc from 'dayjs/plugin/utc'
-import timezone from 'dayjs/plugin/timezone'
-
-dayjs.extend(utc)
-dayjs.extend(timezone)
 
 import { IGeoLocationState } from '../../../ContactsMap/ContactsMap-types'
 import { ISorter, TFilterValue, TFilters } from '../../../Table/Table-types'
@@ -17,17 +21,13 @@ import {
 	DEFAULT_ETABLISSEMENT_FILTER,
 	DEFAULT_FILTER_OBJECT,
 	GOUV_API_URL,
-} from './Table-constants'
-import {
-	IQueryParams,
-	ISchool,
-	ITableConfigState,
-	TReducerActionType,
-} from './Table-types'
-import { useAuth, useFavorites } from '@contexts'
-import { useMemo, useRef } from 'react'
+} from './ContactsTable-constants'
+import { IQueryParams, ISchool, ITableConfigState, TReducerActionType } from './ContactsTable-types'
 
-const {useBreakpoint} = Grid
+dayjs.extend(utc)
+dayjs.extend(timezone)
+
+const { useBreakpoint } = Grid
 
 export function fetchTableData(queryParams: IQueryParams) {
 	const { limit, offset, select, where, orderBy } = queryParams
@@ -265,7 +265,6 @@ export function useColumns() {
 
 	return columns
 }
-
 
 /**
  * This class is a utility class for building SQL WHERE clauses.

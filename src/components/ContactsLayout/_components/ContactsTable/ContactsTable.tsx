@@ -5,16 +5,16 @@ import { useFavorites, useMapDisplay, useTheme } from '@contexts'
 
 import { useGeoLocation } from '../../../ContactsMap/ContactsMap-utils'
 import { formatNumberWithDots } from '../../../Table/Table-utils'
-import { SELECTED_FIELDS } from './Table-constants'
-import { IAPIResponse, ISchool, ITableProps } from './Table-types'
+import { SELECTED_FIELDS } from './ContactsTable-constants'
+import { IAPIResponse, ISchool, ITableProps } from './ContactsTable-types'
 import {
 	fetchTableData,
 	getGlobalSearch,
 	getOrderBy,
 	getRowClassname,
 	getWhere,
-  useColumns
-} from './Table-utils'
+	useColumns,
+} from './ContactsTable-utils'
 
 export function ContactsTable() {
 	const { setFocusedPin } = useMapDisplay()

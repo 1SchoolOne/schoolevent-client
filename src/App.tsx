@@ -123,7 +123,7 @@ function App() {
 								}
 							>
 								<Route index element={<StudentEventList />} />
-								<Route path=":studentEventId" element={<StudentEventDetail />} />
+								<Route path=":eventId" element={<StudentEventDetail />} />
 							</Route>
 							<Route
 								path="rewards"

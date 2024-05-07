@@ -1,12 +1,14 @@
-import { Card, Collapse, List } from 'antd'
+import { Button, Card, Collapse, List } from 'antd'
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 
 import { useSupabase } from '../../../utils/useSupabase'
 import { IEventFormFields } from '../../Events/type'
+import { Star as FavoriteIcon } from '@phosphor-icons/react'
 
 import './StudentEventsList-styles.less'
 import { TEventTypeValue } from '../../Events/EventForm/EventForm-types'
+import dayjs from 'dayjs'
 
 export function StudentEventList() {
 	const supabase = useSupabase()
@@ -19,7 +21,7 @@ export function StudentEventList() {
 	}
 
 	const [eventsByMonth, setEventsByMonth] = useState<EventsByMonth>({})
-
+	
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	const fetchEvents = async () => {
 		const { data, error } = await supabase.from('events').select('*')
@@ -43,23 +45,51 @@ export function StudentEventList() {
 		fetchEvents()
 	}, [fetchEvents])
 
-	const handleEventClick = (studentEventId: number) => {
-		navigate(`/studentEvent/${studentEventId}`)
+	const handleEventClick = (eventId: number) => {
+		navigate(`/studentEvents/${eventId}`)
 	}
 
+	const capitalizeFirstLetter = (str: string) => {
+		return str.charAt(0).toUpperCase() + str.slice(1)
+	}
+	
+	const getEventStartTime = (event: IEventFormFields) => {
+		const eventTime = dayjs(event.event_date)
+    return `${eventTime.hour()}h${eventTime.minute()}`
+  }
+
+	const formatEventDuration = (duration: number) => {
+		if(duration < 1) {
+			return `${duration * 60} min`
+		} else {
+			const hours = Math.floor(duration)
+			const minutes = (duration - hours) * 60
+			if(minutes === 0) {
+				return `${hours}h`
+			} else {
+				return `${hours}h${minutes}min`
+			}
+		}
+	}
+
+	const customPanelStyle = {
+    border: 0,
+  }
+
 	return (
-		<Collapse accordion>
+		<Collapse accordion style={{ border: 'none' }}>
 			{Object.entries(eventsByMonth).map(([month, events]) => (
 				<Panel
-					header={new Date(0, parseInt(month)).toLocaleString('default', { month: 'long' })}
+					header={capitalizeFirstLetter(new Date(0, parseInt(month)).toLocaleString('default', { month: 'long' }))}
 					key={month}
+					style={customPanelStyle}
 				>
 					<List
-						grid={{ gutter: 16, column: 1 }}
+						grid={{ gutter: 20, column: 3 }}
 						dataSource={events}
 						renderItem={(event) => (
 							<List.Item key={event.id} onClick={() => handleEventClick(event.id)}>
-								<Link to={`/studentEvent/${event.id}`} key={event.id}></Link>
+								<Link to={`/studentEvents/${event.id}`} key={event.id}></Link>
 								<Card
 									hoverable
 									className="event-card"
@@ -67,6 +97,16 @@ export function StudentEventList() {
 										<img className="img-cover" alt="event-cover" src={event.event_background} />
 									}
 								>
+									<div className="event-favorite">
+									<Button
+									className="favorite-button"
+									onClick={async () => {
+										//await handleFavorites(record)
+									}}
+									icon={<FavoriteIcon size="1rem"/>}
+									type="text"
+								/>
+									</div>
 									<div className="card-title">
 										<p>{event.event_title}</p>
 									</div>
@@ -76,7 +116,7 @@ export function StudentEventList() {
 												weekday: 'long',
 												day: 'numeric',
 												month: 'long',
-											})} - 10h00`}
+											})} - ${getEventStartTime(event)}`}
 										</p>
 									</div>
 									<p>
@@ -89,7 +129,7 @@ export function StudentEventList() {
 											? 'Présentation'
 											: 'Conférence'}
 									</p>
-									<p>Durée : {event.event_duration / 3600}h</p>
+									<p>Durée : {formatEventDuration(event.event_duration / 3600)}</p>
 								</Card>
 							</List.Item>
 						)}

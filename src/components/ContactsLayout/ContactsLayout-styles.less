@@ -4,163 +4,136 @@
     padding: var(--ant-padding) 0;
   }
 
-  .contacts-layout__table-and-global-search {
-    height: 100%;
+  .ant-layout-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--ant-color-bg-elevated);
+    border-radius: 30px 0 0 0;
+    margin: 16px 0 0 16px;
+    padding: 16px 0 0 16px;
+    gap: 10px;
+    box-shadow: 0 0 30px rgba(130, 130, 130, 0.15);
 
-    .ant-layout-content {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: white;
-      border-radius: 30px 30px 0 0;
-      margin: 16px 16px 0 16px;
-      padding: 16px;
-      gap: 10px;
-      box-shadow: 0 0 30px rgba(130, 130, 130, 0.15);
+    .ant-pagination {
+      margin: var(--ant-margin);
     }
 
-    .contacts-table-container {
+    &:has(.table-container__full) {
+      .ant-pagination.ant-table-pagination {
+        li:last-child {
+          margin-right: calc(var(--ant-padding-lg) * 2);
+        }
+      }
+    }
+
+    .map-container {
       position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: var(--ant-color-bg-elevated);
-      border-radius: calc(var(--ant-border-radius) * 3) 0 0 0;
-      margin: 16px 0 0 16px;
-      padding: 16px 0 0 16px;
-      box-shadow: 0 0 30px rgba(130, 130, 130, 0.15);
+      width: 50%;
+      min-width: 40%;
+      height: 100%;
+      padding: 0 var(--ant-padding) var(--ant-padding) 0;
 
-      .ant-pagination {
-        margin: var(--ant-margin);
+      .leaflet-container {
+        border-radius: var(--ant-border-radius-lg);
       }
 
-      &:has(.table-container__full) {
-        .ant-pagination.ant-table-pagination {
-          li:last-child {
-            margin-right: calc(var(--ant-padding-lg) * 2);
-          }
+      &__dark {
+        .leaflet-layer,
+        .leaflet-control-zoom-in,
+        .leaflet-control-zoom-out,
+        .leaflet-control-attribution {
+          filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
         }
       }
 
-      .map-container {
-        position: relative;
-        width: 50%;
-        min-width: 40%;
-        height: 100%;
-        padding: 0 var(--ant-padding) var(--ant-padding) 0;
-
-        .leaflet-container {
-          border-radius: var(--ant-border-radius-lg);
-        }
-
-        &__dark {
-          .leaflet-layer,
-          .leaflet-control-zoom-in,
-          .leaflet-control-zoom-out,
-          .leaflet-control-attribution {
-            filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
-          }
-        }
-
-        &__legend {
-          z-index: 99;
-          position: absolute;
-          top: var(--ant-padding-sm);
-          right: calc(var(--ant-padding) + var(--ant-padding-sm));
-          padding: var(--ant-padding-xs);
-          border-radius: var(--ant-border-radius);
-          background-color: var(--ant-color-bg-layout);
-
-          &__item {
-            display: flex;
-            flex-direction: row;
-            justify-content: start;
-            align-items: center;
-            gap: 0.5rem;
-          }
-        }
-
-        &__full {
-          width: 100%;
-          height: 100%;
-          padding: unset;
-
-          .map-container__legend {
-            right: var(--ant-padding-sm);
-          }
-
-          .leaflet-container {
-            border-radius: var(--ant-border-radius-lg) 0 0 0;
-          }
-        }
-
-        &__hidden {
-          display: none;
-        }
-      }
-
-      .table-container {
-        width: 50%;
-        height: 100%;
-
-        &__full {
-          width: 100%;
-          height: 100%;
-        }
-
-        &__hidden {
-          display: none;
-        }
-      }
-
-      .map-btn {
+      &__legend {
         z-index: 99;
         position: absolute;
-        bottom: var(--ant-padding);
-        right: var(--ant-padding);
+        top: var(--ant-padding-sm);
+        right: calc(var(--ant-padding) + var(--ant-padding-sm));
+        padding: var(--ant-padding-xs);
+        border-radius: var(--ant-border-radius);
+        background-color: var(--ant-color-bg-layout);
 
-        &.close-map-btn,
-        &.toggle-mode-btn {
-          bottom: calc(var(--ant-padding-sm) * 2);
-          right: calc(var(--ant-padding-sm) * 2);
+        &__item {
+          display: flex;
+          flex-direction: row;
+          justify-content: start;
+          align-items: center;
+          gap: 0.5rem;
+        }
+      }
+
+      &__full {
+        width: 100%;
+        height: 100%;
+        padding: unset;
+
+        .map-container__legend {
+          right: var(--ant-padding-sm);
         }
 
-        &.toggle-mode-btn {
-          transform: translateY(calc(-100% - var(--ant-padding-sm)));
+        .leaflet-container {
+          border-radius: var(--ant-border-radius-lg) 0 0 0;
+        }
+      }
+
+      &__hidden {
+        display: none;
+      }
+    }
+
+    .table-container {
+      width: 50%;
+      height: 100%;
+
+      &__full {
+        width: 100%;
+        height: 100%;
+      }
+
+      &__hidden {
+        display: none;
+      }
+
+      .se-table-header {
+        align-items: end;
+
+        &:has(.range-select) {
+          .se-table-global-search {
+            margin-left: 0;
+          }
+        }
+
+        .ant-segmented {
+          height: fit-content;
+        }
+
+        .range-select {
+          margin-left: auto;
+
+          .ant-select {
+            width: 100px;
+          }
         }
       }
     }
 
-    .contacts-layout__header {
-      height: min-content;
-      display: flex;
-      flex-direction: column;
-      background: none;
-      padding-left: 1rem;
+    .map-btn {
+      z-index: 99;
+      position: absolute;
+      bottom: var(--ant-padding);
+      right: var(--ant-padding);
 
-      .contacts-table__header {
-        align-self: flex-end;
-        width: 100%;
+      &.close-map-btn,
+      &.toggle-mode-btn {
+        bottom: calc(var(--ant-padding-sm) * 2);
+        right: calc(var(--ant-padding-sm) * 2);
+      }
 
-        .ant-space-item:has(.contacts-data-mode-segmented) {
-          margin-right: auto;
-        }
-
-        .contacts-range-container {
-          display: flex;
-          flex-direction: column;
-          width: 130px;
-        }
-
-        .contacts-global-search .ant-input {
-          width: 275px;
-        }
-
-        .clear-filters-btn {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
+      &.toggle-mode-btn {
+        transform: translateY(calc(-100% - var(--ant-padding-sm)));
       }
     }
   }

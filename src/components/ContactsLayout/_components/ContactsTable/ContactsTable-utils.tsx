@@ -118,9 +118,12 @@ export function getWhere<T>(
 	// Otherwise, we use the base query string.
 	const where = gblSearch ? `${DEFAULT_ETABLISSEMENT_FILTER} AND (${gblSearch})` : baseQueryString
 
-	// If a range is provided, we query only the schools that are within that range.
+	console.log({ range, location })
+	if (range && location.loaded && location.error === null) {
+		// If a range is provided, we query only the schools that are within that range.
+		return `${where} AND distance(position, geom'POINT(${userLocation?.lng} ${userLocation?.lat})', ${range}km)`
+	}
+
 	// Otherwise, we use the previous where clause.
-	return range
-		? `${where} AND distance(position, geom'POINT(${userLocation?.lng} ${userLocation?.lat})', ${range}km)`
-		: where
+	return where
 }

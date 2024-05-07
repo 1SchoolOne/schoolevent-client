@@ -1,3 +1,7 @@
+import {
+	BookOpenText as GovContactsIcon,
+	AddressBook as MyContactsIcon,
+} from '@phosphor-icons/react'
 import { Segmented, Space, Typography } from 'antd'
 
 import { Table } from '@components'
@@ -15,10 +19,12 @@ import { useColumns } from './MyContacts-utils'
 export function MyContacts() {
 	const supabase = useSupabase()
 	const { favorites } = useFavorites()
-	const { setFocusedPin } = useMapDisplay()
+	const { setFocusedPin, mapDisplayState } = useMapDisplay()
 	const { user } = useAuth()
 	const { dataMode, setDataMode, setContacts } = useContacts()
 	const columns = useColumns()
+
+	const isSplitView = mapDisplayState.state === 'split' && !mapDisplayState.isHidden
 
 	return (
 		<Table<TContact & { favorite: boolean }>
@@ -27,8 +33,18 @@ export function MyContacts() {
 				<>
 					<Segmented
 						options={[
-							{ label: 'Mes contacts', value: 'my-contacts' },
-							{ label: 'Gouvernement', value: 'gov-contacts' },
+							{
+								label: isSplitView ? null : 'Mes contacts',
+								value: 'my-contacts',
+								icon: <MyContactsIcon size={16} />,
+								title: 'Mes contacts',
+							},
+							{
+								label: isSplitView ? null : 'Gouvernement',
+								value: 'gov-contacts',
+								icon: <GovContactsIcon size={16} />,
+								title: 'Gouvernement',
+							},
 						]}
 						value={dataMode}
 						onChange={(value) => setDataMode(value as 'my-contacts' | 'gov-contacts')}

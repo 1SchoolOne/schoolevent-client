@@ -27,4 +27,12 @@ export {
 	getRadioOrCheckboxFilterConfig,
 	getStaticRadioOrCheckboxFilterConfig,
 } from './Table/Table-utils'
-export type {ColumnType, ColumnsType, TFilters, TFilterValue,ISorter,IPagination,IDataSourceObject} from './Table/Table-types'
+export type {
+	ColumnType,
+	ColumnsType,
+	TFilters,
+	TFilterValue,
+	ISorter,
+	IPagination,
+	IDataSourceObject,
+} from './Table/Table-types'

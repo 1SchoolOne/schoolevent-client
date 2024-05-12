@@ -3,11 +3,11 @@ import timezone from 'dayjs/plugin/timezone'
 import utc from 'dayjs/plugin/utc'
 
 import { ISorter, TFilterValue, TFilters } from '@components'
-import { isStringEmpty } from '@utils'
+import { getLocalStorage, isStringEmpty } from '@utils'
 
 import { IGeoLocationState } from '../../../ContactsMap/ContactsMap-types'
 import { DEFAULT_ETABLISSEMENT_FILTER, GOUV_API_URL } from './ContactsTable-constants'
-import { IQueryParams } from './ContactsTable-types'
+import { IQueryParams, TRange } from './ContactsTable-types'
 
 dayjs.extend(utc)
 dayjs.extend(timezone)
@@ -118,7 +118,6 @@ export function getWhere<T>(
 	// Otherwise, we use the base query string.
 	const where = gblSearch ? `${DEFAULT_ETABLISSEMENT_FILTER} AND (${gblSearch})` : baseQueryString
 
-	console.log({ range, location })
 	if (range && location.loaded && location.error === null) {
 		// If a range is provided, we query only the schools that are within that range.
 		return `${where} AND distance(position, geom'POINT(${userLocation?.lng} ${userLocation?.lat})', ${range}km)`
@@ -126,4 +125,21 @@ export function getWhere<T>(
 
 	// Otherwise, we use the previous where clause.
 	return where
+}
+
+export function loadRange(location: IGeoLocationState): TRange {
+	const storage = getLocalStorage()
+
+	const storageKey = 'gov-contacts.table.range'
+
+	if (!location.loaded || location.error) {
+		return null
+	}
+
+	if (storage.has(storageKey)) {
+		return storage.get(storageKey) as TRange
+	} else {
+		storage.set({ key: storageKey, data: null })
+		return null
+	}
 }

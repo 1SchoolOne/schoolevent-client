@@ -45,3 +45,5 @@ export interface IFetchGovContactsParams<T>
 	extends Omit<IFetchMyContactsParams<T>, 'userId' | 'supabase'> {
 	location: IGeoLocationState
 }
+
+export type TRange = null | 15 | 30 | 45

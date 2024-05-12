@@ -3,32 +3,61 @@ import {
 	AddressBook as MyContactsIcon,
 } from '@phosphor-icons/react'
 import { Segmented, Select, Space, Typography } from 'antd'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { Table } from '@components'
 import { useContacts, useFavorites, useMapDisplay } from '@contexts'
+import { useLocalStorage } from '@utils'
 
 import { useGeoLocation } from '../../../ContactsMap/ContactsMap-utils'
 import { formatNumberWithDots } from '../../../Table/Table-utils'
 import { DEFAULT_FILTER_OBJECT, SELECTED_FIELDS } from '../ContactsTable/ContactsTable-constants'
-import { IAPIResponse, ISchool } from '../ContactsTable/ContactsTable-types'
+import { IAPIResponse, ISchool, TRange } from '../ContactsTable/ContactsTable-types'
 import {
 	fetchGovData,
 	getGlobalSearch,
 	getOrderBy,
 	getWhere,
+	loadRange,
 } from '../ContactsTable/ContactsTable-utils'
 import { useColumns } from './GovContacts-utils'
 
 export function GovContacts() {
-	const [range, setRange] = useState<number | null>(null)
 	const location = useGeoLocation()
+	const [range, setRange] = useState<TRange>(loadRange(location))
 	const { favorites } = useFavorites()
 	const { setFocusedPin, mapDisplayState } = useMapDisplay()
 	const { dataMode, setDataMode, setContacts } = useContacts()
 	const columns = useColumns()
+	const storage = useLocalStorage()
 
 	const isSplitView = mapDisplayState.state === 'split' && !mapDisplayState.isHidden
+
+	// Sync the range state with the local storage when the user location has successfully loaded.
+	useEffect(
+		function initSyncRangeStorage() {
+			const storageRangeValue = storage.get('gov-contacts.table.range') as unknown as TRange
+
+			// If the range value saved in local storage is different from the range state, update the state when the user
+			// location has loaded.
+			if (location.loaded && location.error === null) {
+				if (storageRangeValue !== range) {
+					setRange(storageRangeValue)
+				}
+			}
+		},
+		[location],
+	)
+
+	// Keep the local storage in sync with the range state.
+	useEffect(
+		function syncRangeStorage() {
+			if (location.loaded && location.error === null) {
+				storage.set({ key: 'gov-contacts.table.range', data: range })
+			}
+		},
+		[range],
+	)
 
 	return (
 		<Table<ISchool>
@@ -56,7 +85,7 @@ export function GovContacts() {
 					/>
 					<Space className="range-select">
 						{!isSplitView && <Typography.Text>Distance max :</Typography.Text>}
-						<Select<number | null>
+						<Select<TRange>
 							disabled={!location.loaded || !!location.error}
 							placeholder="Distance max"
 							options={[

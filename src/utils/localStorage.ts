@@ -6,6 +6,8 @@ import { TGetStorageReturn, TSetStorageParams, TStorageKey } from '@types'
 const STORAGE_PREFIX = 'se'
 
 /**
+ * TODO: refactor the local storage API
+ *
  * Hook version of store2. It will automatically be prefixed by 'se'
  */
 export function useLocalStorage() {

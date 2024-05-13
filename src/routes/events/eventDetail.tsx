@@ -1,7 +1,7 @@
 import { Helmet } from 'react-helmet'
 import { RouteObject } from 'react-router-dom'
 
-import { EventDetail } from '../../components/events/EventDetail/EventDetail'
+import { EventDetail } from '../../components/Events/EventDetail/EventDetail'
 
 export const eventDetailRoute: RouteObject = {
 	path: ':eventId',

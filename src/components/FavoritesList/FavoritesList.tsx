@@ -44,19 +44,31 @@ export function FavoritesList() {
 		return matchName || matchCity || matchPostalCode
 	})
 
-	const getMenuItems = (school_id: string): ItemType[] => [
+	const getMenuItems = (school_id: string | null, contact_id: number | null): ItemType[] => [
 		{
 			key: 'create-follow-up',
 			label: 'Créer un suivi',
 			icon: <PlusIcon size={16} weight="bold" />,
-			onClick: () => navigate(`/appointments?action=new&school_id=${school_id}`),
+			onClick: () => {
+				if (school_id) {
+					navigate(`/appointments?action=new&school_id=${school_id}`)
+				} else if (contact_id) {
+					navigate(`/appointments?action=new&contact_id=${contact_id}`)
+				}
+			},
 		},
 		{
 			key: 'delete-favorite',
 			label: 'Supprimer des favoris',
 			icon: <DeleteIcon size={16} weight="bold" />,
 			danger: true,
-			onClick: () => removeFavorite(school_id),
+			onClick: () => {
+				if (school_id) {
+					removeFavorite(school_id)
+				} else if (contact_id) {
+					removeFavorite(contact_id)
+				}
+			},
 		},
 	]
 
@@ -88,7 +100,10 @@ export function FavoritesList() {
 									<i>
 										{item.school_city} - {item.school_postal_code}
 									</i>
-									<Dropdown menu={{ items: getMenuItems(item.school_id) }} trigger={['click']}>
+									<Dropdown
+										menu={{ items: getMenuItems(item.school_id, item.contact_id) }}
+										trigger={['click']}
+									>
 										<IconButton type="text" icon={<MoreIcon size={16} weight="bold" />} />
 									</Dropdown>
 								</Flex>

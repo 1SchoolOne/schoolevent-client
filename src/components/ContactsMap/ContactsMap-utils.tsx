@@ -69,7 +69,10 @@ export function useGeoLocation() {
 			})
 		}
 
-		navigator.geolocation.getCurrentPosition(onSuccess, onError)
+		navigator.geolocation.getCurrentPosition(onSuccess, onError, {
+			maximumAge: 24 * 60 * 60 * 1000,
+			enableHighAccuracy: true,
+		})
 	}, [])
 
 	return location

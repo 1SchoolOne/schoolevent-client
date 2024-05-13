@@ -46,6 +46,7 @@ export function GovContacts() {
 				}
 			}
 		},
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[location],
 	)
 
@@ -56,6 +57,7 @@ export function GovContacts() {
 				storage.set({ key: 'gov-contacts.table.range', data: range })
 			}
 		},
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[range],
 	)
 

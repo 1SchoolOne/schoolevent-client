@@ -28,3 +28,6 @@ dist-ssr
 # Cypress
 cypress.env.json
 cypress/screenshots/*
+
+# Coverage reports
+coverage

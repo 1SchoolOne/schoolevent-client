@@ -3,7 +3,7 @@ import { Table as AntdTable, Grid } from 'antd'
 import { AnyObject } from 'antd/lib/_util/type'
 import { TableRef } from 'antd/lib/table'
 import classNames from 'classnames'
-import { Suspense, useEffect, useMemo, useRef, useState } from 'react'
+import { Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 
 import { useTheme } from '@contexts'
 import { useLocalStorage } from '@utils'
@@ -15,6 +15,7 @@ import {
 	formatNumberWithDots,
 	generateRowKey,
 	getPaginationSizeOptions,
+	getScrollX,
 	loadStorage,
 	useGlobalSearch,
 	useResetFiltersButton,
@@ -43,6 +44,8 @@ function InnerTable<DataType extends AnyObject>(props: IInnerTableProps<DataType
 		additionalQueryKey = [],
 		...restProps
 	} = props
+
+	const [scrollX, setScrollX] = useState(0)
 	const tableRef = useRef<TableRef>(null)
 	const { theme } = useTheme()
 	const storage = useLocalStorage()
@@ -83,21 +86,20 @@ function InnerTable<DataType extends AnyObject>(props: IInnerTableProps<DataType
 			columns.map((col) => ({
 				...col,
 				key: col.dataIndex,
-				width: col.width ?? 200,
 				filteredValue: tableConfig.filters?.[col.dataIndex as string],
+				ellipsis: {
+					showTitle: false,
+				},
 				sortOrder:
 					tableConfig.sorter?.field === col.dataIndex ? tableConfig.sorter?.order : undefined,
 			})),
 		[tableConfig.filters, tableConfig.sorter, columns],
 	)
 
-	// Calculate the width of the table body with columns width.
-	// It makes the table scrollable horizontally.
-	let scrollX = 0
-
-	cols.forEach((col) => {
-		scrollX += Number(col.width)
-	})
+	useLayoutEffect(() => {
+		const sX = getScrollX()
+		setScrollX(sX)
+	}, [])
 
 	useEffect(
 		function syncLocalStorage() {

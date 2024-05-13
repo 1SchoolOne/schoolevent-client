@@ -300,3 +300,11 @@ export function defaultRenderHeaderCallback(
 		</>
 	)
 }
+
+export function getScrollX() {
+	const layoutContent = document.querySelector('.basic-layout__content') as HTMLDivElement
+	const totalWidth = layoutContent.getBoundingClientRect().width
+	const { value: padding } = layoutContent.computedStyleMap().get('padding-left') as CSSUnitValue
+
+	return totalWidth - padding
+}

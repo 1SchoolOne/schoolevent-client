@@ -3,11 +3,7 @@ name: Lint
 permissions:
   pull-requests: write
 
-on:
-  push:
-    branches:
-      - master
-      - develop
+on: [pull_request]
 
 jobs:
   linting:
@@ -26,4 +22,10 @@ jobs:
         run: yarn install --frozen-lockfile
 
       - name: Code Linting
-        run: yarn run lint
+        run: yarn run lint:report
+        continue-on-error: true
+      
+      - name: Annotate Code Linting Results
+        uses: ataylorme/eslint-annotate-action@v3
+        with:
+          report-json: "eslint_report.json"

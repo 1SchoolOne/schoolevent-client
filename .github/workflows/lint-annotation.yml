@@ -9,6 +9,7 @@ jobs:
   linting:
     name: Linting
     runs-on: ubuntu-latest
+    permissions: write-all
     steps:
       - name: Install NodeJS
         uses: actions/setup-node@v4

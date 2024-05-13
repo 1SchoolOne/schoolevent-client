@@ -1,7 +1,7 @@
 import { Helmet } from 'react-helmet'
 import { RouteObject } from 'react-router-dom'
 
-import { EventUpdateForm } from '../../components/events/EventUpdate/EventUpdateForm'
+import { EventUpdateForm } from '../../components/Events/EventUpdate/EventUpdateForm'
 
 export const eventFormRoute: RouteObject = {
 	path: '/event/update/:eventId',

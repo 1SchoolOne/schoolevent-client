@@ -1,5 +1,5 @@
 import { Star as FavoriteIcon } from '@phosphor-icons/react/Star'
-import { Button, Grid, InputRef } from 'antd'
+import { Button, Grid, InputRef, Tooltip } from 'antd'
 import dayjs from 'dayjs'
 import { useCallback, useMemo, useRef } from 'react'
 
@@ -48,9 +48,14 @@ export function useColumns() {
 				key: 'nom_etablissement',
 				title: 'Établissement',
 				dataIndex: 'nom_etablissement',
+				width: screens.xxl ? 500 : 450,
 				...getColumnSearchFilterConfig(inputRef),
 				filterMultiple: true,
 				sorter: true,
+				ellipsis: {
+					showTitle: false,
+				},
+				render: (value) => <Tooltip title={value}>{value}</Tooltip>,
 			},
 			{
 				key: 'type_etablissement',
@@ -70,6 +75,7 @@ export function useColumns() {
 				key: 'nom_commune',
 				title: 'Commune',
 				dataIndex: 'nom_commune',
+				width: screens.xxl ? 250 : 200,
 				...getColumnSearchFilterConfig(inputRef),
 				filterMultiple: true,
 				sorter: true,
@@ -90,6 +96,16 @@ export function useColumns() {
 				...getColumnSearchFilterConfig(inputRef),
 				filterMultiple: true,
 				sorter: true,
+				ellipsis: {
+					showTitle: false,
+				},
+				render: (value) => {
+					if (!value) {
+						return '-'
+					}
+
+					return <Tooltip title={value}>{value}</Tooltip>
+				},
 			},
 			{
 				key: 'favoris',

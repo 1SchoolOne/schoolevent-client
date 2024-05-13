@@ -1,8 +1,9 @@
 import { Grid, Skeleton, Table } from 'antd'
 import { AnyObject } from 'antd/lib/_util/type'
 import classNames from 'classnames'
+import { useLayoutEffect, useState } from 'react'
 
-import { generateRowKey } from '../../Table-utils'
+import { generateRowKey, getScrollX } from '../../Table-utils'
 import { ILoadingTableProps } from './LoadingTable-types'
 
 const { useBreakpoint } = Grid
@@ -10,6 +11,7 @@ const { useBreakpoint } = Grid
 export function LoadingTable<DataType extends AnyObject>(props: ILoadingTableProps<DataType>) {
 	const { className, columns, tableHeader } = props
 	const screens = useBreakpoint()
+	const [scrollX, setScrollX] = useState(0)
 
 	const dataIndexes = columns.map((c) => c.dataIndex as string)
 	const fakeData = []
@@ -42,12 +44,20 @@ export function LoadingTable<DataType extends AnyObject>(props: ILoadingTablePro
 		),
 	}))
 
+	useLayoutEffect(() => {
+		const sX = getScrollX()
+		setScrollX(sX)
+	}, [])
+
 	return (
 		<>
 			{tableHeader}
 			<Table<AnyObject>
 				size={screens.xxl ? 'large' : 'small'}
 				tableLayout="fixed"
+				scroll={{
+					x: scrollX,
+				}}
 				className={classNames('se-table--loading', className)}
 				columns={cols}
 				rowKey={(record) => {

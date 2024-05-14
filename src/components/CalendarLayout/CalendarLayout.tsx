@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 
 import { BasicLayout } from '@components'
 import { useAuth } from '@contexts'
-import { useSupabase } from '@utils'
+import { log, useSupabase } from '@utils'
 
 import { Calendar, CalendarList } from './_components'
 
@@ -18,7 +18,7 @@ export function CalendarLayout() {
 			const { data, error } = await supabase.from('events').select('*')
 
 			if (error) {
-				console.error('Error fetching events', error)
+				log.error('Error fetching events', error)
 				throw error
 			}
 
@@ -35,7 +35,7 @@ export function CalendarLayout() {
 				.or(`assignee.eq.${user!.id},author_id.eq.${user!.id}`)
 
 			if (error) {
-				console.error('Error fetching appointments', error)
+				log.error('Error fetching appointments', error)
 				throw error
 			}
 

@@ -24,7 +24,7 @@ import short from 'short-uuid'
 
 import { AutoCompleteField, IconButton, SelectField } from '@components'
 import { useAuth, useTheme } from '@contexts'
-import { fetchAddressCompletion, fetchGeoIP, useDebounce, useSupabase } from '@utils'
+import { fetchAddressCompletion, fetchGeoIP, log, useDebounce, useSupabase } from '@utils'
 
 import { TEventTypeValue } from '../EventForm/EventForm-types'
 import { getFileExtension } from '../EventForm/EventForm-utils'
@@ -60,12 +60,12 @@ export function UpdateForm() {
 			const { data, error } = await supabase.from('events').select('*').eq('id', eventId!).single()
 
 			if (error) {
-				console.error('Error fetching event:', error)
+				log.error('Error fetching event:', error)
 			} else if (data) {
 				setEventData(data as IEventFormFields | null)
 			}
 		}
-		console.log('eventData', eventData)
+		log.log('eventData', eventData)
 
 		fetchEvent()
 	}, [supabase, eventId])
@@ -187,7 +187,7 @@ export function UpdateForm() {
 									}
 									req.upload.onerror = (event) => {
 										onError?.(event)
-										console.error('error', event)
+										log.error('error', event)
 									}
 									req.upload.onload = () => {
 										onSuccess?.('ok')

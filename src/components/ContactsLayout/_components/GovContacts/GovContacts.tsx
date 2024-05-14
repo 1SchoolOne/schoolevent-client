@@ -64,6 +64,7 @@ export function GovContacts() {
 	return (
 		<Table<ISchool>
 			tableId="gov-contacts"
+			className="contacts-table gov-contacts-table"
 			additionalQueryKey={[favorites, range]}
 			renderHeader={(resetFiltersButton, globalSearchInput) => (
 				<>

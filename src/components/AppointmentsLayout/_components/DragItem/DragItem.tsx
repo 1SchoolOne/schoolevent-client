@@ -4,11 +4,10 @@ import { Avatar, Space, Tooltip, Typography } from 'antd'
 import dayjs from 'dayjs'
 import timezone from 'dayjs/plugin/timezone'
 import utc from 'dayjs/plugin/utc'
-import logger from 'loglevel'
 import { useDrag } from 'react-dnd'
 import { useNavigate } from 'react-router-dom'
 
-import { getNameFromEmail, useSupabase } from '@utils'
+import { getNameFromEmail, log, useSupabase } from '@utils'
 
 import { IDragItemProps } from '../../AppointmentsLayout-types'
 import { DateField } from '../AppointmentModal/_components/DateField/DateField'
@@ -30,7 +29,7 @@ export function DragItem({ appointment }: IDragItemProps) {
 				.list(`appointment_${appointment.id}`)
 
 			if (error) {
-				logger.error(error)
+				log.error(error)
 				throw error
 			}
 
@@ -48,7 +47,7 @@ export function DragItem({ appointment }: IDragItemProps) {
 				.eq('appointment_id', appointment.id)
 
 			if (error) {
-				logger.error(error)
+				log.error(error)
 				throw error
 			}
 

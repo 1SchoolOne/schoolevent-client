@@ -3,8 +3,8 @@ import { Button, Card, Row, Select, Typography } from 'antd'
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 
-import { getNameFromEmail } from '../../../utils/getNameFromEmail'
-import { useSupabase } from '../../../utils/useSupabase'
+import { getNameFromEmail, log, useSupabase } from '@utils'
+
 import { IEventFormFields, IUser } from '../type'
 
 import './EventDetail-styles.less'
@@ -35,7 +35,7 @@ export function EventDetail() {
 
 				setUserEmail(data)
 			} catch (error) {
-				console.error('Error fetching user emails:', error)
+				log.error('Error fetching user emails:', error)
 			}
 		}
 
@@ -53,7 +53,7 @@ export function EventDetail() {
 
 				setEvent(data as IEventFormFields)
 			} catch (error) {
-				console.error('Error fetching event data:', error)
+				log.error('Error fetching event data:', error)
 			}
 		}
 		fetchUserEmails()

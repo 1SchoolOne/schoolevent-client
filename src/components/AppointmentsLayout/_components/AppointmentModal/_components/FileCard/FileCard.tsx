@@ -2,11 +2,10 @@ import { Trash as DeleteIcon, DownloadSimple as DownloadIcon } from '@phosphor-i
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Card, Spin, Typography } from 'antd'
 import { saveAs } from 'file-saver'
-import logger from 'loglevel'
 
 import { IconButton } from '@components'
 import { useAppointmentForm } from '@contexts'
-import { useSupabase } from '@utils'
+import { log, useSupabase } from '@utils'
 
 import { IFileCardProps } from './FileCard-types'
 import { formatFileSize, getFileIcon } from './FileCard-utils'
@@ -28,7 +27,7 @@ export function FileCard(props: IFileCardProps) {
 		const { data, error } = await supabase.storage.from('attachments').download(path)
 
 		if (error) {
-			logger.error(error)
+			log.error(error)
 			throw error
 		}
 
@@ -40,7 +39,7 @@ export function FileCard(props: IFileCardProps) {
 			const { error } = await supabase.storage.from('attachments').remove([path])
 
 			if (error) {
-				logger.error(error)
+				log.error(error)
 				throw error
 			}
 		},
@@ -81,7 +80,7 @@ export function FileCard(props: IFileCardProps) {
 				})
 
 			if (error) {
-				logger.error(error)
+				log.error(error)
 				throw error
 			}
 

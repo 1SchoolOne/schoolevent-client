@@ -1,15 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
-import {
-	App as AppProvider,
-	Card,
-	ConfigProvider,
-	Typography,
-	theme as themeAlg,
-} from 'antd'
+import { App as AppProvider, Card, ConfigProvider, Typography, theme as themeAlg } from 'antd'
 import frFR from 'antd/lib/locale/fr_FR'
-import logger from 'loglevel'
-import prefixLogger from 'loglevel-plugin-prefix'
 import { useEffect, useState } from 'react'
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
@@ -43,14 +35,6 @@ const queryClient = new QueryClient({
 		queries: {
 			staleTime: APP_MODE === 'staging' ? 0 : 60_000,
 		},
-	},
-})
-
-prefixLogger.reg(logger)
-logger.enableAll()
-prefixLogger.apply(logger, {
-	format(level, _name, timestamp) {
-		return `[${timestamp}] ${level}:`
 	},
 })
 

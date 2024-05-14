@@ -1,10 +1,9 @@
 import { SignIn as SignUpIcon } from '@phosphor-icons/react'
 import { useMutation } from '@tanstack/react-query'
 import { App, Button, Form, Input } from 'antd'
-import logger from 'loglevel'
 import { Link, useNavigate } from 'react-router-dom'
 
-import { isStringEmpty, useSupabase } from '@utils'
+import { isStringEmpty, log, useSupabase } from '@utils'
 
 import { ISignUpFormFields } from '../types'
 import { handleSuccessfulRedirect } from './SignUpForm-utils'
@@ -30,7 +29,7 @@ export function SignUpForm() {
 			})
 
 			if (error) {
-				logger.error(error)
+				log.error(error)
 				message.error(`${error.name}: ${error.message}`, 7.5)
 				return
 			}
@@ -38,7 +37,7 @@ export function SignUpForm() {
 			return data
 		},
 		onError: (error) => {
-			logger.error(error)
+			log.error(error)
 			message.error(`${error.name}: ${error.message}`, 7.5)
 		},
 		onSuccess: (data) => {

@@ -1,14 +1,14 @@
-import logger from 'loglevel'
 import { useState } from 'react'
 
 import { ICopyFnReturn, TCopyFn } from '@types'
+import { log } from '@utils'
 
 export function useCopyToClipboard(timeout = 2000): ICopyFnReturn {
 	const [copied, setCopied] = useState<boolean>(false)
 
 	const copy: TCopyFn = async (text) => {
 		if (!navigator?.clipboard) {
-			logger.warn('Clipboard not supported')
+			log.warn('Clipboard not supported')
 			return false
 		}
 
@@ -24,7 +24,7 @@ export function useCopyToClipboard(timeout = 2000): ICopyFnReturn {
 
 			return true
 		} catch (error) {
-			logger.warn('Copy failed', error)
+			log.warn('Copy failed', error)
 
 			setCopied(false)
 

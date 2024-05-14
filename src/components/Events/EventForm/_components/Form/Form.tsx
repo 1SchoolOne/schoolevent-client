@@ -17,14 +17,13 @@ import {
 import dayjs from 'dayjs'
 import timezone from 'dayjs/plugin/timezone'
 import utc from 'dayjs/plugin/utc'
-import logger from 'loglevel'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import short from 'short-uuid'
 
 import { AutoCompleteField, IconButton, SelectField } from '@components'
 import { useAuth, useTheme } from '@contexts'
-import { fetchAddressCompletion, fetchGeoIP, useDebounce, useSupabase } from '@utils'
+import { fetchAddressCompletion, fetchGeoIP, log, useDebounce, useSupabase } from '@utils'
 
 import { IEventFormFields } from '../../EventForm-types'
 import { getFileExtension } from '../../EventForm-utils'
@@ -148,7 +147,7 @@ export function Form() {
 									}
 									req.upload.onerror = (event) => {
 										onError?.(event)
-										logger.error(event)
+										log.error(event)
 									}
 									req.upload.onload = () => {
 										onSuccess?.('ok')

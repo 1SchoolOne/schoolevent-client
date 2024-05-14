@@ -10,13 +10,12 @@ import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import timezone from 'dayjs/plugin/timezone'
 import utc from 'dayjs/plugin/utc'
-import logger from 'loglevel'
 import { useLayoutEffect, useState } from 'react'
 
 import { Divider } from '@components'
 import { useAppointmentForm, useAuth } from '@contexts'
 import { ICommentSortStorage, TComments } from '@types'
-import { useLocalStorage, useSupabase } from '@utils'
+import { log, useLocalStorage, useSupabase } from '@utils'
 
 import { Comment } from '../Comment/Comment'
 
@@ -59,7 +58,7 @@ export function CommentList() {
 			})
 
 			if (error) {
-				logger.error(error)
+				log.error(error)
 				throw error
 			}
 
@@ -127,7 +126,7 @@ export function CommentList() {
 				.eq('appointment_id', appointmentId)
 
 			if (error) {
-				logger.error(error)
+				log.error(error)
 				throw error
 			}
 

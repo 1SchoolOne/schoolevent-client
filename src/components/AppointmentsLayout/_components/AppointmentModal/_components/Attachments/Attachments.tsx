@@ -5,11 +5,10 @@ import {
 } from '@phosphor-icons/react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { App, Space, Upload } from 'antd'
-import logger from 'loglevel'
 
 import { Divider } from '@components'
 import { useAppointmentForm } from '@contexts'
-import { useSupabase } from '@utils'
+import { log, useSupabase } from '@utils'
 
 import { FileList } from '../FileList/FileList'
 import { ACCEPTED_FILE_TYPES } from './Attachments-constants'
@@ -29,7 +28,7 @@ export function Attachments() {
 				.list(`appointment_${appointmentId}`)
 
 			if (error) {
-				logger.error(error)
+				log.error(error)
 				throw error
 			}
 
@@ -45,7 +44,7 @@ export function Attachments() {
 				.upload(`appointment_${appointmentId}/${file.name}`, file)
 
 			if (error) {
-				logger.error(error)
+				log.error(error)
 
 				const defaultError = `${error.name ? error.name + ': ' : ''}${error.message}`
 				const formattedError = getFormatedError(error.message)

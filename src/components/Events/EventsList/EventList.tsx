@@ -2,7 +2,7 @@ import { Card, List } from 'antd'
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 
-import { useSupabase } from '@utils'
+import { log, useSupabase } from '@utils'
 
 import { TEventTypeValue } from '../EventForm/EventForm-types'
 import { IEventFormFields } from '../type'
@@ -17,7 +17,7 @@ export function EventList() {
 	const fetchEvents = async () => {
 		const { data, error } = await supabase.from('events').select('*')
 		if (error) {
-			console.error('Error fetching events:', error)
+			log.error('Error fetching events:', error)
 			return []
 		}
 		setEvents(data as IEventFormFields[])
@@ -38,7 +38,7 @@ export function EventList() {
 				size="large"
 				pagination={{
 					onChange: (page) => {
-						console.log(page)
+						log.log(page)
 					},
 					pageSize: 3,
 				}}

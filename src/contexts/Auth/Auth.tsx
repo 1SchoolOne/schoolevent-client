@@ -1,11 +1,10 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { Spin } from 'antd'
-import logger from 'loglevel'
 import { createContext, useContext, useEffect, useMemo, useReducer } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { PropsWithChildren } from '@types'
-import { useSupabase } from '@utils'
+import { log, useSupabase } from '@utils'
 
 import { INIT_AUTH_STATE } from './Auth-constants'
 import { IAuthContext } from './Auth-types'
@@ -19,8 +18,6 @@ export function AuthProvider({ children }: PropsWithChildren) {
 	const supabase = useSupabase()
 	const navigate = useNavigate()
 	const queryClient = useQueryClient()
-
-	const DEV_MODE = import.meta.env.DEV
 
 	supabase.auth.getSession()
 
@@ -56,7 +53,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
 		} = supabase.auth.onAuthStateChange((event, newSession) => {
 			const pathname = window.location.pathname.split('/').filter((i) => i)
 
-			DEV_MODE && logger.info(event, newSession)
+			log.info(event, newSession)
 
 			setAuthState({ type: 'SET_SESSION', payload: { session: newSession } })
 

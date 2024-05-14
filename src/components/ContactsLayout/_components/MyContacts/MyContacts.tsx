@@ -29,6 +29,7 @@ export function MyContacts() {
 	return (
 		<Table<TContact & { favorite: boolean }>
 			tableId="my-contacts"
+			className="contacts-table my-contacts-table"
 			renderHeader={(resetFiltersButton, globalSearchInput) => (
 				<>
 					<Segmented

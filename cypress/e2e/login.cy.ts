@@ -97,7 +97,6 @@ describe('Login', () => {
 		cy.url().should('eq', EVENTS_URL)
 
 		// TODO: Manager should have access to students page
-		// TODO: Manager should have access to stats page
 	})
 
 	it('allows access to home and events routes for student role', () => {
@@ -127,6 +126,5 @@ describe('Login', () => {
 		cy.url().should('eq', EVENTS_URL)
 
 		// TODO: Admin should have access to students page
-		// TODO: Admin should have access to stats page
 	})
 })

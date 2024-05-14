@@ -31,7 +31,6 @@ export const SIDE_MENU_LABELS = {
 			'Rendez-vous',
 			'Événements',
 			'Étudiants',
-			'Statistiques',
 		],
 	},
 	manager: {
@@ -42,11 +41,10 @@ export const SIDE_MENU_LABELS = {
 			'Rendez-vous',
 			'Événements',
 			'Étudiants',
-			'Statistiques',
 		],
 	},
 	student: {
 		shouldHaveAccessTo: ['Accueil', 'Événements'],
-		shouldNotHaveAccessTo: ['Contacts', 'Calendrier', 'Rendez-vous', 'Étudiants', 'Statistiques'],
+		shouldNotHaveAccessTo: ['Contacts', 'Calendrier', 'Rendez-vous', 'Étudiants'],
 	},
 }

@@ -5,7 +5,7 @@ import { unlinkSync } from 'fs'
 export default defineConfig({
 	projectId: 'pccnxg',
 	defaultCommandTimeout: 10_000,
-	pageLoadTimeout: 10_000,
+	pageLoadTimeout: 20_000,
 	requestTimeout: 10_000,
 	viewportWidth: 1600,
 	viewportHeight: 900,

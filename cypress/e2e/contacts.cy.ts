@@ -34,6 +34,9 @@ describe('Contacts', () => {
 			},
 		})
 
+		// Switch to government tab
+		cy.contains('Gouvernement').click()
+
 		waitForTableDataToLoad()
 	})
 
@@ -106,6 +109,9 @@ describe('Contacts', () => {
 	})
 
 	it('allows to filter by postcode', () => {
+		// On some screen size, the "Code postal" column might not be in view
+		cy.get('.ant-table-body').scrollTo(100, 0)
+
 		getTableColumnHeader(/^Code postal$/).within(() => {
 			getTableColumnFilterButton().click()
 		})
@@ -125,6 +131,9 @@ describe('Contacts', () => {
 	})
 
 	it('allows to filter by address', () => {
+		// On some screen size, the "Adresse" column might not be in view
+		cy.get('.ant-table-body').scrollTo(300, 0)
+
 		getTableColumnHeader(/^Adresse$/).within(() => {
 			getTableColumnFilterButton().click()
 		})
@@ -144,7 +153,7 @@ describe('Contacts', () => {
 	})
 
 	it('allows to filter globally', () => {
-		cy.get('.contacts-global-search')
+		cy.get('.se-table-global-search')
 			.find('input')
 			.type("Section d'enseignement professionnel du lycée polyvalent Jean Perrin")
 
@@ -215,17 +224,13 @@ describe('Contacts', () => {
 
 		openMap()
 
-		cy.get('.contacts-global-search')
+		cy.get('.se-table-global-search')
 			.find('input')
 			.type(schoolName + '{enter}')
 
 		waitForTableDataToLoad(true)
 
-		getAllTableRows().then((rows) => {
-			cy.wrap(rows).each((row) => {
-				cy.wrap(row).click()
-			})
-		})
+		cy.get('.ant-table-row').contains(schoolName).click()
 
 		cy.get(`img[title="${schoolName}"]`).should('be.visible')
 	})

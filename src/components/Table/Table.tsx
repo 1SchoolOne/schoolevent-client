@@ -85,11 +85,8 @@ function InnerTable<DataType extends AnyObject>(props: IInnerTableProps<DataType
 		() =>
 			columns.map((col) => ({
 				...col,
-				key: col.dataIndex,
+				width: col.width ?? 200,
 				filteredValue: tableConfig.filters?.[col.dataIndex as string],
-				ellipsis: {
-					showTitle: false,
-				},
 				sortOrder:
 					tableConfig.sorter?.field === col.dataIndex ? tableConfig.sorter?.order : undefined,
 			})),

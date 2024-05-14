@@ -121,22 +121,39 @@ export function GovContacts() {
 				const orderBy = getOrderBy(sorter)
 				const where = getWhere(filters, gblSearch, range, location)
 
-				const res = await fetchGovData({
-					limit: pagination?.size ?? 25,
-					offset: pagination?.offset ?? 0,
-					select: SELECTED_FIELDS,
-					where: where,
-					orderBy,
-				}).then((response) => response.json() as Promise<IAPIResponse>)
+				// eslint-disable-next-line
+				try {
+					const res = await fetchGovData({
+						limit: pagination?.size ?? 25,
+						offset: pagination?.offset ?? 0,
+						select: SELECTED_FIELDS,
+						where: where,
+						orderBy,
+					}).then(async (response) => {
+						if (response.ok) {
+							return (await response.json()) as Promise<IAPIResponse>
+						} else {
+							throw await response.json()
+						}
+					})
 
-				const dataWithFavorites: ISchool[] = res.results.map((record) => ({
-					...record,
-					favoris: favorites.some((fav) => fav.school_id === record.identifiant_de_l_etablissement),
-				}))
+					if (res) {
+						const dataWithFavorites: ISchool[] = res.results.map((record) => ({
+							...record,
+							favoris: favorites.some(
+								(fav) => fav.school_id === record.identifiant_de_l_etablissement,
+							),
+						}))
 
-				setContacts(dataWithFavorites)
+						setContacts(dataWithFavorites)
 
-				return { data: dataWithFavorites, totalCount: res.total_count }
+						return { data: dataWithFavorites, totalCount: res.total_count }
+					}
+				} catch (e) {
+					throw e
+				}
+
+				return { data: [], totalCount: 0 }
 			}}
 			onRow={(record) => ({
 				onClick: () => {

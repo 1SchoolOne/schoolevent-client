@@ -31,3 +31,7 @@ cypress/screenshots/*
 
 # Coverage reports
 coverage
+*storybook.log
+
+# Storybook build
+storybook-static

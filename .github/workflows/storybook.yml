@@ -28,9 +28,9 @@ jobs:
           node-version: '20.13.1'
 
       #👇 Add Storybook build and deploy to GitHub Pages as a step in the workflow
-      - uses: bitovi/github-actions-storybook-to-github-pages@v1.0.1
+      - uses: bitovi/github-actions-storybook-to-github-pages@v1.0.3
         with:
-          install_command: yarn install --frozen-lock-file
+          install_command: yarn install
           build_command: yarn build-storybook
           path: storybook-static # default: dist/storybook
           checkout: false # default: true

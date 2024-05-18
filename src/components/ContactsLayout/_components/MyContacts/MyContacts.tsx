@@ -55,9 +55,9 @@ export function MyContacts() {
 				</>
 			)}
 			additionalQueryKey={[favorites]}
-			dataSource={async (filters, sorter, pagination, globalSearch) => {
-				const from = pagination!.offset
-				const to = pagination!.offset + pagination!.size
+			dataSource={async (filters, sorter, pagination, currentPage, globalSearch) => {
+				const from = (currentPage - 1) * pagination!.size
+				const to = from + pagination!.size
 
 				let request = supabase
 					.from('contacts')

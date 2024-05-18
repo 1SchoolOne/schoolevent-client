@@ -81,9 +81,7 @@ export function getAllTableRows() {
  * To use when you need to wait for the table data to load.
  */
 export function waitForTableDataToLoad(filtered = false) {
-	cy.get('.table-container').within(() => {
-		cy.get('.ant-spin-blur').should('not.exist')
-	})
+	cy.get('.se-table--loading').should('not.exist')
 
 	if (filtered) {
 		cy.get('.ant-pagination').within(() => {

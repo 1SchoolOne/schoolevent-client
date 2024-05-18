@@ -117,7 +117,7 @@ export function GovContacts() {
 					{resetFiltersButton}
 				</>
 			)}
-			dataSource={async (filters, sorter, pagination, globalSearch) => {
+			dataSource={async (filters, sorter, pagination, currentPage, globalSearch) => {
 				const gblSearch = getGlobalSearch(globalSearch ?? '')
 				const orderBy = getOrderBy(sorter)
 				const where = getWhere(filters, gblSearch, range, location)
@@ -126,7 +126,7 @@ export function GovContacts() {
 				try {
 					const res = await fetchGovData({
 						limit: pagination?.size ?? 25,
-						offset: pagination?.offset ?? 0,
+						offset: pagination?.size ? (currentPage - 1) * pagination.size : 0,
 						select: SELECTED_FIELDS,
 						where: where,
 						orderBy,

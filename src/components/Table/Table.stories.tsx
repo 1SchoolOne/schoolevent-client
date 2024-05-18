@@ -1,14 +1,13 @@
 import { Check, X } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react'
 
+import { Table } from './Table'
 import {
 	getColumnSearchFilterConfig,
 	getRadioOrCheckboxFilterConfig,
 	getStaticColumnSearchFilterConfig,
 	getStaticRadioOrCheckboxFilterConfig,
-} from '@components'
-
-import { Table } from './Table'
+} from './Table-utils'
 import { DEFAULT_FILTERS, SIMPLE_COLUMNS, STATIC_DATA } from './Table.stories-constants'
 
 const meta: Meta<typeof Table> = {

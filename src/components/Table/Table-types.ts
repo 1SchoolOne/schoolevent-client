@@ -32,16 +32,27 @@ export type ColumnsType<T extends AnyObject> = ColumnType<T>[]
 
 export interface ITableProps<T extends AnyObject>
 	extends Omit<TableProps<T>, 'dataSource' | 'columns' | 'onChange'> {
+	/**
+	 * Will be used to create a local storage reference.
+	 */
 	tableId: string
+	/**
+	 * Either:
+	 * - an object of type { data: Array<T>, totalCount: number }
+	 * - a Promise that returns an object of type { data: Array<T>, totalCount: number }
+	 */
 	dataSource: TDataSource<T>
 	columns: ColumnsType<T>
+	/**
+	 * A function to customize the table header.
+	 */
 	renderHeader?: TRenderHeader
+	/**
+	 * List of fields that are included in the global search. They will be
+	 * displayed in the global search tooltip. This list is only used for display
+	 * purposes.
+	 */
 	globalSearch?: {
-		/**
-		 * List of fields that are included in the global search. They will be
-		 * displayed in the global search tooltip. This list is only used for display
-		 * purposes.
-		 */
 		searchedFields: Array<string>
 	}
 	showResetFilters?: true
@@ -49,6 +60,11 @@ export interface ITableProps<T extends AnyObject>
 	 * Values **MUST** be null, not undefined.
 	 */
 	defaultFilters: TFilters<keyof T, null>
+	/**
+	 * Variables that could trigger a refetch. Must be an array.
+	 *
+	 * Example: ['my-string', { config: '...', page: 1 }]
+	 */
 	additionalQueryKey?: QueryKey
 }
 
@@ -66,6 +82,7 @@ export type TDataSource<T> =
 			filters: TFilters<keyof T> | undefined,
 			sorter: ISorter<T> | undefined,
 			pagination: IPagination | undefined,
+			currentPage: number,
 			globalSearch: string | null,
 	  ) => Promise<IDataSourceObject<T>>)
 
@@ -100,7 +117,6 @@ export interface ISorter<T> {
 
 export interface IPagination {
 	size: number
-	offset: number
 }
 
 export interface ITableConfig<T> {

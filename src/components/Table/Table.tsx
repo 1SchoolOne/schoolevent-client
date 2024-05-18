@@ -3,7 +3,7 @@ import { Table as AntdTable, Grid } from 'antd'
 import { AnyObject } from 'antd/lib/_util/type'
 import { TableRef } from 'antd/lib/table'
 import classNames from 'classnames'
-import { Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { Suspense, useEffect, useMemo, useRef, useState } from 'react'
 
 import { useTheme } from '@contexts'
 import { useLocalStorage } from '@utils'
@@ -28,6 +28,7 @@ import './Table-styles.less'
 
 const { useBreakpoint } = Grid
 
+// TODO: add a defaultSortOrder props
 function InnerTable<DataType extends AnyObject>(props: IInnerTableProps<DataType>) {
 	const {
 		tableId,
@@ -45,7 +46,7 @@ function InnerTable<DataType extends AnyObject>(props: IInnerTableProps<DataType
 		...restProps
 	} = props
 
-	const [scrollX, setScrollX] = useState(0)
+	const [currentPage, setCurrentPage] = useState(1)
 	const tableRef = useRef<TableRef>(null)
 	const { theme } = useTheme()
 	const storage = useLocalStorage()
@@ -62,7 +63,7 @@ function InnerTable<DataType extends AnyObject>(props: IInnerTableProps<DataType
 			{
 				filters: tableConfig.filters,
 				sorter: tableConfig.sorter,
-				pagination: tableConfig.pagination,
+				pagination: { ...tableConfig.pagination, currentPage },
 				globalSearch: globalSearchValue,
 			},
 			...additionalQueryKey,
@@ -76,6 +77,7 @@ function InnerTable<DataType extends AnyObject>(props: IInnerTableProps<DataType
 				tableConfig.filters,
 				tableConfig.sorter,
 				tableConfig.pagination,
+				currentPage,
 				globalSearchValue,
 			)
 		},
@@ -93,14 +95,14 @@ function InnerTable<DataType extends AnyObject>(props: IInnerTableProps<DataType
 		[tableConfig.filters, tableConfig.sorter, columns],
 	)
 
-	useLayoutEffect(() => {
-		const sX = getScrollX()
-		setScrollX(sX)
-	}, [])
+	const scrollX = getScrollX(tableRef)
 
 	useEffect(
 		function syncLocalStorage() {
-			storage.set({ key: tableStorageKey, data: tableConfig as unknown as Record<string, unknown> })
+			storage.set({
+				key: tableStorageKey,
+				data: tableConfig,
+			})
 		},
 		[storage, tableConfig, tableStorageKey],
 	)
@@ -130,11 +132,11 @@ function InnerTable<DataType extends AnyObject>(props: IInnerTableProps<DataType
 					const paginationObject =
 						pagination.current && pagination.pageSize
 							? {
-									offset: (pagination.current - 1) * pagination.pageSize,
 									size: pagination.pageSize,
 							  }
 							: undefined
 
+					setCurrentPage(pagination.current ?? 0)
 					setTableConfig((prevConfig) => ({
 						...prevConfig,
 						filters: filters as TFilters<keyof DataType>,

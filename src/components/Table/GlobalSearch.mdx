@@ -1,0 +1,74 @@
+import { Meta } from '@storybook/blocks'
+import TableStories from './Table.stories'
+
+<Meta of={TableStories} title="Global search" />
+
+# Global search
+
+The global search allows to search on all columns at once. The best practice is that the match should be partial, not strict.
+
+The following example uses the Supabase API. If using another API, the implementation should be custom made.
+
+```tsx
+// Not mandatory but useful for autocompletion.
+<Table<Database['public']['Tables']['favorites']['Row']>
+	tableId="myTable"
+	globalSearch={{
+		// Does not have any effect on the fetch process. It is used to indicate a tooltip to indicate
+		// which fields the global search will match.
+		searchedFields: ['École', 'Ville', 'Code postal'],
+	}}
+	dataSource={async (filters, sorter, pagination, globalSearch) => {
+		const parsedFilters = parseFiltersForSupabase(filters)
+
+		const from = pagination?.offset
+		const to = pagination?.offset + pagination?.size
+
+		let sup = supabase.from('favorites').select('*', { count: 'exact' }).range(from, to)
+
+		if (globalSearch) {
+			const gblSearch = parseGlobalSearchForSupabase<
+				Database['public']['Tables']['favorites']['Row']
+			>(globalSearch, ['school_name', 'school_city', 'school_postal_code'])
+			sup = sup.or(gblSearch)
+		} else if (parsedFilters) {
+			sup = sup.or(parsedFilters)
+		}
+
+		if (sorter) {
+			sup = sup.order(sorter.field, {
+				ascending: sorter.order === 'ascend',
+			})
+		}
+
+		const { data, error, count } = await sup
+
+		if (error) {
+			throw error
+		}
+
+		return { data, totalCount: count ?? 0 }
+	}}
+	columns={[
+		{
+			dataIndex: 'school_name',
+			title: 'École',
+		},
+		{
+			dataIndex: 'school_city',
+			title: 'Ville',
+		},
+		{
+			dataIndex: 'school_postal_code',
+			title: 'Code postal',
+		},
+	]}
+	defaultFilters={{
+		school_city: null,
+		school_name: null,
+		school_postal_code: null,
+	}}
+	// Will display a button to reset filters
+	showResetFilters
+/>
+```

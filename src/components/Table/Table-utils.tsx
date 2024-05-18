@@ -31,12 +31,13 @@ export function loadStorage<DataType>(
 	const tableStorageKey = tableId + '.table'
 
 	if (storage.has(tableStorageKey)) {
+		// TODO: sync page size but not offset
 		return storage.get(tableStorageKey) as unknown as ILoadStorageReturn<DataType>
 	} else {
-		const defaultValues = {
+		const defaultValues: ILoadStorageReturn<DataType> = {
 			filters: defaultFilters,
 			sorter: undefined,
-			pagination: { size: 25, offset: 0 },
+			pagination: { size: 25 },
 		}
 
 		storage.set({ key: tableStorageKey, data: defaultValues })
@@ -282,7 +283,7 @@ export function useResetFiltersButton(onClick: () => void, enabled?: true) {
 export function useTableHeader(params: IRenderHeaderParams) {
 	const { resetFiltersButton, globalSearchInput, callback } = params
 
-	if (!resetFiltersButton && !globalSearchInput && !callback) {
+	if (!resetFiltersButton && !globalSearchInput) {
 		return null
 	}
 
@@ -301,10 +302,13 @@ export function defaultRenderHeaderCallback(
 	)
 }
 
-export function getScrollX() {
-	const layoutContent = document.querySelector('.basic-layout__content') as HTMLElement
-	const totalWidth = layoutContent.getBoundingClientRect().width
-	const { value: padding } = layoutContent.computedStyleMap().get('padding-left') as CSSUnitValue
+export function getScrollX(tableRef: RefObject<TableRef>) {
+	if (tableRef?.current) {
+		const tableContainer = tableRef.current.nativeElement.parentElement as HTMLElement
 
-	return totalWidth - padding
+		const totalWidth = tableContainer.getBoundingClientRect().width
+		const { value: padding } = tableContainer.computedStyleMap().get('padding-left') as CSSUnitValue
+
+		return totalWidth - padding
+	}
 }

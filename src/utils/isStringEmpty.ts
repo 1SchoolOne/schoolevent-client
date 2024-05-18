@@ -1,7 +1,7 @@
-export function isStringEmpty(str: string | undefined) {
+export function isStringEmpty(str: unknown | undefined) {
 	if (str === undefined) {
 		return true
 	}
 
-	return str.trim() === ''
+	return String(str).trim() === ''
 }

@@ -1,6 +1,5 @@
-import { IEventFormFields } from "../../../../Events/type"
+import { TEvent } from '@types'
 
 export interface IEventCardProps {
-  event: IEventFormFields
-  onClick: () => void
+	event: TEvent
 }

@@ -8,9 +8,7 @@ import { formatEventDuration, getEventStartTime, getEventTypeLabel } from './Eve
 
 import './EventCard-styles.less'
 
-export function EventCard(props: IEventCardProps) {
-	const { event, onClick } = props
-
+export function EventCard({ event }: IEventCardProps) {
 	return (
 		<Card
 			className={classNames('event-card', {
@@ -23,7 +21,6 @@ export function EventCard(props: IEventCardProps) {
 					<img className="img-cover" alt="event-cover" src={event.event_background} />
 				) : undefined
 			}
-			onClick={onClick}
 		>
 			<p className="event-card__date">
 				{`${new Date(event.event_date).toLocaleDateString('fr-FR', {

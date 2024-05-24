@@ -1,29 +1,44 @@
 .event-card {
-  width: 290px;
-  position: relative;
-}
+	position: relative;
 
-.card-title {
-  position: absolute;
-  top: 15%;
-  left: 25%;
-  font-size: 25px;
-  color: #fff;
-} 
+	&--has-background::before {
+		content: attr(data-title);
+		display: block;
+		z-index: 99;
 
-.event-favorite {
-  position: absolute;
-  right: 5%;
-  bottom: 90%;
-  font-size: 25px;
-  color: #fff;
-}
+		position: absolute;
+		top: calc(175px / 2);
+		left: 50%;
+		transform: translate(-50%, -50%);
+		padding: 0 var(--ant-padding-lg);
+		width: max-content;
+		max-width: 100%;
 
-.card-date {
-  display: flex;
-  justify-content: right;
-}
+		font-size: var(--ant-font-size-heading-2);
+		overflow-wrap: break-word;
+		color: white;
+	}
 
-.img-cover {
-  filter: brightness(60%);
+	.ant-card-cover {
+		height: 175px;
+
+		img.img-cover {
+			position: relative;
+			height: 100%;
+			object-fit: cover;
+			filter: brightness(60%);
+		}
+	}
+
+	&__date {
+		width: fit-content;
+		margin-left: auto;
+	}
+
+	&__link {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		margin-top: var(--ant-margin);
+	}
 }

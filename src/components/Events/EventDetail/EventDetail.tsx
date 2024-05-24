@@ -62,7 +62,7 @@ export function EventDetail() {
 
 	//TODO Préparation pour la feature du update d'un envent
 	const handleEditClick = () => {
-		navigate(`/events/update/${eventId}`)
+		navigate(`/events/edit/${eventId}`)
 	}
 
 	return (

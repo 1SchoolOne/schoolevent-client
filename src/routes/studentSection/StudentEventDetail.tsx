@@ -1,7 +1,7 @@
 import { Helmet } from 'react-helmet'
 import { RouteObject } from 'react-router-dom'
 
-import { StudentDetail } from '../../components/StudentSection/StudentEventDetail/StudentEventDetail'
+import { StudentEventDetail } from '@components'
 
 export const studentEventDetailRoute: RouteObject = {
 	path: ':studentEventId',
@@ -10,7 +10,7 @@ export const studentEventDetailRoute: RouteObject = {
 			<Helmet>
 				<title>SchoolEvent | Détail</title>
 			</Helmet>
-			<StudentDetail />
+			<StudentEventDetail />
 		</>
 	),
 }

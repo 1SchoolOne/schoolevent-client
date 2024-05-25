@@ -13,7 +13,6 @@ import {
 	ContactsLayout,
 	EventDetail,
 	EventForm,
-	EventList,
 	EventUpdateForm,
 	HomeLayout,
 	LoginForm,
@@ -22,7 +21,6 @@ import {
 	ProvidersWithAuth,
 	Reward,
 	SignUpForm,
-	StudentEventDetail,
 	StudentEventList,
 	Success,
 } from '@components'
@@ -93,7 +91,7 @@ function App() {
 									</ProtectedRoute>
 								}
 							>
-								<Route index element={<EventList />} />
+								<Route index element={<StudentEventList />} />
 								<Route path="new" element={<EventForm />} />
 								<Route path="view/:eventId" element={<EventDetail />} />
 								<Route path="edit/:eventId" element={<EventUpdateForm />} />
@@ -111,20 +109,6 @@ function App() {
 									</ProtectedRoute>
 								}
 							/>
-							<Route
-								path="studentEvents"
-								element={
-									<ProtectedRoute>
-										<Helmet>
-											<title>SchoolEvent | Events</title>
-										</Helmet>
-										<Outlet />
-									</ProtectedRoute>
-								}
-							>
-								<Route index element={<StudentEventList />} />
-								<Route path=":eventId" element={<StudentEventDetail />} />
-							</Route>
 							<Route
 								path="rewards"
 								element={

@@ -224,6 +224,7 @@ export type Database = {
       events: {
         Row: {
           event_address: string
+          event_assignee: string | null
           event_background: string | null
           event_creator_id: string
           event_date: string
@@ -236,6 +237,7 @@ export type Database = {
         }
         Insert: {
           event_address: string
+          event_assignee?: string | null
           event_background?: string | null
           event_creator_id: string
           event_date: string
@@ -248,6 +250,7 @@ export type Database = {
         }
         Update: {
           event_address?: string
+          event_assignee?: string | null
           event_background?: string | null
           event_creator_id?: string
           event_date?: string
@@ -258,7 +261,20 @@ export type Database = {
           event_type?: Database["public"]["Enums"]["event_type"]
           id?: number
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "events_event_assignee_fkey"
+            columns: ["event_assignee"]
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "events_event_creator_id_fkey"
+            columns: ["event_creator_id"]
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       events_participants: {
         Row: {

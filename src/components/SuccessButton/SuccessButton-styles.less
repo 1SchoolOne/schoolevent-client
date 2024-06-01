@@ -1,0 +1,83 @@
+@color: var(--ant-color-success);
+@colorHover: var(--ant-color-success-hover);
+@colorActive: var(--ant-color-success-active);
+
+.se-success-button.ant-btn {
+	&.ant-btn-default,
+	&.ant-btn-dashed {
+		border-color: @color;
+		color: @color;
+
+		&:hover {
+			border-color: @colorHover;
+			color: @colorHover;
+		}
+
+		&:active {
+			border-color: @colorActive;
+			color: @colorActive;
+		}
+
+		&:disabled,
+		&:disabled:hover,
+		&:disabled:active {
+			border-color: var(--ant-button-border-color-disabled);
+			color: var(--ant-color-text-disabled);
+		}
+	}
+
+	&.ant-btn-primary {
+		background-color: @color;
+
+		&:hover {
+			background-color: @colorHover;
+		}
+
+		&:active {
+			background-color: @colorActive;
+		}
+
+		&:disabled,
+		&:disabled:hover,
+		&:disabled:active {
+			background-color: var(--ant-color-bg-container-disabled);
+			border-color: var(--ant-button-border-color-disabled);
+			color: var(--ant-color-text-disabled);
+		}
+	}
+
+	&.ant-btn-text {
+		color: @color;
+
+		&:hover,
+		&:active {
+			color: @color;
+			background-color: var(--ant-color-success-bg);
+		}
+
+		&:disabled,
+		&:disabled:hover,
+		&:disabled:active {
+			background-color: unset;
+			color: var(--ant-color-text-disabled);
+		}
+	}
+
+	&.ant-btn-link {
+		color: @color;
+
+		&:hover {
+			color: @colorHover;
+		}
+
+		&:active {
+			color: @colorActive;
+		}
+
+		&:disabled,
+		&:disabled:hover,
+		&:disabled:active {
+			color: var(--ant-color-text-disabled);
+		}
+	}
+}

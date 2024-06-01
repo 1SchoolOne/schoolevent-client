@@ -1,0 +1,62 @@
+.event-detail-skeleton {
+	margin: 0 auto;
+	max-width: 1000px;
+	min-width: 490px;
+	width: 100%;
+
+	&__back-btn {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: var(--ant-padding-xs) 0;
+	}
+
+	.ant-skeleton:has(&__banner) {
+		width: 100%;
+		height: calc(var(--ant-control-height-lg) * 6);
+
+		.ant-skeleton-input {
+			height: 100%;
+			width: 100%;
+			border-radius: var(--ant-border-radius-lg);
+		}
+	}
+
+	&__body {
+		width: 100%;
+		height: 100%;
+		padding: var(--ant-padding) 0;
+		overflow: hidden;
+		overflow-y: auto;
+
+		&__description,
+		&__assignee,
+		&__participants {
+			width: 100%;
+			padding: var(--ant-padding-sm);
+			background-color: var(--ant-color-bg-container);
+			border-radius: var(--ant-border-radius-lg);
+		}
+
+		&__description,
+		&__participants {
+			height: fit-content;
+		}
+
+		&__participants {
+			display: flex;
+			flex-direction: column;
+			gap: var(--ant-margin);
+		}
+	}
+
+	.ant-skeleton:has(&__small-skeleton) {
+		width: 100%;
+		height: calc(46px - var(--ant-padding-sm) * 2);
+
+		.ant-skeleton-input {
+			width: inherit;
+			height: inherit;
+		}
+	}
+}

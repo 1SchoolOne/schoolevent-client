@@ -1,5 +1,8 @@
-import { UploadOutlined } from '@ant-design/icons'
-import { useQuery } from '@tanstack/react-query'
+import {
+	Plus as CreateIcon,
+	Check as UpdateIcon,
+	UploadSimple as UploadIcon,
+} from '@phosphor-icons/react'
 import {
 	Form as AntdForm,
 	Button,
@@ -10,280 +13,268 @@ import {
 	Input,
 	InputNumber,
 	Row,
+	Select,
+	Space,
 	Typography,
 	Upload,
-	theme as themeAlg,
 } from 'antd'
 import dayjs from 'dayjs'
 import timezone from 'dayjs/plugin/timezone'
 import utc from 'dayjs/plugin/utc'
-import { useState } from 'react'
+import { ReactNode, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import short from 'short-uuid'
 
 import { AutoCompleteField, IconButton, SelectField } from '@components'
-import { useAuth, useTheme } from '@contexts'
-import { fetchAddressCompletion, fetchGeoIP, log, useDebounce, useSupabase } from '@utils'
+import { getNameFromEmail, useAssignees } from '@utils'
 
-import { IEventFormFields } from '../../EventForm-types'
-import { getFileExtension } from '../../EventForm-utils'
-import { eventTypeLabelRecord } from './Form-types'
-import { getFilePathFromUrl } from './Form-utils'
+import { IFormProps, eventTypeLabelRecord } from './Form-types'
+import { useFormController } from './Form-utils'
 
 dayjs.extend(utc)
 dayjs.extend(timezone)
 
-export function Form() {
-	const [backgroundUrl, setBackgroundUrl] = useState<string | null>(null)
-	const [eventTitle, setEventTitle] = useState("Titre de l'événement")
-	const [addressSearch, setAddressSearch] = useState('')
-	const debouncedSearch = useDebounce(addressSearch, 500)
-	const [form] = AntdForm.useForm()
-	const { user, session } = useAuth()
-	const { theme } = useTheme()
-	const supabase = useSupabase()
-	const navigate = useNavigate()
-	const translator = short()
+export function Form(props: IFormProps) {
+	const { eventId } = props
 
-	const { data: userLocation } = useQuery({ queryKey: ['user-geoip'], queryFn: fetchGeoIP })
+	const {
+		form,
+		formValues,
+		fileList,
+		setFileList,
+		isLoading,
+		setAddressSearch,
+		addressCompletion,
+		onSubmit,
+	} = useFormController(eventId)
+
+	const [backgroundUrl, setBackgroundUrl] = useState<string | ArrayBuffer | null | undefined>(
+		undefined,
+	)
+	const navigate = useNavigate()
+	const { data: assignees } = useAssignees()
 
 	const formatDate = 'DD/MM/YYYY à HH:mm'
 
-	const { data: addressCompletion } = useQuery({
-		queryKey: ['addresse-completion', { search: debouncedSearch }],
-		queryFn: async () => await fetchAddressCompletion(debouncedSearch, userLocation),
-		enabled: !!debouncedSearch && !!userLocation,
-		placeholderData: [],
-	})
+	useEffect(() => {
+		if (fileList.blob[0]) {
+			const reader = new FileReader()
 
-	const createEvent = async (value: IEventFormFields) => {
-		await supabase.from('events').insert({
-			...value,
-			event_creator_id: user!.id,
-			event_background: backgroundUrl,
-			event_date: dayjs(value.event_date).tz().toISOString(),
-			event_duration: value.event_duration * 60 * 60,
-		})
-	}
+			reader.onload = (ev) => {
+				setBackgroundUrl(ev.target?.result)
+			}
 
-	const removeBackground = async () => {
-		if (!backgroundUrl) {
-			return true
+			reader.readAsDataURL(fileList.blob[0])
+		} else {
+			setBackgroundUrl(undefined)
 		}
+	}, [fileList.blob])
 
-		const { error } = await supabase.storage
-			.from('pictures')
-			.remove([getFilePathFromUrl(backgroundUrl)])
+	const assigneeOptions: Array<{ label: ReactNode; value: string | null }> =
+		assignees?.map((a) => ({
+			label: (
+				<Space>
+					<Typography.Text>{getNameFromEmail(a.email).name}</Typography.Text>
+					<Typography.Text type="secondary">({a.email})</Typography.Text>
+				</Space>
+			),
+			value: a.id,
+		})) ?? []
 
-		if (error === null) {
-			setBackgroundUrl(null)
-		}
-
-		return !error
-	}
+	assigneeOptions.push({ label: 'Aucun', value: null })
 
 	return (
-		<AntdForm
-			className="event-form"
-			form={form}
-			name="event"
-			size="large"
-			layout="vertical"
-			autoComplete="off"
-			initialValues={{
-				event_duration: 1.0,
-				event_title: '',
-				event_address: '',
-				event_school_name: '',
-				event_background: '',
-				event_date: '',
-				event_description: '',
-			}}
-			onFinish={createEvent}
-		>
-			<div
-				className="event-form__header"
-				style={{
-					backgroundImage: backgroundUrl ? `url(${backgroundUrl})` : undefined,
-					backgroundColor: 'var(--ant-layout-sider-bg)',
+		<>
+			<Typography.Text code>isLoading: {String(isLoading)}</Typography.Text>
+			<AntdForm
+				className="event-form"
+				form={form}
+				name="event"
+				size="large"
+				layout="vertical"
+				autoComplete="off"
+				initialValues={{
+					event_duration: 1.0,
+					event_title: "Titre de l'événement",
+					event_address: '',
+					event_school_name: '',
+					event_background: '',
+					event_date: '',
+					event_description: '',
 				}}
+				onFinish={onSubmit}
 			>
-				<ConfigProvider
-					theme={{
-						algorithm: theme === 'light' ? themeAlg.darkAlgorithm : themeAlg.defaultAlgorithm,
+				<div
+					className="event-form__header"
+					style={{
+						backgroundImage: `url(${backgroundUrl})`,
+						backgroundColor: 'var(--ant-layout-sider-bg)',
 					}}
 				>
-					<AntdForm.Item<IEventFormFields>
-						name="event_title"
-						rules={[{ required: true, message: "Veuillez saisir un nom d'évenement." }]}
-						className="event-title-input"
-					>
-						<Typography.Title
-							level={2}
-							editable={{
-								onChange: (value) => {
-									setEventTitle(value)
-									form.setFieldValue('event_title', value)
+					<ConfigProvider
+						theme={{
+							components: {
+								Typography: {
+									colorText: '#fff',
+									colorTextHeading: '#fff',
 								},
-							}}
+								Button: {
+									colorText: '#fff',
+								},
+								Upload: {
+									colorText: '#fff',
+								},
+							},
+						}}
+					>
+						<AntdForm.Item
+							name="event_title"
+							rules={[{ required: true, message: "Veuillez saisir un nom d'évenement." }]}
+							className="event-title-input"
 						>
-							{eventTitle}
-						</Typography.Title>
+							<Typography.Title
+								level={2}
+								editable={{
+									onChange: (value) => {
+										form.setFieldValue('event_title', value)
+									},
+								}}
+							>
+								{formValues?.event_title}
+							</Typography.Title>
+						</AntdForm.Item>
+						<AntdForm.Item name="event_background" className="upload-background-btn">
+							<Upload
+								fileList={fileList.rcFile}
+								beforeUpload={async (file) => {
+									const blob = [new Blob([await file.arrayBuffer()], { type: file.type })]
+
+									setFileList({ rcFile: [file], blob })
+
+									return false
+								}}
+								onRemove={() => {
+									setFileList({ rcFile: [], blob: [] })
+								}}
+								accept="image/png, image/jpeg"
+							>
+								<IconButton type="text" icon={<UploadIcon size={16} />} />
+							</Upload>
+						</AntdForm.Item>
+					</ConfigProvider>
+				</div>
+				<div className="event-form__body">
+					<Divider>Quand</Divider>
+					<Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
+						<Col span={9}>
+							<AntdForm.Item
+								label="Date de l'événement"
+								name="event_date"
+								rules={[{ required: true, message: 'Veuillez saisir la date de votre événement.' }]}
+							>
+								<DatePicker format={formatDate} showTime={{ minuteStep: 5 }} />
+							</AntdForm.Item>
+						</Col>
+						<Col span={5}>
+							<AntdForm.Item
+								label="Durée"
+								name="event_duration"
+								rules={[
+									{
+										required: true,
+										message: "Veuillez saisir la durée de l'événement.",
+									},
+								]}
+							>
+								<InputNumber addonAfter="h" step={0.5} />
+							</AntdForm.Item>
+						</Col>
+						<Col span={10}>
+							<AntdForm.Item
+								label="Type d'événement"
+								name="event_type"
+								rules={[
+									{ required: true, message: 'Veuillez sélectionner le type de votre événement.' },
+								]}
+							>
+								<SelectField
+									placeholder="Sélectionner un type"
+									options={Object.keys(eventTypeLabelRecord).map((key) => ({
+										label: eventTypeLabelRecord[key as keyof typeof eventTypeLabelRecord],
+										value: key as keyof typeof eventTypeLabelRecord,
+									}))}
+								/>
+							</AntdForm.Item>
+						</Col>
+					</Row>
+					<Divider>Référent</Divider>
+					<AntdForm.Item name="event_assignee">
+						<Select placeholder="Sélectionner un référent" options={assigneeOptions} />
+					</AntdForm.Item>
+					<Divider>Où</Divider>
+					<AntdForm.Item
+						label="Adresse"
+						name="event_address"
+						rules={[{ required: true, message: "Veuillez saisir l'adresse de votre événement." }]}
+					>
+						<AutoCompleteField
+							onSearch={(value) => setAddressSearch(value)}
+							onSelect={(value) => setAddressSearch(value)}
+							options={addressCompletion?.map((address) => ({
+								label: `${address.name}, ${address.postcode} ${address.city}`,
+								value: `${address.name}, ${address.postcode} ${address.city}`,
+							}))}
+						/>
 					</AntdForm.Item>
 
-					<AntdForm.Item<IEventFormFields>
-						name="event_background"
-						className="upload-background-btn"
+					<AntdForm.Item
+						label="Établissement"
+						name="event_school_name"
+						rules={[{ required: true, message: "Veuillez saisir le nom de l'établissement." }]}
 					>
-						<Upload
-							customRequest={async ({ file, onSuccess, onError, onProgress }) => {
-								if (file instanceof File) {
-									const fileExtension = getFileExtension(file.name)
-									const fileId = translator.new()
+						<Input />
+					</AntdForm.Item>
 
-									const req = new XMLHttpRequest()
-									req.upload.onprogress = (event) => {
-										onProgress?.({ percent: (event.loaded / event.total) * 100 })
-									}
-									req.upload.onerror = (event) => {
-										onError?.(event)
-										log.error(event)
-									}
-									req.upload.onload = () => {
-										onSuccess?.('ok')
-									}
-
-									req.open(
-										'POST',
-										`${
-											import.meta.env.VITE_SUPABASE_URL
-										}/storage/v1/object/pictures/background_${fileId}.${fileExtension}`,
-									)
-
-									req.setRequestHeader('Authorization', `Bearer ${session?.access_token}`)
-									if (fileExtension) {
-										req.setRequestHeader(
-											'Content-Type',
-											`image/${fileExtension === 'jpg' ? 'jpeg' : fileExtension}`,
-										)
-									}
-
-									req.send(file)
-
-									// when the request is successful, we can set the backgroundUrl
-									req.onreadystatechange = () => {
-										if (req.readyState === 4 && req.status === 200) {
-											const publicUrl = `${
-												import.meta.env.VITE_SUPABASE_URL
-											}/storage/v1/object/public/pictures/background_${fileId}.${fileExtension}`
-											setBackgroundUrl(publicUrl)
+					<Divider>Description</Divider>
+					<AntdForm.Item
+						name="event_description"
+						rules={[{ required: true, message: "Veuillez saisir une description d'évenement." }]}
+					>
+						<Input.TextArea autoSize={{ minRows: 3, maxRows: 6 }} />
+					</AntdForm.Item>
+				</div>
+				<div className="event-form__footer">
+					<Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
+						<Col span={10}>
+							<AntdForm.Item>
+								<Button
+									onClick={() => {
+										if (eventId) {
+											navigate(`/events/view/${eventId}`)
+										} else {
+											navigate('/events')
 										}
-									}
-								}
-							}}
-							onRemove={removeBackground}
-							accept="image/png, image/jpeg"
-						>
-							<IconButton type="text" icon={<UploadOutlined />} />
-						</Upload>
-					</AntdForm.Item>
-				</ConfigProvider>
-			</div>
-			<div className="event-form__body">
-				<Divider>Quand</Divider>
-				<Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
-					<Col span={9}>
-						<AntdForm.Item<IEventFormFields>
-							label="Date de l'événement"
-							name="event_date"
-							rules={[{ required: true, message: 'Veuillez saisir la date de votre événement.' }]}
-						>
-							<DatePicker format={formatDate} showTime={{ minuteStep: 5 }} />
-						</AntdForm.Item>
-					</Col>
-					<Col span={5}>
-						<AntdForm.Item<IEventFormFields>
-							label="Durée"
-							name="event_duration"
-							rules={[
-								{
-									required: true,
-									message: "Veuillez saisir la durée de l'événement.",
-								},
-							]}
-						>
-							<InputNumber addonAfter="h" step={0.5} />
-						</AntdForm.Item>
-					</Col>
-					<Col span={10}>
-						<AntdForm.Item<IEventFormFields>
-							label="Type d'événement"
-							name="event_type"
-							rules={[
-								{ required: true, message: 'Veuillez sélectionner le type de votre événement.' },
-							]}
-						>
-							<SelectField
-								placeholder="Sélectionner un type"
-								options={Object.keys(eventTypeLabelRecord).map((key) => ({
-									label: eventTypeLabelRecord[key as keyof typeof eventTypeLabelRecord],
-									value: key as keyof typeof eventTypeLabelRecord,
-								}))}
-							/>
-						</AntdForm.Item>
-					</Col>
-				</Row>
-				<Divider>Où</Divider>
-				<AntdForm.Item<IEventFormFields>
-					label="Adresse"
-					name="event_address"
-					rules={[{ required: true, message: "Veuillez saisir l'adresse de votre événement." }]}
-				>
-					<AutoCompleteField
-						onSearch={(value) => setAddressSearch(value)}
-						onSelect={(value) => setAddressSearch(value)}
-						options={addressCompletion?.map((address) => ({
-							label: `${address.name}, ${address.postcode} ${address.city}`,
-							value: `${address.name}, ${address.postcode} ${address.city}`,
-						}))}
-					/>
-				</AntdForm.Item>
-
-				<AntdForm.Item<IEventFormFields>
-					label="Établissement"
-					name="event_school_name"
-					rules={[{ required: true, message: "Veuillez saisir le nom de l'établissement." }]}
-				>
-					<Input />
-				</AntdForm.Item>
-
-				<Divider>Description</Divider>
-				<AntdForm.Item<IEventFormFields>
-					// label="Description de l'événement"
-					name="event_description"
-					rules={[{ required: true, message: "Veuillez saisir une description d'évenement." }]}
-				>
-					<Input.TextArea autoSize={{ minRows: 3, maxRows: 6 }} />
-				</AntdForm.Item>
-			</div>
-			<div className="event-form__footer">
-				<Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
-					<Col span={10}>
-						<AntdForm.Item>
-							<Button onClick={() => navigate('/events')} block>
-								Annuler
-							</Button>
-						</AntdForm.Item>
-					</Col>
-					<Col span={14}>
-						<AntdForm.Item>
-							<Button htmlType="submit" type="primary" block>
-								Créer l'événement
-							</Button>
-						</AntdForm.Item>
-					</Col>
-				</Row>
-			</div>
-		</AntdForm>
+									}}
+									block
+								>
+									Annuler
+								</Button>
+							</AntdForm.Item>
+						</Col>
+						<Col span={14}>
+							<AntdForm.Item>
+								<Button
+									icon={eventId ? <UpdateIcon size={16} /> : <CreateIcon size={16} />}
+									htmlType="submit"
+									type="primary"
+									block
+								>
+									{eventId ? 'Enregistrer' : "Créer l'événement"}
+								</Button>
+							</AntdForm.Item>
+						</Col>
+					</Row>
+				</div>
+			</AntdForm>
+		</>
 	)
 }

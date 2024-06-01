@@ -22,6 +22,7 @@ export { ProvidersWithAuth, StoriesProviders } from './Providers/Providers'
 export { SelectField } from './SelectField/SelectField'
 export { ShortEventsList } from './ShortEventsList/ShortEventsList'
 export { Success } from './AuthLayout/_components/SignUpForm/_components/Success/Success'
+export { SuccessButton } from './SuccessButton/SuccessButton'
 export { Table } from './Table/Table'
 export {
 	getColumnSearchFilterConfig,

@@ -1,7 +1,9 @@
+import { useQuery } from '@tanstack/react-query'
+
 import { Feature, GeoCodeJSON } from '@types'
 import { isStringEmpty } from '@utils'
 
-export async function fetchAddressCompletion(
+async function fetchAddressCompletion(
 	search: string,
 	location?: { lat: number; lon: number },
 	postCode?: string,
@@ -22,4 +24,13 @@ export async function fetchAddressCompletion(
 	})
 
 	return addresses
+}
+
+export function useAddressCompletion(search: string, userLocation?: { lat: number; lon: number }) {
+	return useQuery({
+		queryKey: ['addresse-completion', { search }],
+		queryFn: async () => await fetchAddressCompletion(search, userLocation),
+		enabled: !!search && !!userLocation,
+		placeholderData: [],
+	})
 }

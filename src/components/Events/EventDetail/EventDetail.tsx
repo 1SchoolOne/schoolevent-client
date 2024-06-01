@@ -1,169 +1,162 @@
-import { CheckOutlined, CloseOutlined } from '@ant-design/icons'
-import { Button, Card, Row, Select, Typography } from 'antd'
-import { useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import {
+	ArrowLeft,
+	Calendar,
+	Trash as DeleteIcon,
+	PencilSimple as EditIcon,
+	MapPin,
+} from '@phosphor-icons/react'
+import { Button, Col, ConfigProvider, Divider, Modal, Row, Space, Typography, message } from 'antd'
+import dayjs from 'dayjs'
+import { lazy } from 'react'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 
-import { getNameFromEmail, log, useSupabase } from '@utils'
+import { useAuth } from '@contexts'
+import { log, useEvent, useSupabase } from '@utils'
 
-import { IEventFormFields, IUser } from '../type'
+import { BasicLayout } from '../../BasicLayout/BasicLayout'
+import { Assignee } from './_components/Assignee/Assignee'
+import { Skeleton } from './_components/Skeleton/Skeleton'
 
 import './EventDetail-styles.less'
 
+const Participants = lazy(() => import('./_components/Participants/Participants'))
+const { useModal } = Modal
+const { useMessage } = message
+
 export function EventDetail() {
 	const { eventId } = useParams()
-	const [event, setEvent] = useState<IEventFormFields>()
-	const [userEmail, setUserEmail] = useState<IUser[]>()
-	// const [selectedReferent, setSelectedReferent] = useState<string>()
-
-	const supabase = useSupabase
+	const { role, user } = useAuth()
+	const [modal, modalContextHolder] = useModal()
+	const [msg, messageContextHolder] = useMessage()
+	const supabase = useSupabase()
 
 	const navigate = useNavigate()
+	const { data: event, isPending } = useEvent(eventId)
 
-	const listUser = [{ name: 'user1' }, { name: 'user2' }, { name: 'user3' }]
+	// TODO: admins should be able to have edit rights whether they are the creator/assignee or not
+	const hasEditRights = event?.event_creator_id === user!.id || event?.event_assignee === user!.id
 
-	useEffect(() => {
-		const fetchUserEmails = async () => {
-			try {
-				const { data, error } = await supabase()
-					.from('users')
-					.select('*')
-					.in('role', ['manager', 'admin'])
+	const deleteEvent = async () => {
+		const genericErrorMsg =
+			"Une erreur est survenue lors de la suppression de l'événement. Veuillez rééssayer plus tard."
 
-				if (error) {
-					throw error
-				}
-
-				setUserEmail(data)
-			} catch (error) {
-				log.error('Error fetching user emails:', error)
-			}
+		if (!eventId) {
+			log.error("Impossible de supprimer l'événement. `id` est `" + String(eventId) + '`')
+			return Promise.reject(genericErrorMsg)
 		}
 
-		const fetchEventData = async () => {
-			try {
-				const { data, error } = await supabase()
-					.from('events')
-					.select('*')
-					.eq('id', eventId!)
-					.single()
+		const { error } = await supabase.from('events').delete().eq('id', eventId).select().single()
 
-				if (error) {
-					throw error
-				}
-
-				setEvent(data as IEventFormFields)
-			} catch (error) {
-				log.error('Error fetching event data:', error)
-			}
+		if (error) {
+			log.error(error)
+			return Promise.reject(genericErrorMsg)
+		} else {
+			return Promise.resolve('Événement supprimé avec succès.')
 		}
-		fetchUserEmails()
-		fetchEventData()
-	}, [eventId, supabase])
-
-	//TODO Préparation pour la feature du update d'un envent
-	const handleEditClick = () => {
-		navigate(`/events/edit/${eventId}`)
 	}
 
-	return (
-		<div>
-			{event ? (
-				<Card>
-					<Row justify="center">
-						<Card
-							className="cardContent"
-							style={{
-								backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${event.event_background})`,
-							}}
-						>
-							<Row justify="center" align="middle">
-								<Typography className="header" style={{ zIndex: 1 }}>
-									{new Date(event.event_date)
-										.toLocaleDateString('fr-FR', {
-											weekday: 'long',
-											day: 'numeric',
-											month: 'long',
-										})
-										.toUpperCase()}
-								</Typography>
-
-								<Typography className="header"> , {event.event_school_name} </Typography>
-
-								<Typography className="header"> , {event.event_address}</Typography>
-							</Row>
-							<Row justify="center" align="middle">
-								<Typography.Title level={2} style={{ color: 'white', zIndex: 1 }}>
-									{event.event_title}
-								</Typography.Title>
-							</Row>
-						</Card>
-					</Row>
-					<Row justify="center" className="DetailEvent">
-						<Typography.Title level={3}>
-							{new Date(event.event_date)
-								.toLocaleDateString('fr-FR', {
-									weekday: 'long',
-									day: 'numeric',
-									month: 'long',
-								})
-								.toUpperCase()}{' '}
-							à{' '}
-							{new Date(event.event_date).toLocaleTimeString('fr-FR', {
-								hour: 'numeric',
-								hour12: false,
-							})}
-							. Pour une durée de : {event.event_duration / 3600}h
-						</Typography.Title>
-					</Row>
-
-					<Row justify="space-around" align="middle">
-						<Card className="descriptif">
-							<Typography> {event.event_description}</Typography>
-						</Card>
-
-						<Row style={{ flexDirection: 'column', alignItems: 'center' }}>
-							<Card className="referent">
-								<Typography>Contacte de l'événement: </Typography>
-								<Row justify="center">
-									<Select
-										placeholder="Sélectionner référent"
-										options={userEmail?.map((user) => ({
-											label: getNameFromEmail(user.email).name,
-											value: getNameFromEmail(user.email).name,
-										}))}
-										// value={selectedReferent}
-										// onChange={(value) => setSelectedReferent(value)}
-									/>
-								</Row>
-							</Card>
-
-							<Card className="participants">
-								<Typography>Liste des participants: </Typography>
-								{listUser.map((user) => (
-									<Row justify="center" key={user.name}>
-										<Typography>{user.name}</Typography>
-										<CheckOutlined />
-										<CloseOutlined />
-									</Row>
-								))}
-							</Card>
-						</Row>
-					</Row>
-
-					<Row justify="center" className="button">
+	return isPending ? (
+		<Skeleton />
+	) : (
+		<BasicLayout className="event-detail">
+			{modalContextHolder}
+			{messageContextHolder}
+			<Space className="event-detail__header">
+				<Link to="/events">
+					<ArrowLeft size={16} />
+					Retour
+				</Link>
+				{hasEditRights && (
+					<>
 						<Button
+							className="event-detail__header__edit-btn"
 							type="primary"
-							onClick={() => {
-								handleEditClick()
-							}}
+							icon={<EditIcon size={16} />}
+							onClick={() => navigate(`/events/edit/${event?.id}`)}
 						>
 							Modifier
 						</Button>
-					</Row>
-				</Card>
-			) : (
-				<p>Loading...</p>
-			)}
-		</div>
+						<Button
+							className="event-detail__header__delete-btn"
+							type="primary"
+							icon={<DeleteIcon size={16} />}
+							onClick={() => {
+								modal.confirm({
+									className: 'event-detail__delete-modal',
+									title: "Supprimer l'événement",
+									content: 'Êtes-vous sur de vouloir supprimer cet événement ?',
+									okText: 'Supprimer',
+									okButtonProps: { danger: true },
+									cancelText: 'Annuler',
+									icon: (
+										<DeleteIcon
+											className="event-detail__delete-modal__icon"
+											size={20}
+											color="var(--ant-color-error)"
+										/>
+									),
+									onOk: async () =>
+										deleteEvent()
+											.then(async (successMessage) => {
+												await msg.success(successMessage)
+												navigate('/events')
+											})
+											.catch((err) => msg.error(err)),
+								})
+							}}
+							danger
+						>
+							Supprimer
+						</Button>
+					</>
+				)}
+			</Space>
+			<div
+				className="event-detail__banner"
+				style={{
+					backgroundColor: 'var(--ant-layout-sider-bg)',
+				}}
+			>
+				<ConfigProvider
+					theme={{
+						components: { Typography: { colorText: '#fff', colorTextHeading: '#fff' } },
+					}}
+				>
+					{event!.event_background && <img src={event!.event_background} />}
+					<Typography.Title className="event-detail__banner__title">
+						{event!.event_title}
+					</Typography.Title>
+					<div className="event-detail__banner__date-and-location">
+						<Typography className="event-detail__banner__date">
+							<Calendar size={16} /> {dayjs(event!.event_date).format('DD MMMM YYYY à HH')}h
+							{dayjs(event!.event_date).format('mm')}
+						</Typography>
+						<Typography className="event-detail__banner__location">
+							<MapPin size={16} /> {event!.event_address}
+						</Typography>
+					</div>
+				</ConfigProvider>
+			</div>
+			<Row className="event-detail__body" gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
+				<Col span={16}>
+					<Divider>Description</Divider>
+					<div className="event-detail__body__description">
+						<Typography.Paragraph
+							className="event-detail__body__description__text"
+							ellipsis={{
+								rows: 10,
+								expandable: true,
+							}}
+						>
+							{event?.event_description}
+						</Typography.Paragraph>
+					</div>
+				</Col>
+				<Col span={8}>
+					<Assignee assigneeId={event?.event_assignee} eventId={eventId} />
+					{role !== 'student' && <Participants eventId={eventId} hasEditRights={hasEditRights} />}
+				</Col>
+			</Row>
+		</BasicLayout>
 	)
 }

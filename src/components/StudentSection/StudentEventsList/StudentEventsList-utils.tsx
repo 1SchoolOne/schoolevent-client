@@ -68,6 +68,7 @@ function getYearCollapse(params: IGetYearCollapseParams) {
 	return (
 		<Collapse
 			key={year}
+			className="event-list__main-collapse"
 			ghost
 			accordion
 			activeKey={activeYear.value}
@@ -112,7 +113,12 @@ function getMonthItems(params: IGetMonthItemsParams): Array<ItemType> {
 					</Typography.Title>
 				),
 				children: (
-					<Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
+					<Row
+						gutter={[
+							{ xs: 8, sm: 16, md: 24, lg: 32 },
+							{ xs: 8, sm: 16, md: 24, lg: 32 },
+						]}
+					>
 						{groupedEvents[year][month].map((event, index) => (
 							<Col key={'col' + year + month + index} span={8}>
 								<EventCard event={event} />

@@ -1,6 +1,6 @@
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { Card, Typography } from 'antd'
-import { useEffect, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
 import { Helmet } from 'react-helmet'
@@ -93,7 +93,14 @@ function App() {
 							>
 								<Route index element={<StudentEventList />} />
 								<Route path="new" element={<EventForm />} />
-								<Route path="view/:eventId" element={<EventDetail />} />
+								<Route
+									path="view/:eventId"
+									element={
+										<Suspense>
+											<EventDetail />
+										</Suspense>
+									}
+								/>
 								<Route path="edit/:eventId" element={<EventUpdateForm />} />
 							</Route>
 							<Route

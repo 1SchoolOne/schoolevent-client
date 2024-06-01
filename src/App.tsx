@@ -13,6 +13,7 @@ import {
 	ContactsLayout,
 	EventDetail,
 	EventForm,
+	EventList,
 	HomeLayout,
 	LoginForm,
 	MainLayout,
@@ -20,7 +21,6 @@ import {
 	ProvidersWithAuth,
 	Reward,
 	SignUpForm,
-	StudentEventList,
 	Success,
 } from '@components'
 import { FavoriteContactsProvider, MapDisplayProvider, useTheme } from '@contexts'
@@ -90,7 +90,7 @@ function App() {
 									</ProtectedRoute>
 								}
 							>
-								<Route index element={<StudentEventList />} />
+								<Route index element={<EventList />} />
 								<Route path="new" element={<EventForm />} />
 								<Route
 									path="view/:eventId"

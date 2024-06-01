@@ -8,13 +8,7 @@ import { useEffect, useState } from 'react'
 import { AutoCompleteField, Info, SelectField } from '@components'
 import { useAppointmentForm } from '@contexts'
 import { appointmentStatusRecord } from '@types'
-import {
-	fetchAddressCompletion,
-	fetchGeoIP,
-	getNameFromEmail,
-	useDebounce,
-	useSupabase,
-} from '@utils'
+import { getNameFromEmail, useAddressCompletion, useDebounce, useGeoIP, useSupabase } from '@utils'
 
 import { DateField } from '../DateField/DateField'
 import { IFormValues, TFormProps } from './Form-types'
@@ -31,19 +25,9 @@ export function Form(props: TFormProps) {
 
 	const supabase = useSupabase()
 
-	const { data: userLocation } = useQuery({ queryKey: ['user-geoip'], queryFn: fetchGeoIP })
+	const { data: userLocation } = useGeoIP()
 
-	const { data: addressCompletion } = useQuery({
-		queryKey: ['addresse-completion', { search: debouncedSearch }],
-		queryFn: async () =>
-			await fetchAddressCompletion(
-				debouncedSearch,
-				userLocation,
-				formInstance.getFieldValue('school_postal_code'),
-			),
-		enabled: !!debouncedSearch && !!userLocation,
-		placeholderData: [],
-	})
+	const { data: addressCompletion } = useAddressCompletion(debouncedSearch, userLocation)
 
 	const { data: assignees, isFetching } = useQuery({
 		queryKey: ['assignees'],

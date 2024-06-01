@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react'
 
-import { renderEventList, useGroupedEvents } from './StudentEventsList-utils'
+import { renderEventList, useGroupedEvents } from './EventList-utils'
 import { Skeleton } from './_components/Skeleton/Skeleton'
 
-import './StudentEventsList-styles.less'
+import './EventList-styles.less'
 
-export function StudentEventList() {
+export function EventList() {
 	const [activeYear, setActiveYear] = useState<string | string[] | null>(null)
 	const [activeMonth, setActiveMonth] = useState<string | string[] | null>(null)
 	const { data: groupedEvents, isPending } = useGroupedEvents()

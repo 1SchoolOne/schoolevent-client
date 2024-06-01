@@ -47,6 +47,11 @@ export interface GeoCodeJSON {
 	limit: number
 }
 
+export interface IUseUserParams {
+	userId: string
+	columns?: Array<keyof Database['public']['Tables']['users']['Row']>
+}
+
 export type TContact = Database['public']['Tables']['contacts']['Row']
 
 export * from './localStorage'

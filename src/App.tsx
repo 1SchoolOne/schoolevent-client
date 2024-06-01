@@ -13,7 +13,6 @@ import {
 	ContactsLayout,
 	EventDetail,
 	EventForm,
-	EventUpdateForm,
 	HomeLayout,
 	LoginForm,
 	MainLayout,
@@ -101,7 +100,7 @@ function App() {
 										</Suspense>
 									}
 								/>
-								<Route path="edit/:eventId" element={<EventUpdateForm />} />
+								<Route path="edit/:eventId" element={<EventForm />} />
 							</Route>
 							<Route
 								path="appointments"

@@ -1,7 +1,7 @@
-import { Skeleton } from 'antd'
 import { useEffect, useState } from 'react'
 
 import { renderEventList, useGroupedEvents } from './StudentEventsList-utils'
+import { Skeleton } from './_components/Skeleton/Skeleton'
 
 import './StudentEventsList-styles.less'
 

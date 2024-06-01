@@ -1,7 +1,7 @@
 import { Database } from '@types'
 
 export interface IFormProps {
-	initialValues?: string
+	eventId?: string
 }
 
 export const eventTypeLabelRecord: Record<Database['public']['Enums']['event_type'], string> = {

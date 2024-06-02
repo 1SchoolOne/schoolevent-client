@@ -4,6 +4,8 @@ import { Button, Result } from 'antd'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
+import { useAuth } from '@contexts'
+
 import { renderEventList, useGroupedEvents } from './EventList-utils'
 import { Skeleton } from './_components/Skeleton/Skeleton'
 
@@ -15,6 +17,7 @@ export function EventList() {
 	const { data: groupedEvents, isPending } = useGroupedEvents()
 	const navigate = useNavigate()
 	const queryClient = useQueryClient()
+	const { role } = useAuth()
 
 	const hasEvents = !!groupedEvents && Object.entries(groupedEvents).length > 0
 
@@ -35,11 +38,17 @@ export function EventList() {
 
 	return (
 		<>
-			<div>
-				<Button type="primary" icon={<NewIcon size={16} />} onClick={() => navigate('/events/new')}>
-					Créer un événement
-				</Button>
-			</div>
+			{role !== 'student' && (
+				<div>
+					<Button
+						type="primary"
+						icon={<NewIcon size={16} />}
+						onClick={() => navigate('/events/new')}
+					>
+						Créer un événement
+					</Button>
+				</div>
+			)}
 			{hasEvents ? (
 				renderEventList({
 					groupedEvents,

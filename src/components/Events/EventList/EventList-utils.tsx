@@ -11,7 +11,7 @@ import {
 	IGetYearCollapseParams,
 	IGroupedEvents,
 	IRenderEventListParams,
-} from './StudentEventsList-types'
+} from './EventList-types'
 import { EventCard } from './_components/EventCard/EventCard'
 
 dayjs.extend(localeData)

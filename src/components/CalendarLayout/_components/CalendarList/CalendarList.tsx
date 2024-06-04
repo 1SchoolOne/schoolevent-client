@@ -9,7 +9,7 @@ import 'dayjs/locale/fr'
 import { IconButton } from '@components'
 
 import { ICalendarListProps } from './CalendarList-types'
-import { useCalendarList } from './CalendarList-hooks'
+import { useCalendarList } from './CalendarList-utils'
 
 import '../../../FavoritesList/FavoritesList-styles.less'
 import './CalendarList-styles.less'

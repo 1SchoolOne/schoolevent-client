@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom'
 import { IconButton } from '@components'
 
 import { ICalendarProps } from './Calendar-types'
-import { useCalendar } from './Calendar-hooks'
+import { useCalendar } from './Calendar-utils'
 
 import './Calendar-styles.less'
 

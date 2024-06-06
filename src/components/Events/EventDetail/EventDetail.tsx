@@ -58,105 +58,119 @@ export function EventDetail() {
 	return isPending ? (
 		<Skeleton />
 	) : (
-		<BasicLayout className="event-detail">
-			{modalContextHolder}
-			{messageContextHolder}
-			<Space className="event-detail__header">
-				<Link to="/events">
-					<ArrowLeft size={16} />
-					Retour
-				</Link>
-				{hasEditRights && (
-					<>
-						<Button
-							className="event-detail__header__edit-btn"
-							type="primary"
-							icon={<EditIcon size={16} />}
-							onClick={() => navigate(`/events/edit/${event?.id}`)}
-						>
-							Modifier
-						</Button>
-						<Button
-							className="event-detail__header__delete-btn"
-							type="primary"
-							icon={<DeleteIcon size={16} />}
-							onClick={() => {
-								modal.confirm({
-									className: 'event-detail__delete-modal',
-									title: "Supprimer l'événement",
-									content: 'Êtes-vous sur de vouloir supprimer cet événement ?',
-									okText: 'Supprimer',
-									okButtonProps: { danger: true },
-									cancelText: 'Annuler',
-									icon: (
-										<DeleteIcon
-											className="event-detail__delete-modal__icon"
-											size={20}
-											color="var(--ant-color-error)"
-										/>
-									),
-									onOk: async () =>
-										deleteEvent()
-											.then(async (successMessage) => {
-												await msg.success(successMessage)
-												navigate('/events')
-											})
-											.catch((err) => msg.error(err)),
-								})
-							}}
-							danger
-						>
-							Supprimer
-						</Button>
-					</>
+		<div className="flex-container">
+			{role === 'student' && (
+					<div className="register-to-event">
+						<Typography.Title level={4}>A savoir !</Typography.Title>
+						<Typography.Text><span className="people">50 </span>personnes ont déjà postulés à cet évènement.</Typography.Text>
+						<Typography.Title level={4}>Veux-tu participer ?</Typography.Title>
+						<div className="btn-section">
+							<Button className="question-btn no">Non</Button>
+							<Button className="question-btn yes">Oui</Button>
+						</div>
+					</div>
 				)}
-			</Space>
-			<div
-				className="event-detail__banner"
-				style={{
-					backgroundColor: 'var(--ant-layout-sider-bg)',
-				}}
-			>
-				<ConfigProvider
-					theme={{
-						components: { Typography: { colorText: '#fff', colorTextHeading: '#fff' } },
+		
+			<BasicLayout className="event-detail">
+				{modalContextHolder}
+				{messageContextHolder}
+				<Space className="event-detail__header">
+					<Link to="/events">
+						<ArrowLeft size={16} />
+						Retour
+					</Link>
+					{hasEditRights && (
+						<>
+							<Button
+								className="event-detail__header__edit-btn"
+								type="primary"
+								icon={<EditIcon size={16} />}
+								onClick={() => navigate(`/events/edit/${event?.id}`)}
+							>
+								Modifier
+							</Button>
+							<Button
+								className="event-detail__header__delete-btn"
+								type="primary"
+								icon={<DeleteIcon size={16} />}
+								onClick={() => {
+									modal.confirm({
+										className: 'event-detail__delete-modal',
+										title: "Supprimer l'événement",
+										content: 'Êtes-vous sur de vouloir supprimer cet événement ?',
+										okText: 'Supprimer',
+										okButtonProps: { danger: true },
+										cancelText: 'Annuler',
+										icon: (
+											<DeleteIcon
+												className="event-detail__delete-modal__icon"
+												size={20}
+												color="var(--ant-color-error)"
+											/>
+										),
+										onOk: async () =>
+											deleteEvent()
+												.then(async (successMessage) => {
+													await msg.success(successMessage)
+													navigate('/events')
+												})
+												.catch((err) => msg.error(err)),
+									})
+								}}
+								danger
+							>
+								Supprimer
+							</Button>
+						</>
+					)}
+				</Space>
+				<div
+					className="event-detail__banner"
+					style={{
+						backgroundColor: 'var(--ant-layout-sider-bg)',
 					}}
 				>
-					{event!.event_background && <img src={event!.event_background} />}
-					<Typography.Title className="event-detail__banner__title">
-						{event!.event_title}
-					</Typography.Title>
-					<div className="event-detail__banner__date-and-location">
-						<Typography className="event-detail__banner__date">
-							<Calendar size={16} /> {dayjs(event!.event_date).format('DD MMMM YYYY à HH')}h
-							{dayjs(event!.event_date).format('mm')}
-						</Typography>
-						<Typography className="event-detail__banner__location">
-							<MapPin size={16} /> {event!.event_address}
-						</Typography>
-					</div>
-				</ConfigProvider>
-			</div>
-			<Row className="event-detail__body" gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
-				<Col span={16}>
-					<Divider>Description</Divider>
-					<div className="event-detail__body__description">
-						<Typography.Paragraph
-							className="event-detail__body__description__text"
-							ellipsis={{
-								rows: 10,
-								expandable: true,
-							}}
-						>
-							{event?.event_description}
-						</Typography.Paragraph>
-					</div>
-				</Col>
-				<Col span={8}>
-					<Assignee assigneeId={event?.event_assignee} eventId={eventId} />
-					{role !== 'student' && <Participants eventId={eventId} hasEditRights={hasEditRights} />}
-				</Col>
-			</Row>
-		</BasicLayout>
+					<ConfigProvider
+						theme={{
+							components: { Typography: { colorText: '#fff', colorTextHeading: '#fff' } },
+						}}
+					>
+						{event!.event_background && <img src={event!.event_background} />}
+						<Typography.Title className="event-detail__banner__title">
+							{event!.event_title}
+						</Typography.Title>
+						<div className="event-detail__banner__date-and-location">
+							<Typography className="event-detail__banner__date">
+								<Calendar size={16} /> {dayjs(event!.event_date).format('DD MMMM YYYY à HH')}h
+								{dayjs(event!.event_date).format('mm')}
+							</Typography>
+							<Typography className="event-detail__banner__location">
+								<MapPin size={16} /> {event!.event_address}
+							</Typography>
+						</div>
+					</ConfigProvider>
+				</div>
+				<Row className="event-detail__body" gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
+					<Col span={16}>
+						<Divider>Description</Divider>
+						<div className="event-detail__body__description">
+							<Typography.Paragraph
+								className="event-detail__body__description__text"
+								ellipsis={{
+									rows: 10,
+									expandable: true,
+								}}
+							>
+								{event?.event_description}
+							</Typography.Paragraph>
+						</div>
+					</Col>
+					<Col span={8}>
+						<Assignee assigneeId={event?.event_assignee} eventId={eventId} />
+						{role !== 'student' && <Participants eventId={eventId} hasEditRights={hasEditRights} />}
+					</Col>
+				</Row>
+			</BasicLayout>
+		</div>
 	)
 }

@@ -26,6 +26,7 @@ import {
 import { FavoriteContactsProvider, MapDisplayProvider, useTheme } from '@contexts'
 
 import './App.less'
+import { ChoosingRewardLayout } from './components/StudentSection/Reward/_components/ChoosingRewardLayout/ChoosingRewardLayout'
 
 function App() {
 	const [faviconHref, setFaviconHref] = useState<string>('')
@@ -122,10 +123,13 @@ function App() {
 										<Helmet>
 											<title>SchoolEvent | Reward</title>
 										</Helmet>
-										<Reward />
+										<Outlet />
 									</ProtectedRoute>
 								}
-							></Route>
+							>
+								<Route index element={<Reward />} />
+								<Route path="chooseReward" element={<ChoosingRewardLayout />} />
+							</Route>
 						</Route>
 						<Route path="/auth" element={<AuthLayout />}>
 							<Route path="*" element={<Navigate to="/auth/login" />} />

@@ -27,7 +27,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
 			const { data: userObject, error } = await supabase
 				.from('users')
 				.select('role,approved')
-				.eq('id', authState.session!.user.id)
+				.eq('user_id', authState.session!.user.id)
 				.single()
 
 			if (error) {

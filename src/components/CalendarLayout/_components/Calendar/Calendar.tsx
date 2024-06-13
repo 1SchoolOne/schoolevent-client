@@ -30,43 +30,45 @@ export function Calendar(props: ICalendarProps) {
 	} = useCalendar({ ...props, navigate })
 
 	const dateCellRender = (value: Dayjs) => {
-		const filteredAppointments = filterAppointments(value).sort(
+		const sortedAppointments = filterAppointments(value).sort(
 			(a, b) => dayjs(a.planned_date).valueOf() - dayjs(b.planned_date).valueOf(),
 		)
-		const filteredEvents = filterEvents(value).sort(
+		const sortedEvents = filterEvents(value).sort(
 			(a, b) => dayjs(a.event_date).valueOf() - dayjs(b.event_date).valueOf(),
 		)
-		if (filteredAppointments.length === 0 && filteredEvents.length === 0) {
+
+		if (sortedAppointments.length === 0 && sortedEvents.length === 0) {
 			return null
 		}
+
 		return (
 			<div>
 				<Badge
-					count={filteredAppointments.length}
+					count={sortedAppointments.length}
 					style={{ backgroundColor: 'orange', marginRight: '10px' }}
 				/>
 				<Badge
-					count={filteredEvents.length}
+					count={sortedEvents.length}
 					style={{ backgroundColor: 'blue', marginRight: '10px' }}
 				/>
 				<div>
 					<List
-						dataSource={filteredAppointments}
+						dataSource={sortedAppointments}
 						renderItem={(item) => (
 							<List.Item key={item.school_name}>
 								<Badge dot style={{ backgroundColor: 'orange', marginRight: '10px' }} />
-								<span style={{ fontWeight: 'bold', color: '#4a4a4a' }}>{item.school_name}</span>
-								<div style={{ color: '#4a4a4a' }}>{dayjs(item.planned_date).format('HH:mm')}</div>
+								<span className="list-item-school-name">{item.school_name}</span>
+								<div className="list-item-planned-date">{dayjs(item.planned_date).format('HH:mm')}</div>
 							</List.Item>
 						)}
 					/>
 					<List
-						dataSource={filteredEvents}
+						dataSource={sortedEvents}
 						renderItem={(item) => (
 							<List.Item key={item.event_title}>
 								<Badge dot style={{ backgroundColor: 'blue', marginRight: '10px' }} />
-								<span style={{ fontWeight: 'bold', color: '#4a4a4a' }}>{item.event_title} </span>
-								<div style={{ color: '#4a4a4a' }}>{dayjs(item.event_date).format('HH:mm')}</div>
+								<span className="list-item-event-title">{item.event_title}</span>
+								<div className="list-item-event-date">{dayjs(item.event_date).format('HH:mm')}</div>
 							</List.Item>
 						)}
 					/>
@@ -88,7 +90,7 @@ export function Calendar(props: ICalendarProps) {
 					size="small"
 					popupMatchSelectWidth={false}
 					onChange={handleYearSelectChange}
-					value={String(currentDate.year())}
+					value={currentDate.year().toString()}
 				>
 					{yearOptions}
 				</Select>
@@ -96,7 +98,7 @@ export function Calendar(props: ICalendarProps) {
 					size="small"
 					popupMatchSelectWidth={false}
 					onChange={handleMonthSelectChange}
-					value={String(currentDate.month())}
+					value={currentDate.month()}
 				>
 					{monthOptions}
 				</Select>
@@ -120,14 +122,12 @@ export function Calendar(props: ICalendarProps) {
 	}
 
 	return (
-		<>
-			<AntCalendar
-				className="events-calendar"
-				headerRender={headerRender}
-				value={currentDate}
-				cellRender={dateCellRender}
-				validRange={[firstDayOfMonth, lastDayOfMonth]}
-			/>
-		</>
+		<AntCalendar
+			className="events-calendar"
+			headerRender={headerRender}
+			value={currentDate}
+			cellRender={dateCellRender}
+			validRange={[firstDayOfMonth, lastDayOfMonth]}
+		/>
 	)
 }

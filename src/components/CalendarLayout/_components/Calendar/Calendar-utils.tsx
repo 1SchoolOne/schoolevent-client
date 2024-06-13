@@ -32,20 +32,14 @@ export function useCalendar({ appointments, events }: UseCalendarProps) {
 	)
 
 	const monthOptions = useMemo(() => {
-		const options = []
-		const current = currentDate.clone()
-		const months = []
-		for (let i = 0; i < 12; i++) {
-			months.push(current.locale('fr').month(i).format('MMM'))
-		}
-		for (let index = 0; index < 12; index++) {
-			options.push(
-				<Select.Option className="month-item" key={`${index}`}>
-					{months[index]}
-				</Select.Option>,
+		return Array.from({ length: 12 }, (_, i) => {
+			const month = currentDate.locale('fr').month(i).format('MMM')
+			return (
+				<Select.Option className="month-item" key={i} value={i}>
+					{month}
+				</Select.Option>
 			)
-		}
-		return options
+		})
 	}, [currentDate])
 
 	const yearOptions = useMemo(() => {
@@ -75,8 +69,8 @@ export function useCalendar({ appointments, events }: UseCalendarProps) {
 	)
 
 	const handleMonthSelectChange = useCallback(
-		(newMonth: string) => {
-			const updatedValue = currentDate.clone().month(Number(newMonth))
+		(newMonth: number) => {
+			const updatedValue = currentDate.clone().month(newMonth)
 			setCurrentDate(updatedValue)
 		},
 		[currentDate, setCurrentDate],

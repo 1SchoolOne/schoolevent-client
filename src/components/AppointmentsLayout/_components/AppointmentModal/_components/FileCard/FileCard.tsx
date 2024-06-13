@@ -76,7 +76,7 @@ export function FileCard(props: IFileCardProps) {
 				.from('attachments')
 				// TODO fix supabase signed url transform issue
 				.createSignedUrl(path, 60 * 10, {
-					transform: { width: 300, height: 160, resize: 'cover' },
+					// transform: { width: 300, height: 160, resize: 'cover' },
 				})
 
 			if (error) {

@@ -20,7 +20,7 @@ export function useController(eventId: string | undefined) {
 				.select(
 					`
 					*,
-					users ( id, email )
+					users(id,email)
 				`,
 				)
 				.eq('event_id', eventId!)

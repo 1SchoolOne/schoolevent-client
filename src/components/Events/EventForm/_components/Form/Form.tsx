@@ -61,7 +61,7 @@ export function Form(props: IFormProps) {
 		}
 	}, [fileList.blob])
 
-	const assigneeOptions: Array<{ label: ReactNode; value: string | null }> =
+	const assigneeOptions: Array<{ label: ReactNode; value: number | null }> =
 		assignees?.map((a) => ({
 			label: (
 				<Space>
@@ -120,6 +120,7 @@ export function Form(props: IFormProps) {
 						name="event_title"
 						rules={[{ required: true, message: "Veuillez saisir un nom d'évenement." }]}
 						className="event-title-input"
+						data-testid="event_title"
 					>
 						<Typography.Title
 							level={2}
@@ -132,7 +133,11 @@ export function Form(props: IFormProps) {
 							{formValues?.event_title}
 						</Typography.Title>
 					</AntdForm.Item>
-					<AntdForm.Item name="event_background" className="upload-background-btn">
+					<AntdForm.Item
+						name="event_background"
+						className="upload-background-btn"
+						data-testid="event_background"
+					>
 						<Upload
 							fileList={fileList.rcFile}
 							beforeUpload={async (file) => {
@@ -160,6 +165,7 @@ export function Form(props: IFormProps) {
 							label="Date de l'événement"
 							name="event_date"
 							rules={[{ required: true, message: 'Veuillez saisir la date de votre événement.' }]}
+							data-testid="event_date"
 						>
 							<DatePicker format={formatDate} showTime={{ minuteStep: 5 }} />
 						</AntdForm.Item>
@@ -174,6 +180,7 @@ export function Form(props: IFormProps) {
 									message: "Veuillez saisir la durée de l'événement.",
 								},
 							]}
+							data-testid="event_duration"
 						>
 							<InputNumber addonAfter="h" step={0.5} />
 						</AntdForm.Item>
@@ -185,6 +192,7 @@ export function Form(props: IFormProps) {
 							rules={[
 								{ required: true, message: 'Veuillez sélectionner le type de votre événement.' },
 							]}
+							data-testid="event_type"
 						>
 							<SelectField
 								placeholder="Sélectionner un type"
@@ -197,7 +205,7 @@ export function Form(props: IFormProps) {
 					</Col>
 				</Row>
 				<Divider>Référent</Divider>
-				<AntdForm.Item name="event_assignee">
+				<AntdForm.Item name="event_assignee" data-testid="event_assignee">
 					<Select placeholder="Sélectionner un référent" options={assigneeOptions} />
 				</AntdForm.Item>
 				<Divider>Où</Divider>
@@ -205,6 +213,7 @@ export function Form(props: IFormProps) {
 					label="Adresse"
 					name="event_address"
 					rules={[{ required: true, message: "Veuillez saisir l'adresse de votre événement." }]}
+					data-testid="event_address"
 				>
 					<AutoCompleteField
 						onSearch={(value) => setAddressSearch(value)}
@@ -220,6 +229,7 @@ export function Form(props: IFormProps) {
 					label="Établissement"
 					name="event_school_name"
 					rules={[{ required: true, message: "Veuillez saisir le nom de l'établissement." }]}
+					data-testid="event_school_name"
 				>
 					<Input />
 				</AntdForm.Item>
@@ -228,6 +238,7 @@ export function Form(props: IFormProps) {
 				<AntdForm.Item
 					name="event_description"
 					rules={[{ required: true, message: "Veuillez saisir une description d'évenement." }]}
+					data-testid="event_description"
 				>
 					<Input.TextArea autoSize={{ minRows: 3, maxRows: 6 }} />
 				</AntdForm.Item>

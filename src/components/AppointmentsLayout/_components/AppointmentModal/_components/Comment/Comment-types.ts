@@ -1,9 +1,6 @@
 import { Database } from '@types'
 
-type TUsersJoin = {
-	id: string
-	email: string
-} | null
+type TUsersJoin = Database['public']['Tables']['users']['Row'] | null
 
 export interface ICommentProps {
 	comment: Database['public']['Tables']['appointment_comments']['Row'] & { users: TUsersJoin }

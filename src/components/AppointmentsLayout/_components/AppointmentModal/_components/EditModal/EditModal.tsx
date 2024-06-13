@@ -54,11 +54,11 @@ export function EditModal() {
 		onError: (error) => {
 			notification.error({ message: error.message, duration: 5 })
 		},
-		onSuccess: () => {
-			queryClient.invalidateQueries({
+		onSuccess: async () => {
+			await queryClient.invalidateQueries({
 				queryKey: ['appointment', { appointmentId }],
 			})
-			queryClient.invalidateQueries({
+			await queryClient.resetQueries({
 				queryKey: ['appointments'],
 			})
 			notification.success({ message: 'Rendez-vous modifié avec succès', duration: 5 })

@@ -1,3 +1,10 @@
+import dayjs from 'dayjs'
+import objectSupport from 'dayjs/plugin/objectSupport'
+
+import { TEvent } from '@types'
+
+dayjs.extend(objectSupport)
+
 export const BASE_URL = 'http://localhost:5173'
 export const LOGIN_URL = `${BASE_URL}/login`
 export const CONTACTS_URL = `${BASE_URL}/contacts`
@@ -48,3 +55,26 @@ export const SIDE_MENU_LABELS = {
 		shouldNotHaveAccessTo: ['Contacts', 'Calendrier', 'Rendez-vous', 'Étudiants'],
 	},
 }
+
+export const EVENT: TEvent = {
+	id: 1,
+	event_title: 'Mon événement',
+	event_type: 'conference',
+	event_date: dayjs({
+		year: 2024,
+		month: 6,
+		day: 1,
+		hour: 10,
+		minutes: 0,
+		seconds: 0,
+	}).toISOString(),
+	event_duration: 3600,
+	event_creator_id: '1',
+	event_address: '8 rue pierre de coubertin, 95300 Pontoise',
+	event_school_name: 'ESIEE-IT',
+	event_description: 'super description',
+	event_background: null,
+	event_assignee: null,
+}
+
+export const EVENT_LIST: Array<TEvent> = [EVENT]

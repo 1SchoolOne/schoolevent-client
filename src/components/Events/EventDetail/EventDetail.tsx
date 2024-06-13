@@ -55,22 +55,42 @@ export function EventDetail() {
 		}
 	}
 
+	const preRegisterToEvent = async () => {
+		if (!eventId || !user?.id) {
+			msg.error("La pré-inscription a échoué, veuillez réessayer plus tard")
+			return
+		}
+
+		const { error } = await supabase
+			.from('events_participants')
+			.insert({ event_id: eventId, user_id: user.id })
+
+		if(error) {
+			msg.error("Une erreur est survenue lors de l'inscription.")
+			log.error(error)
+		} else {
+			msg.success("Inscription réussie !")
+		}
+	}
+
 	return isPending ? (
 		<Skeleton />
 	) : (
 		<div className="flex-container">
 			{role === 'student' && (
-					<div className="register-to-event">
-						<Typography.Title level={4}>A savoir !</Typography.Title>
-						<Typography.Text><span className="people">50 </span>personnes ont déjà postulés à cet évènement.</Typography.Text>
-						<Typography.Title level={4}>Veux-tu participer ?</Typography.Title>
-						<div className="btn-section">
-							<Button className="question-btn no">Non</Button>
-							<Button className="question-btn yes">Oui</Button>
-						</div>
+				<div className="register-to-event">
+					<Typography.Title level={4}>A savoir !</Typography.Title>
+					<Typography.Text>
+						<span className="people">50 </span>personnes ont déjà postulés à cet évènement.
+					</Typography.Text>
+					<Typography.Title level={4}>Veux-tu participer ?</Typography.Title>
+					<div className="btn-section">
+						<Button className="question-btn no">Non</Button>
+						<Button className="question-btn yes" onClick={preRegisterToEvent}>Oui</Button>
 					</div>
-				)}
-		
+				</div>
+			)}
+
 			<BasicLayout className="event-detail">
 				{modalContextHolder}
 				{messageContextHolder}

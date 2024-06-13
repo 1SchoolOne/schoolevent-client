@@ -61,7 +61,7 @@ export function Form(props: IFormProps) {
 		}
 	}, [fileList.blob])
 
-	const assigneeOptions: Array<{ label: ReactNode; value: string | null }> =
+	const assigneeOptions: Array<{ label: ReactNode; value: number | null }> =
 		assignees?.map((a) => ({
 			label: (
 				<Space>

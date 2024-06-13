@@ -19,7 +19,7 @@ import {
 
 describe('Contacts', () => {
 	beforeEach(() => {
-		login(undefined, true)
+		login({})
 
 		waitForMainPageToLoad()
 

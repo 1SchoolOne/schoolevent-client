@@ -20,7 +20,7 @@ import {
 
 describe('Login', () => {
 	it('allows to login with school email', () => {
-		login(MANAGER_USER, true)
+		login({ user: MANAGER_USER })
 		waitForMainPageToLoad()
 
 		cy.url().should('eq', `${BASE_URL}/`)
@@ -38,7 +38,7 @@ describe('Login', () => {
 	})
 
 	it('do not allow access to unapproved users', () => {
-		login(DISABLED_USER, true)
+		login({ user: DISABLED_USER })
 
 		cy.contains('Accès refusé').should('be.visible')
 		cy.contains("Votre compte n'est pas approuvé. Veuillez contacter votre administrateur.").should(
@@ -48,7 +48,7 @@ describe('Login', () => {
 
 	it('displays side menu items based on user role', () => {
 		// As manager
-		login(MANAGER_USER, true)
+		login({ user: MANAGER_USER })
 
 		waitForMainPageToLoad()
 
@@ -61,7 +61,7 @@ describe('Login', () => {
 		logout()
 
 		// As student
-		login(STUDENT_USER)
+		login({ user: STUDENT_USER, shouldNavigate: false })
 
 		cy.get('.main-layout__sider').within(() => {
 			SIDE_MENU_LABELS.student.shouldHaveAccessTo.forEach((label) => {
@@ -75,7 +75,7 @@ describe('Login', () => {
 	})
 
 	it('allows access to all routes for manager role', () => {
-		login(MANAGER_USER, true)
+		login({ user: MANAGER_USER })
 
 		waitForMainPageToLoad()
 
@@ -100,7 +100,7 @@ describe('Login', () => {
 	})
 
 	it('allows access to home and events routes for student role', () => {
-		login(STUDENT_USER, true)
+		login({ user: STUDENT_USER })
 
 		waitForMainPageToLoad()
 

@@ -32,7 +32,10 @@ export function Form(props: TFormProps) {
 	const { data: assignees, isFetching } = useQuery({
 		queryKey: ['assignees'],
 		queryFn: async () => {
-			const { data, error } = await supabase.from('users').select('id,email').eq('role', 'manager')
+			const { data, error } = await supabase
+				.from('users')
+				.select('id,email')
+				.or('role.eq.manager,role.eq.admin')
 
 			if (error) {
 				throw error

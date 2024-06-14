@@ -34,7 +34,7 @@ export function Form(props: TFormProps) {
 		queryFn: async () => {
 			const { data, error } = await supabase
 				.from('users')
-				.select('id,email')
+				.select('email,user_id')
 				.or('role.eq.manager,role.eq.admin')
 
 			if (error) {
@@ -253,7 +253,7 @@ export function Form(props: TFormProps) {
 									return {
 										label: `${name} (${assignee.email})`,
 										title: `${name} (${assignee.email})`,
-										value: assignee.id,
+										value: assignee.user_id,
 									}
 								})}
 								showSearch

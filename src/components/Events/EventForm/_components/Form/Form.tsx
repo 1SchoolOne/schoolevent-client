@@ -61,7 +61,7 @@ export function Form(props: IFormProps) {
 		}
 	}, [fileList.blob])
 
-	const assigneeOptions: Array<{ label: ReactNode; value: number | null }> =
+	const assigneeOptions: Array<{ label: ReactNode; value: string | null }> =
 		assignees?.map((a) => ({
 			label: (
 				<Space>
@@ -69,7 +69,7 @@ export function Form(props: IFormProps) {
 					<Typography.Text type="secondary">({a.email})</Typography.Text>
 				</Space>
 			),
-			value: a.id,
+			value: a.user_id,
 		})) ?? []
 
 	assigneeOptions.push({ label: 'Aucun', value: null })

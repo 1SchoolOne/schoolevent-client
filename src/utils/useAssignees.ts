@@ -10,7 +10,7 @@ export function useAssignees() {
 		queryFn: async () => {
 			const { data, error } = await supabase
 				.from('users')
-				.select('id,email')
+				.select('user_id,email')
 				.in('role', ['manager', 'admin'])
 
 			if (error) {

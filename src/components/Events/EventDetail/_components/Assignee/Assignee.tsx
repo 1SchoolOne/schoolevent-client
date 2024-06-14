@@ -16,7 +16,7 @@ export function Assignee(props: IAssigneeProps) {
 			const { data, error } = await supabase
 				.from('users')
 				.select('email')
-				.eq('id', assigneeId!)
+				.eq('user_id', assigneeId!)
 				.single()
 
 			if (error) {
@@ -34,7 +34,7 @@ export function Assignee(props: IAssigneeProps) {
 			<Divider>Référent</Divider>
 			<div className="event-detail__body__assignee">
 				{assignee ? (
-					getNameFromEmail(assignee.email).name
+					<Typography.Text>{getNameFromEmail(assignee.email).name}</Typography.Text>
 				) : (
 					<Typography.Text disabled>Aucun référent</Typography.Text>
 				)}

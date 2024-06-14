@@ -36,6 +36,8 @@ export function EventDetail() {
 	const { data: event, isPending } = useEvent(eventId)
 
 	const [registrationCount, setRegistrationCount] = useState(0)
+	const [registrationMessage, setRegistrationMessage] = useState('')
+	const [isRegistered, setIsRegistered] = useState(false)
 
 	useEffect(() => {
 		if (eventId) {
@@ -48,13 +50,34 @@ export function EventDetail() {
 				if (error) {
 					log.error('Error fetching registration count:', error)
 				} else {
-					setRegistrationCount(count)
+					setRegistrationCount(count ?? 0)
+				}
+			}
+
+			const fetchUserResponse = async () => {
+				if (!user?.id) return
+
+				const { data, error } = await supabase
+					.from('events_participants')
+					.select('*')
+					.eq('event_id', Number(eventId))
+					.eq('user_id', user.id)
+					.single()
+
+				if (error) {
+					log.error('Error fetching user response:', error)
+				} else if (data) {
+					setIsRegistered(true)
+					setRegistrationMessage('Merci pour ta participation !')
 				}
 			}
 
 			fetchRegistrationCount()
+			if (user?.id) {
+				fetchUserResponse()
+			}
 		}
-	}, [eventId, supabase])
+	}, [eventId, user?.id, supabase])
 
 	// TODO: admins should be able to have edit rights whether they are the creator/assignee or not
 	const hasEditRights = event?.event_creator_id === user!.id || event?.event_assignee === user!.id
@@ -92,27 +115,49 @@ export function EventDetail() {
 			msg.error("Une erreur est survenue lors de l'inscription.")
 			log.error(error)
 		} else {
-			msg.success('Inscription réussie !')
+			msg.success('Ta pré-inscription a bien été prise en compte !')
+			setIsRegistered(true)
+			setRegistrationMessage('Merci pour ta participation !')
+			setRegistrationCount((prevCount) => prevCount + 1)
+		}
+	}
+
+	const getRegistrationText = (count: number) => {
+		if (count === 0) {
+			return 'Aucune personne pré-inscrite à cet évènement.'
+		} else if (count === 1) {
+			return (
+				<>
+					<span className="people">{count}</span> personne a déjà postulé à cet évènement.
+				</>
+			)
+		} else {
+			return (
+				<>
+					<span className="people">{count}</span> personnes ont déjà postulés à cet évènement.
+				</>
+			)
 		}
 	}
 
 	return isPending ? (
 		<Skeleton />
 	) : (
-		<div className="flex-container">
+		<div className="register-container">
 			{role === 'student' && (
 				<div className="register-to-event">
-					<Typography.Title level={4}>A savoir !</Typography.Title>
-					<Typography.Text>
-						<span className="people">{registrationCount}</span>personnes ont déjà postulés à cet
-						évènement.
-					</Typography.Text>
-					<Typography.Title level={4}>Veux-tu participer ?</Typography.Title>
-					<div className="btn-section">
-						<Button className="question-btn no">Non</Button>
-						<Button className="question-btn yes" onClick={preRegisterToEvent}>
-							Oui
-						</Button>
+					<Typography.Title level={4}>À savoir !</Typography.Title>
+					<Typography.Text>{getRegistrationText(registrationCount)}</Typography.Text>
+					<div>
+						{isRegistered ? (
+							<Typography.Text>{registrationMessage}</Typography.Text>
+						) : (
+							<div className="btn-section">
+								<Button className="pre-register-btn" onClick={preRegisterToEvent}>
+									Me pré-inscrire
+								</Button>
+							</div>
+						)}
 					</div>
 				</div>
 			)}

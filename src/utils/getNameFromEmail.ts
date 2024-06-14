@@ -12,7 +12,7 @@ export function getNameFromEmail(email: string) {
 			// Split the lastname by '-' and capitalize each part
 			fullname[1].split('-').forEach((substr) => lastname.push(capitalize(substr)))
 
-			fullname[1] = lastname.join(' ')
+			fullname[1] = lastname.join(' ').toUpperCase()
 		} else {
 			fullname[1] = fullname[1].toUpperCase()
 		}

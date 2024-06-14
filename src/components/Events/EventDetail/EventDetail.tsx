@@ -5,6 +5,7 @@ import {
 	PencilSimple as EditIcon,
 	MapPin,
 } from '@phosphor-icons/react'
+// import { useQueryClient } from '@tanstack/react-query'
 import { Button, Col, ConfigProvider, Divider, Modal, Row, Space, Typography, message } from 'antd'
 import dayjs from 'dayjs'
 import { lazy, useEffect, useState } from 'react'
@@ -29,6 +30,7 @@ export function EventDetail() {
 	const [modal, modalContextHolder] = useModal()
 	const [msg, messageContextHolder] = useMessage()
 	const supabase = useSupabase()
+	// const queryClient = useQueryClient()
 
 	const navigate = useNavigate()
 	const { data: event, isPending } = useEvent(eventId)
@@ -84,7 +86,7 @@ export function EventDetail() {
 
 		const { error } = await supabase
 			.from('events_participants')
-			.insert({ event_id: eventId, user_id: user.id })
+			.insert({ event_id: Number(eventId), user_id: user.id })
 
 		if (error) {
 			msg.error("Une erreur est survenue lors de l'inscription.")

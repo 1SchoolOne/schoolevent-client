@@ -1,17 +1,14 @@
 import { UseMutateFunction } from '@tanstack/react-query'
 import { Dispatch, SetStateAction } from 'react'
 
+import { Database } from '@types'
+
 type TParticipants =
-	| {
-			approved: boolean
-			event_id: number
-			id: number
-			user_id: string
-			users: {
-				id: string
-				email: string
-			} | null
-	  }[]
+	| Array<
+			Database['public']['Tables']['events_participants']['Row'] & {
+				users: Pick<Database['public']['Tables']['users']['Row'], 'id' | 'email'> | null
+			}
+	  >
 	| undefined
 
 export interface IParticipantsProps {

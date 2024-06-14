@@ -1,19 +1,43 @@
 import { useQuery } from '@tanstack/react-query'
+import dayjs from 'dayjs'
+import { useState } from 'react'
 
 import { BasicLayout } from '@components'
 import { useAuth } from '@contexts'
 import { log, useSupabase } from '@utils'
 
 import { Calendar, CalendarList } from './_components'
+import { AppointmentItem, EventItem } from './_components/Calendar-types'
 
 import './CalendarLayout-styles.less'
 
 export function CalendarLayout() {
 	const supabase = useSupabase()
+	const [searchValue] = useState('')
 	const { user } = useAuth()
 
+	function filterAndSortData<T extends AppointmentItem | EventItem>(
+		data: T[],
+		dateKey: keyof T,
+		searchKey: keyof T,
+		searchValue: string,
+	): T[] {
+		const currentDate = dayjs()
+		return data
+			.filter(
+				(item: T) =>
+					dayjs(item[dateKey] as string).isAfter(currentDate) &&
+					item[searchKey] !== null &&
+					item[searchKey]?.toString().includes(searchValue),
+			)
+			.sort(
+				(a: T, b: T) =>
+					dayjs(a[dateKey] as string).valueOf() - dayjs(b[dateKey] as string).valueOf(),
+			)
+	}
+
 	const { data: events } = useQuery({
-		queryKey: ['events'],
+		queryKey: ['events-calendar'],
 		queryFn: async () => {
 			const { data, error } = await supabase.from('events').select('*')
 
@@ -24,10 +48,11 @@ export function CalendarLayout() {
 
 			return data
 		},
+		select: (data) => filterAndSortData<EventItem>(data, 'event_date', 'event_title', searchValue),
 	})
 
 	const { data: appointments } = useQuery({
-		queryKey: ['appointments'],
+		queryKey: ['appointments-calendar'],
 		queryFn: async () => {
 			const { data, error } = await supabase
 				.from('appointments')
@@ -41,6 +66,8 @@ export function CalendarLayout() {
 
 			return data?.filter((appointment) => appointment.apt_status === 'planned')
 		},
+		select: (data) =>
+			filterAndSortData<AppointmentItem>(data, 'planned_date', 'school_name', searchValue),
 	})
 
 	return (

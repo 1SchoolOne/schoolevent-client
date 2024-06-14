@@ -1,12 +1,12 @@
 import { LeftOutlined, RightOutlined } from '@ant-design/icons'
 import { Calendar as AntCalendar, Badge, Button, List, Select, Space } from 'antd'
-import dayjs, { Dayjs } from 'dayjs'
+import dayjs from 'dayjs'
 import 'dayjs/locale/fr'
 import { useNavigate } from 'react-router-dom'
 
 import { IconButton } from '@components'
 
-import { ICalendarProps } from './Calendar-types'
+import { ICalendarProps } from '../Calendar-types'
 import { useCalendar } from './Calendar-utils'
 
 import './Calendar-styles.less'
@@ -18,8 +18,6 @@ export function Calendar(props: ICalendarProps) {
 		currentDate,
 		firstDayOfMonth,
 		lastDayOfMonth,
-		filterEvents,
-		filterAppointments,
 		monthOptions,
 		yearOptions,
 		handlePrevMonth,
@@ -27,13 +25,13 @@ export function Calendar(props: ICalendarProps) {
 		handleYearSelectChange,
 		handleMonthSelectChange,
 		handleTodayClick,
-	} = useCalendar({ ...props, navigate })
+	} = useCalendar()
 
-	const dateCellRender = (value: Dayjs) => {
-		const sortedAppointments = filterAppointments(value).sort(
+	const dateCellRender = () => {
+		const sortedAppointments = props.appointments.sort(
 			(a, b) => dayjs(a.planned_date).valueOf() - dayjs(b.planned_date).valueOf(),
 		)
-		const sortedEvents = filterEvents(value).sort(
+		const sortedEvents = props.events.sort(
 			(a, b) => dayjs(a.event_date).valueOf() - dayjs(b.event_date).valueOf(),
 		)
 
@@ -58,7 +56,9 @@ export function Calendar(props: ICalendarProps) {
 							<List.Item key={item.school_name}>
 								<Badge dot style={{ backgroundColor: 'orange', marginRight: '10px' }} />
 								<span className="list-item-school-name">{item.school_name}</span>
-								<div className="list-item-planned-date">{dayjs(item.planned_date).format('HH:mm')}</div>
+								<div className="list-item-planned-date">
+									{dayjs(item.planned_date).format('HH:mm')}
+								</div>
 							</List.Item>
 						)}
 					/>
@@ -80,12 +80,7 @@ export function Calendar(props: ICalendarProps) {
 	const headerRender = () => {
 		return (
 			<Space className="events-calendar__header">
-				<IconButton
-					type="primary"
-					size="small"
-					icon={<LeftOutlined />}
-					onClick={handlePrevMonth}
-				/>
+				<IconButton type="primary" size="small" icon={<LeftOutlined />} onClick={handlePrevMonth} />
 				<Select
 					size="small"
 					popupMatchSelectWidth={false}

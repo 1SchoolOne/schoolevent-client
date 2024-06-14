@@ -5,6 +5,7 @@ import 'dayjs/locale/fr'
 import { useNavigate } from 'react-router-dom'
 
 import { IconButton } from '@components'
+import { getNameFromEmail } from '@utils'
 
 import { ICalendarProps } from '../Calendar-types'
 import { useCalendar } from './Calendar-utils'
@@ -27,13 +28,16 @@ export function Calendar(props: ICalendarProps) {
 		handleTodayClick,
 	} = useCalendar()
 
-	const dateCellRender = () => {
-		const sortedAppointments = props.appointments.sort(
-			(a, b) => dayjs(a.planned_date).valueOf() - dayjs(b.planned_date).valueOf(),
-		)
-		const sortedEvents = props.events.sort(
-			(a, b) => dayjs(a.event_date).valueOf() - dayjs(b.event_date).valueOf(),
-		)
+	const dateCellRender = (value: dayjs.Dayjs) => {
+		const date = value.format('YYYY-MM-DD')
+
+		const sortedAppointments = props.appointments
+			.filter((a) => dayjs(a.planned_date).format('YYYY-MM-DD') === date)
+			.sort((a, b) => dayjs(a.planned_date).valueOf() - dayjs(b.planned_date).valueOf())
+
+		const sortedEvents = props.events
+			.filter((e) => dayjs(e.event_date).format('YYYY-MM-DD') === date)
+			.sort((a, b) => dayjs(a.event_date).valueOf() - dayjs(b.event_date).valueOf())
 
 		if (sortedAppointments.length === 0 && sortedEvents.length === 0) {
 			return null
@@ -57,6 +61,9 @@ export function Calendar(props: ICalendarProps) {
 								<Badge dot style={{ backgroundColor: 'orange', marginRight: '10px' }} />
 								<span className="list-item-school-name">{item.school_name}</span>
 								<div className="list-item-planned-date">
+									{getNameFromEmail(item.users?.email || '').name}
+								</div>
+								<div className="list-item-planned-date">
 									{dayjs(item.planned_date).format('HH:mm')}
 								</div>
 							</List.Item>
@@ -68,6 +75,9 @@ export function Calendar(props: ICalendarProps) {
 							<List.Item key={item.event_title}>
 								<Badge dot style={{ backgroundColor: 'blue', marginRight: '10px' }} />
 								<span className="list-item-event-title">{item.event_title}</span>
+								<div className="list-item-event-date">
+									{getNameFromEmail(item.users?.email || '').name}
+								</div>
 								<div className="list-item-event-date">{dayjs(item.event_date).format('HH:mm')}</div>
 							</List.Item>
 						)}

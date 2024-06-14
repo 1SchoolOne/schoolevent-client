@@ -7,7 +7,7 @@ import {
 } from '@phosphor-icons/react'
 import { Button, Col, ConfigProvider, Divider, Modal, Row, Space, Typography, message } from 'antd'
 import dayjs from 'dayjs'
-import { lazy } from 'react'
+import { lazy, useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 
 import { useAuth } from '@contexts'
@@ -33,6 +33,27 @@ export function EventDetail() {
 	const navigate = useNavigate()
 	const { data: event, isPending } = useEvent(eventId)
 
+	const [registrationCount, setRegistrationCount] = useState(0)
+
+	useEffect(() => {
+		if (eventId) {
+			const fetchRegistrationCount = async () => {
+				const { count, error } = await supabase
+					.from('events_participants')
+					.select('*', { count: 'exact' })
+					.eq('event_id', Number(eventId))
+
+				if(error) {
+					log.error("Error fetching registration count:", error)
+				} else {
+					setRegistrationCount(count)
+				}
+			}
+
+			fetchRegistrationCount()
+		}
+	}, [eventId, supabase])
+
 	// TODO: admins should be able to have edit rights whether they are the creator/assignee or not
 	const hasEditRights = event?.event_creator_id === user!.id || event?.event_assignee === user!.id
 
@@ -57,7 +78,7 @@ export function EventDetail() {
 
 	const preRegisterToEvent = async () => {
 		if (!eventId || !user?.id) {
-			msg.error("La pré-inscription a échoué, veuillez réessayer plus tard")
+			msg.error('La pré-inscription a échoué, veuillez réessayer plus tard')
 			return
 		}
 
@@ -65,11 +86,12 @@ export function EventDetail() {
 			.from('events_participants')
 			.insert({ event_id: eventId, user_id: user.id })
 
-		if(error) {
+		if (error) {
 			msg.error("Une erreur est survenue lors de l'inscription.")
 			log.error(error)
 		} else {
-			msg.success("Inscription réussie !")
+			msg.success('Inscription réussie !')
+			setRegistrationCount(prevCount => prevCount + 1)
 		}
 	}
 
@@ -81,12 +103,14 @@ export function EventDetail() {
 				<div className="register-to-event">
 					<Typography.Title level={4}>A savoir !</Typography.Title>
 					<Typography.Text>
-						<span className="people">50 </span>personnes ont déjà postulés à cet évènement.
+						<span className="people">{ registrationCount }</span>personnes ont déjà postulés à cet évènement.
 					</Typography.Text>
 					<Typography.Title level={4}>Veux-tu participer ?</Typography.Title>
 					<div className="btn-section">
 						<Button className="question-btn no">Non</Button>
-						<Button className="question-btn yes" onClick={preRegisterToEvent}>Oui</Button>
+						<Button className="question-btn yes" onClick={preRegisterToEvent}>
+							Oui
+						</Button>
 					</div>
 				</div>
 			)}

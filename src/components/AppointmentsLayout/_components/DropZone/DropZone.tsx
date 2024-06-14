@@ -8,11 +8,11 @@ import utc from 'dayjs/plugin/utc'
 import { useDrop } from 'react-dnd'
 import { useNavigate } from 'react-router-dom'
 
+import { IconButton } from '@components'
 import { useAuth } from '@contexts'
 import { TAppointment } from '@types'
 import { useSupabase } from '@utils'
 
-import { IconButton } from '../../../IconButton/IconButton'
 import { IDropZoneProps } from '../../AppointmentsLayout-types'
 import { DragItem } from '../DragItem/DragItem'
 
@@ -37,7 +37,7 @@ export function DropZone(props: IDropZoneProps) {
 		queryFn: async () => {
 			const { data, error, count } = await supabase
 				.from('appointments')
-				.select('*, users(id, email)', { count: 'exact' }) // This select statement allows to make a join request and get both the appointment and the assignee at the same time
+				.select('*, users!appointments_assignee_fkey(id, email)', { count: 'exact' }) // This select statement allows to make a join request and get both the appointment and the assignee at the same time
 				.eq('apt_status', columnStatus)
 				.or(`assignee.eq.${user!.id},author_id.eq.${user!.id}`)
 

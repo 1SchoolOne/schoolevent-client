@@ -18,4 +18,8 @@ export default defineConfig({
 	server: {
 		open: true,
 	},
+	test: {
+		dir: 'src',
+		globals: true,
+	},
 })

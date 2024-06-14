@@ -10,6 +10,8 @@
 		"lint": "npx eslint --format=pretty src/ --ext .ts,.tsx --report-unused-disable-directives --max-warnings 0",
 		"lint:fix": "npx eslint --fix --format=pretty src/ --ext .ts,.tsx --report-unused-disable-directives --max-warnings 0",
 		"lint:report": "npx eslint -o coverage/eslint_report.json -f json src/ --ext .ts,.tsx --report-unused-disable-directives --max-warnings 0",
+		"test": "vitest run",
+		"test:watch": "vitest watch",
 		"format:check": "prettier ./src --check",
 		"format:fix": "prettier ./src --write",
 		"preview": "vite preview",

@@ -1,33 +1,17 @@
-import {
-	PencilSimple as PencilSimpleIcon,
-} from '@phosphor-icons/react'
-
 import { ItemType } from 'antd/lib/menu/hooks/useItems'
-import { useState, useCallback } from 'react'
-import dayjs from 'dayjs'
+import { useCallback, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ICalendarListProps } from './CalendarList-types'
+
+import { ICalendarListProps } from '../Calendar-types'
+
+const RENDEZ_VOUS = 'Rendez-vous'
+const EVENEMENT = 'Événement'
 
 export function useCalendarList(props: ICalendarListProps) {
 	const { events, appointments } = props
 	const [search, setSearch] = useState('')
-	const [selectedButton, setSelectedButton] = useState('Rendez-vous')
+	const [selectedButton, setSelectedButton] = useState(RENDEZ_VOUS)
 	const navigate = useNavigate()
-	const currentDate = dayjs()
-
-	const sortedAndFilteredEvents = events
-		.filter(
-			(event) => dayjs(event.event_date).isAfter(currentDate) && event.event_title.includes(search),
-		)
-		.sort((a, b) => dayjs(a.event_date).valueOf() - dayjs(b.event_date).valueOf())
-
-	const sortedAndFilteredAppointments = appointments
-		.filter(
-			(appointment) =>
-				dayjs(appointment.planned_date).isAfter(currentDate) &&
-				appointment.school_name.includes(search),
-		)
-		.sort((a, b) => dayjs(a.planned_date).valueOf() - dayjs(b.planned_date).valueOf())
 
 	const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
 		setSearch(e.target.value)
@@ -35,36 +19,39 @@ export function useCalendarList(props: ICalendarListProps) {
 
 	const handleSegmentChange = useCallback((value: string | number) => {
 		if (typeof value === 'string') {
-			setSelectedButton(value)
+			setSelectedButton(value === EVENEMENT ? EVENEMENT : RENDEZ_VOUS)
 		}
 	}, [])
 
-	const getAppointmentsMenu = useCallback((id: number): ItemType[] => [
-		{
-			key: 'create-follow-up',
-			label: 'Modifier le rendez-vous',
-			icon: <PencilSimpleIcon size={16} weight="bold" />,
-			onClick: () => navigate(`/appointments?action=edit&id=${id}`),
-		},
-	], [navigate])
+	const getAppointmentsMenu = useCallback(
+		(id: number): ItemType[] => [
+			{
+				key: 'create-follow-up',
+				label: 'Modifier le rendez-vous',
+				onClick: () => navigate(`/appointments?action=edit&id=${id}`),
+			},
+		],
+		[navigate],
+	)
 
-	const getEventsMenu = useCallback((_id: string): ItemType[] => [
-		{
-			key: 'create-follow-up',
-			label: "Modifier l'événement",
-			icon: <PencilSimpleIcon size={16} weight="bold" />,
-			// onClick: () => navigate(`/appointments?action=edit&id=${id}`),
-		},
-	], [])
+	const getEventsMenu = useCallback(
+		(_id: string): ItemType[] => [
+			{
+				key: 'create-follow-up',
+				label: "Modifier l'événement",
+			},
+		],
+		[],
+	)
 
 	return {
 		search,
 		selectedButton,
-		sortedAndFilteredEvents,
-		sortedAndFilteredAppointments,
+		events,
+		appointments,
 		handleSearchChange,
 		handleSegmentChange,
 		getAppointmentsMenu,
-		getEventsMenu
+		getEventsMenu,
 	}
 }

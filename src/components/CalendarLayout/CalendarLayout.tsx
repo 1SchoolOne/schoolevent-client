@@ -22,13 +22,9 @@ export function CalendarLayout() {
 		searchKey: keyof T,
 		searchValue: string,
 	): T[] {
-		const currentDate = dayjs()
 		return data
 			.filter(
-				(item: T) =>
-					dayjs(item[dateKey] as string).isAfter(currentDate) &&
-					item[searchKey] !== null &&
-					item[searchKey]?.toString().includes(searchValue),
+				(item: T) => item[searchKey] !== null && item[searchKey]?.toString().includes(searchValue),
 			)
 			.sort(
 				(a: T, b: T) =>
@@ -39,7 +35,10 @@ export function CalendarLayout() {
 	const { data: events } = useQuery({
 		queryKey: ['events-calendar'],
 		queryFn: async () => {
-			const { data, error } = await supabase.from('events').select('*')
+			const { data, error } = await supabase
+				.from('events')
+				.select('*, users!events_event_assignee_fkey(email)')
+				.or(`event_assignee.eq.${user!.id},event_creator_id.eq.${user!.id}`)
 
 			if (error) {
 				log.error('Error fetching events', error)
@@ -56,7 +55,7 @@ export function CalendarLayout() {
 		queryFn: async () => {
 			const { data, error } = await supabase
 				.from('appointments')
-				.select('*')
+				.select('*, users!appointments_assignee_fkey(email)')
 				.or(`assignee.eq.${user!.id},author_id.eq.${user!.id}`)
 
 			if (error) {

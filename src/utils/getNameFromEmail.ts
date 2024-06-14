@@ -5,23 +5,40 @@ export function getNameFromEmail(email: string) {
 
 	if (splittedEmail[0].includes('.')) {
 		const fullname = splittedEmail.shift()!.split('.')
-		fullname[0] = capitalize(fullname[0])
 
-		if (fullname[1].includes('-')) {
-			const lastname: string[] = []
-			// Split the lastname by '-' and capitalize each part
-			fullname[1].split('-').forEach((substr) => lastname.push(capitalize(substr)))
-
-			fullname[1] = lastname.join(' ').toUpperCase()
-		} else {
-			fullname[1] = fullname[1].toUpperCase()
-		}
-
-		const name = fullname.join(' ')
-
-		return { name, initials: name.split(' ')[0].charAt(0) + name.split(' ')[1].charAt(0) }
+		return formatFullnameWithHyphens(fullname as [string, string])
 	} else {
 		const name = capitalize(splittedEmail[0])
 		return { name, initials: name.charAt(0) }
 	}
+}
+
+function formatFullnameWithHyphens(strings: [string, string]): { name: string; initials: string } {
+	const results: Array<string> = []
+	const initials: Array<string> = []
+
+	for (const i in strings) {
+		const newString: Array<string> = []
+		const str = strings[i]
+
+		if (str.includes('-')) {
+			str.split('-').forEach((substr) => newString.push(capitalize(substr)))
+
+			if (Number(i) === 0) {
+				results.push(newString.join(' '))
+			} else {
+				results.push(newString.join(' ').toUpperCase())
+			}
+		} else {
+			if (Number(i) === 0) {
+				results.push(capitalize(str))
+			} else {
+				results.push(str.toUpperCase())
+			}
+		}
+
+		initials.push(results[i].charAt(0).toUpperCase())
+	}
+
+	return { name: results.join(' '), initials: initials.join('') }
 }

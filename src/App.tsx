@@ -20,13 +20,13 @@ import {
 	ProtectedRoute,
 	ProvidersWithAuth,
 	Reward,
+	ChoosingRewardLayout,
 	SignUpForm,
 	Success,
 } from '@components'
 import { FavoriteContactsProvider, MapDisplayProvider, useTheme } from '@contexts'
 
 import './App.less'
-import { ChoosingRewardLayout } from './components/StudentSection/Reward/_components/ChoosingRewardLayout/ChoosingRewardLayout'
 
 function App() {
 	const [faviconHref, setFaviconHref] = useState<string>('')

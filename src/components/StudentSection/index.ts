@@ -1,2 +1,2 @@
 export { Reward } from './Reward/Reward'
-export { StudentEventDetail } from './StudentEventDetail/StudentEventDetail'
+export { ChoosingRewardLayout } from './Reward/_components/ChoosingRewardLayout/ChoosingRewardLayout'

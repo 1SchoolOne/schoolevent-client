@@ -1,7 +1,8 @@
 @maxWidth: 1000px;
 
-.flex-container {
+.register-container {
 	display: flex;
+	flex-direction: row !important;
 }
 
 .people {
@@ -9,16 +10,21 @@
 	font-weight: bold;
 }
 
+.register-to-event {
+	width: 23%;
+}
+
 .btn-section {
+	width: 100%;
+	height: 5em;
 	display: flex;
-	gap: 20px;
-	.question-btn {
+	justify-content: center;
+	align-items: center;
+	.pre-register-btn {
 		border: 2px solid #FE8E06;
-		width: 6em;
+		background-color: #FE8E06;
+		width: auto;
 		height: 2.5em;
-		.yes {
-			background-color: #FE8E06;
-		}
 	}
 }
 

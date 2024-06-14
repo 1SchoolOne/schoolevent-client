@@ -4,6 +4,7 @@ import dayjs from 'dayjs'
 import 'dayjs/locale/fr'
 
 import { IconButton } from '@components'
+import { getNameFromEmail } from '@utils'
 
 import { ICalendarListProps } from '../Calendar-types'
 import { useCalendarList } from './CalendarList-utils'
@@ -36,6 +37,9 @@ export function CalendarList(props: ICalendarListProps) {
 		getEventsMenu,
 	} = useCalendarList(props)
 
+	const futureAppointments = appointments.filter((a) => dayjs(a.planned_date).isAfter(dayjs()))
+	const futureEvents = events.filter((e) => dayjs(e.event_date).isAfter(dayjs()))
+
 	return (
 		<div className="favorites-list">
 			<Typography.Title className="favorites-list__title" level={5}>
@@ -66,7 +70,7 @@ export function CalendarList(props: ICalendarListProps) {
 					locale={{
 						emptyText: 'Aucun rendez-vous',
 					}}
-					dataSource={appointments}
+					dataSource={futureAppointments}
 					renderItem={(item) => (
 						<List.Item key={item.school_name?.toString() || ''}>
 							<List.Item.Meta
@@ -75,7 +79,10 @@ export function CalendarList(props: ICalendarListProps) {
 								description={
 									<Flex justify="space-between">
 										<i>
-											{item.school_city?.toString() || ''} -{' '}
+											{item.school_address?.toString() || ''}{' '}
+											{item.school_postal_code?.toString() || ''}{' '}
+											{item.school_city?.toString() || ''} -
+											{getNameFromEmail(item.users?.email || '').name}
 											<div>
 												{item.planned_date
 													? dayjs(item.planned_date.toString()).format('HH:mm')
@@ -101,7 +108,7 @@ export function CalendarList(props: ICalendarListProps) {
 					locale={{
 						emptyText: 'Aucun événement',
 					}}
-					dataSource={events}
+					dataSource={futureEvents}
 					renderItem={(item) => (
 						<List.Item key={item.event_title?.toString() || ''}>
 							<List.Item.Meta
@@ -110,7 +117,8 @@ export function CalendarList(props: ICalendarListProps) {
 								description={
 									<Flex justify="space-between">
 										<i>
-											{item.event_address?.toString() || ''} -{' '}
+											{item.event_address?.toString() || ''} -
+											{getNameFromEmail(item.users?.email || '').name}
 											<div>
 												{item.event_date
 													? dayjs(item.event_date.toString()).format('HH:mm')

@@ -1,9 +1,8 @@
-import { useCallback, useMemo, useState } from 'react'
-import dayjs, { Dayjs } from 'dayjs'
 import { Select } from 'antd'
-import { UseCalendarProps } from './Calendar-types'
+import dayjs from 'dayjs'
+import { useCallback, useMemo, useState } from 'react'
 
-export function useCalendar({ appointments, events }: UseCalendarProps) {
+export function useCalendar() {
 	const [currentDate, setCurrentDate] = useState(dayjs())
 	const currentYear = dayjs().year()
 	const years = useMemo(
@@ -13,16 +12,6 @@ export function useCalendar({ appointments, events }: UseCalendarProps) {
 
 	const firstDayOfMonth = currentDate.clone().startOf('month')
 	const lastDayOfMonth = currentDate.clone().endOf('month')
-
-	const filterEvents = useCallback((value: Dayjs) => {
-		return events.filter((event) => dayjs(event.event_date).isSame(value, 'day'))
-	}, [events])
-
-	const filterAppointments = useCallback((value: Dayjs) => {
-		return appointments.filter((appointment) =>
-			dayjs(appointment.planned_date).isSame(value, 'day'),
-		)
-	}, [appointments])
 
 	const updateCurrentDate = useCallback(
 		(operation: 'subtract' | 'add', value: number, unit: 'month' | 'year') => {
@@ -82,8 +71,6 @@ export function useCalendar({ appointments, events }: UseCalendarProps) {
 		currentDate,
 		firstDayOfMonth,
 		lastDayOfMonth,
-		filterEvents,
-		filterAppointments,
 		updateCurrentDate,
 		monthOptions,
 		yearOptions,

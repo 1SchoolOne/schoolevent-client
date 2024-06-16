@@ -8,13 +8,14 @@ import {
 // import { useQueryClient } from '@tanstack/react-query'
 import { Button, Col, ConfigProvider, Divider, Modal, Row, Space, Typography, message } from 'antd'
 import dayjs from 'dayjs'
-import { lazy, useEffect, useState } from 'react'
+import { lazy, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 
 import { useAuth } from '@contexts'
 import { log, useEvent, useSupabase } from '@utils'
 
 import { BasicLayout } from '../../BasicLayout/BasicLayout'
+import { preRegisterToEvent, useFetchEventData } from './EventDetail-utils'
 import { Assignee } from './_components/Assignee/Assignee'
 import { Skeleton } from './_components/Skeleton/Skeleton'
 
@@ -25,7 +26,7 @@ const { useModal } = Modal
 const { useMessage } = message
 
 export function EventDetail() {
-	const { eventId } = useParams()
+	const { eventId } = useParams<{ eventId: string }>()
 	const { role, user } = useAuth()
 	const [modal, modalContextHolder] = useModal()
 	const [msg, messageContextHolder] = useMessage()
@@ -39,45 +40,13 @@ export function EventDetail() {
 	const [registrationMessage, setRegistrationMessage] = useState('')
 	const [isRegistered, setIsRegistered] = useState(false)
 
-	useEffect(() => {
-		if (eventId) {
-			const fetchRegistrationCount = async () => {
-				const { count, error } = await supabase
-					.from('events_participants')
-					.select('*', { count: 'exact' })
-					.eq('event_id', Number(eventId))
-
-				if (error) {
-					log.error('Error fetching registration count:', error)
-				} else {
-					setRegistrationCount(count ?? 0)
-				}
-			}
-
-			const fetchUserResponse = async () => {
-				if (!user?.id) return
-
-				const { data, error } = await supabase
-					.from('events_participants')
-					.select('*')
-					.eq('event_id', Number(eventId))
-					.eq('user_id', user.id)
-					.single()
-
-				if (error) {
-					log.error('Error fetching user response:', error)
-				} else if (data) {
-					setIsRegistered(true)
-					setRegistrationMessage('Merci pour ta participation !')
-				}
-			}
-
-			fetchRegistrationCount()
-			if (user?.id) {
-				fetchUserResponse()
-			}
-		}
-	}, [eventId, user?.id, supabase])
+	useFetchEventData(
+		eventId ?? null,
+		user,
+		setRegistrationCount,
+		setIsRegistered,
+		setRegistrationMessage,
+	)
 
 	// TODO: admins should be able to have edit rights whether they are the creator/assignee or not
 	const hasEditRights = event?.event_creator_id === user!.id || event?.event_assignee === user!.id
@@ -98,27 +67,6 @@ export function EventDetail() {
 			return Promise.reject(genericErrorMsg)
 		} else {
 			return Promise.resolve('Événement supprimé avec succès.')
-		}
-	}
-
-	const preRegisterToEvent = async () => {
-		if (!eventId || !user?.id) {
-			msg.error('La pré-inscription a échoué, veuillez réessayer plus tard')
-			return
-		}
-
-		const { error } = await supabase
-			.from('events_participants')
-			.insert({ event_id: Number(eventId), user_id: user.id })
-
-		if (error) {
-			msg.error("Une erreur est survenue lors de l'inscription.")
-			log.error(error)
-		} else {
-			msg.success('Ta pré-inscription a bien été prise en compte !')
-			setIsRegistered(true)
-			setRegistrationMessage('Merci pour ta participation !')
-			setRegistrationCount((prevCount) => prevCount + 1)
 		}
 	}
 
@@ -153,7 +101,19 @@ export function EventDetail() {
 							<Typography.Text>{registrationMessage}</Typography.Text>
 						) : (
 							<div className="btn-section">
-								<Button className="pre-register-btn" onClick={preRegisterToEvent}>
+								<Button
+									className="pre-register-btn"
+									onClick={() =>
+										preRegisterToEvent(
+											eventId ?? null,
+											user,
+											msg,
+											setIsRegistered,
+											setRegistrationMessage,
+											setRegistrationCount,
+										)
+									}
+								>
 									Me pré-inscrire
 								</Button>
 							</div>

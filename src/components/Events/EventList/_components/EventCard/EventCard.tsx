@@ -11,7 +11,7 @@ import './EventCard-styles.less'
 export function EventCard({ event }: IEventCardProps) {
 	return (
 		<Card
-			className={classNames('event-card', {
+			className={classNames('event-card', {	
 				'event-card--has-background': !!event.event_background,
 			})}
 			data-title={event.event_title}

@@ -1,6 +1,7 @@
 import {
 	ArrowLeft,
 	Calendar,
+	CheckCircle,
 	Trash as DeleteIcon,
 	PencilSimple as EditIcon,
 	MapPin,
@@ -96,13 +97,17 @@ export function EventDetail() {
 				<div className="register-to-event">
 					<Typography.Title level={4}>À savoir !</Typography.Title>
 					<Typography.Text>{getRegistrationText(registrationCount)}</Typography.Text>
-					<div>
+					<div className="btn-action-section">
 						{isRegistered ? (
-							<Typography.Text>{registrationMessage}</Typography.Text>
+							<div className="success-msg-section">
+								<Typography.Text>{registrationMessage}</Typography.Text>
+								<CheckCircle size={30} color="var(--ant-green)" weight="fill" />
+							</div>
 						) : (
-							<div className="btn-section">
+							<div>
 								<Button
 									className="pre-register-btn"
+									type="primary"
 									onClick={() =>
 										preRegisterToEvent(
 											eventId ?? null,

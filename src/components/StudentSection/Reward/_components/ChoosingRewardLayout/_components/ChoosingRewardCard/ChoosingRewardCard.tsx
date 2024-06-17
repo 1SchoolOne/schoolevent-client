@@ -1,20 +1,26 @@
 import { Button, Card } from 'antd'
 
+import { IRewardCardProps } from './ChoosingRewardCard-types'
+
 import './ChoosingRewardCard-styles.less'
 
-export function ChoosingRewardCard() {
+export function ChoosingRewardCard({ reward }: IRewardCardProps) {
 	return (
 		<Card
 			className="reward-card--has-background"
-			data-title={'Fnac'}
-			cover={<img className="img-cover" alt="event-cover" src="../public/fnac.png" />}
+			data-title={reward.reward_name}
+			cover={
+				reward.reward_background ? (
+					<img className="img-cover" alt="event-cover" src={reward.reward_background} />
+				) : undefined
+			}
 		>
 			<p className="required-points">
 				Valeur:
-				<span className="points"> 20</span> pts
+				<span className="points"> {reward.reward_points}</span> pts
 			</p>
 			<p className="rewards-number">
-				Cartes cadeaux restantes: <span className="number">5</span>
+				Cartes cadeaux restantes: <span className="number">{reward.reward_number}</span>
 			</p>
 			<div className="select-reward">
 				<Button type="primary">Sélectionner</Button>

@@ -2,14 +2,15 @@ import {
 	BookOpenText as GovContactsIcon,
 	AddressBook as MyContactsIcon,
 } from '@phosphor-icons/react'
-import { Segmented, Select, Space, Typography } from 'antd'
+import { Button, Segmented, Select, Space, Typography } from 'antd'
 import { useEffect, useState } from 'react'
 
 import { Table } from '@components'
-import { useContacts, useFavorites, useMapDisplay } from '@contexts'
+import { useAuth, useContacts, useFavorites, useMapDisplay } from '@contexts'
 import { useLocalStorage } from '@utils'
 
 import { useGeoLocation } from '../../../ContactsMap/ContactsMap-utils'
+import { CSVUploadModal } from '../../../ImportCsv/ImportCsv'
 import { formatNumberWithDots } from '../../../Table/Table-utils'
 import { DEFAULT_FILTER_OBJECT, SELECTED_FIELDS } from '../ContactsTable/ContactsTable-constants'
 import { IAPIResponse, ISchool, TRange } from '../ContactsTable/ContactsTable-types'
@@ -61,6 +62,18 @@ export function GovContacts() {
 		[range],
 	)
 
+	// IMPORT CSV
+	const [modalOpen, setModalOpen] = useState(false)
+	const { user } = useAuth()
+	const showModal = () => {
+		setModalOpen(true)
+	}
+
+	const handleClose = () => {
+		setModalOpen(false)
+	}
+	// FIN IMPORT CSV
+
 	return (
 		<Table<ISchool>
 			tableId="gov-contacts"
@@ -86,6 +99,12 @@ export function GovContacts() {
 						value={dataMode}
 						onChange={(value) => setDataMode(value as 'my-contacts' | 'gov-contacts')}
 					/>
+
+					<Button type="primary" onClick={showModal}>
+						Import CSV
+					</Button>
+					{user && <CSVUploadModal open={modalOpen} onClose={handleClose} userId={user.id} />}
+
 					<Space className="range-select">
 						{!isSplitView && <Typography.Text>Distance max :</Typography.Text>}
 						<Select<TRange>

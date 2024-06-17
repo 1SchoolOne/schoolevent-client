@@ -1,6 +1,8 @@
 import { ArrowLeft } from '@phosphor-icons/react'
-import { Card, Col, Row, Typography } from 'antd'
+import { Col, Row, Typography } from 'antd'
 import { Link } from 'react-router-dom'
+
+import { ChoosingRewardCard } from './_components/ChoosingRewardCard/ChoosingRewardCard'
 
 import './ChoosingRewardLayout-styles.less'
 
@@ -19,35 +21,22 @@ export function ChoosingRewardLayout() {
 					Tes points : <span className="points">0</span>
 				</Title>
 			</div>
-			<Row>
-				<Col span={8}>
-					<Card
-						hoverable
-						style={{ width: 240 }}
-						cover={
-							<img alt="example" src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png" />
-						}
-					></Card>
-				</Col>
-				<Col span={8}>
-				<Card
-						hoverable
-						style={{ width: 240 }}
-						cover={
-							<img alt="example" src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png" />
-						}
-					></Card>
-				</Col>
-				<Col span={8}>
-				<Card
-						hoverable
-						style={{ width: 240 }}
-						cover={
-							<img alt="example" src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png" />
-						}
-					></Card>
-				</Col>
-			</Row>
+			<div className="rewards-list">
+				<Row gutter={[16, 16]}>
+					<Col span={8}>
+						<ChoosingRewardCard></ChoosingRewardCard>
+					</Col>
+					<Col span={8}>
+						<ChoosingRewardCard></ChoosingRewardCard>
+					</Col>
+					<Col span={8}>
+						<ChoosingRewardCard></ChoosingRewardCard>
+					</Col>
+					<Col span={8}>
+						<ChoosingRewardCard></ChoosingRewardCard>
+					</Col>
+				</Row>
+			</div>
 		</div>
 	)
 }

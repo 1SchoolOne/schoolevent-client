@@ -1,0 +1,61 @@
+.reward-card--has-background {
+	width: 300px;
+}
+
+.reward-card--has-background::before {
+	content: attr(data-title);
+	display: block;
+	z-index: 99;
+
+	position: absolute;
+	top: calc(175px / 2);
+	left: 50%;
+	transform: translate(-50%, -50%);
+	padding: 0 var(--ant-padding-lg);
+	width: max-content;
+	max-width: 100%;
+
+	font-size: var(--ant-font-size-heading-2);
+	overflow-wrap: break-word;
+	color: white;
+}
+
+.ant-card-cover {
+	padding-top: 15px;
+	height: 175px;
+
+	img.img-cover {
+		position: relative;
+		height: 100%;
+		object-fit: contain;
+		filter: brightness(60%);
+	}
+}
+
+.rewards-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.required-points {
+	font-size: 16px;
+	.points {
+    font-size: 25px;
+		font-weight: bold;
+		color: var(--ant-color-primary);
+	}
+}
+
+.rewards-number {
+	font-size: 16px;
+	.number {
+		font-weight: bold;
+		color: var(--ant-color-primary);
+	}
+}
+
+.select-reward {
+  display: flex;
+  justify-content: flex-end;
+}

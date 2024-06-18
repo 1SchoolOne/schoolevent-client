@@ -1,27 +1,36 @@
 import { Typography } from 'antd'
 
+import { IEventCardProps } from '../../../../Events/EventList/_components/EventCard/EventCard-types'
+import { getEventStartTime } from '../../../../Events/EventList/_components/EventCard/EventCard-utils'
+
 import './HistoricEventCell-styles.less'
 
-const { Text, Title } = Typography
+const { Text } = Typography
 
-export function HistoricEventCell() {
+export function HistoricEventCell({ event }: IEventCardProps) {
 	return (
 		<div className="event-cell">
 			<div className="event-infos">
-				<Text strong>Portes-ouvertes</Text>
-				<Text>16 décembre 2023 - Campus Pontoise</Text>
-				<div className="description">
+				<Text strong>{event.event_title}</Text>
+				<div className="historic-event__date-and-address">
 					<Text>
-						Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
-						incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
-						exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.{' '}
+						{`${new Date(event.event_date).toLocaleDateString('fr-FR', {
+							weekday: 'long',
+							day: 'numeric',
+							month: 'long',
+						})} - ${getEventStartTime(event.event_date)}`}
 					</Text>
+					<Text> | </Text>
+					<Text>{event.event_school_name}</Text>
+				</div>
+				<div className="description">
+					<Text>{event.event_description}</Text>
 				</div>
 			</div>
 			<section className="points-won">
-        <Title level={4}>Points gagnés : </Title>
-        <Title level={3} className='points'>0</Title>
-      </section>
+				<p>Points gagnés : </p>
+				<p className="points">0</p>
+			</section>
 		</div>
 	)
 }

@@ -37,7 +37,7 @@ export function ChoosingRewardLayout() {
 				</Title>
 			</div>
 			<div className="rewards-list">
-				<Row gutter={[16, 16]}>
+				<Row gutter={[10, 40]}>
 					{rewards.map((reward, index: number) => (
 						<Col span={8} key={index}>
 							<ChoosingRewardCard reward={reward}></ChoosingRewardCard>

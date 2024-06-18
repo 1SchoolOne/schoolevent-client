@@ -1,6 +1,11 @@
 import { Button, Typography } from 'antd'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
+import { useAuth } from '@contexts'
+import { TEvent } from '@types'
+
+import { useFetchStudentPastEventData } from './Reward-utils'
 import { HistoricEventCell } from './_components/HistoricEventCell/HistoricEventCell'
 
 import './Reward-styles.less'
@@ -8,6 +13,20 @@ import './Reward-styles.less'
 export function Reward() {
 	const { Title } = Typography
 	const navigate = useNavigate()
+	const { user } = useAuth()
+	const [events, setEvents] = useState<TEvent[]>([])
+
+	useEffect(() => {
+		const loadPastEvents = async () => {
+			if (user?.id) {
+				// eslint-disable-next-line react-hooks/rules-of-hooks
+				const events = await useFetchStudentPastEventData(user.id)
+				setEvents(events)
+			}
+		}
+
+		loadPastEvents()
+	}, [user])
 
 	return (
 		<div className="layout-container">
@@ -31,12 +50,17 @@ export function Reward() {
 				</div>
 				<div className="historic-container">
 					<Title level={2}>Historique de tes évènements</Title>
-					<HistoricEventCell />
+					{events.map((event) => (
+						<div>
+							<HistoricEventCell event={event} />
+							<div className="divider"></div>
+						</div>
+					))}
 				</div>
 			</div>
 			<div className="right-div">
 				<div className="historic-rewards">
-				<Title level={2}>Tes récompenses !</Title>
+					<Title level={2}>Tes récompenses !</Title>
 				</div>
 			</div>
 		</div>

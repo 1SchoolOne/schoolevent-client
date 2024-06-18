@@ -230,6 +230,7 @@ export type Database = {
           event_date: string
           event_description: string
           event_duration: number
+          event_points: number | null
           event_school_name: string
           event_title: string
           event_type: Database["public"]["Enums"]["event_type"]
@@ -243,6 +244,7 @@ export type Database = {
           event_date: string
           event_description: string
           event_duration: number
+          event_points?: number | null
           event_school_name: string
           event_title: string
           event_type: Database["public"]["Enums"]["event_type"]
@@ -256,6 +258,7 @@ export type Database = {
           event_date?: string
           event_description?: string
           event_duration?: number
+          event_points?: number | null
           event_school_name?: string
           event_title?: string
           event_type?: Database["public"]["Enums"]["event_type"]
@@ -356,27 +359,27 @@ export type Database = {
           },
         ]
       }
-      reward: {
+      rewards: {
         Row: {
           id: number
-          image: string | null
-          name: string
-          numberOfCards: number | null
-          points: number | null
+          reward_background: string | null
+          reward_name: string
+          reward_number: number
+          reward_points: number
         }
         Insert: {
           id?: number
-          image?: string | null
-          name: string
-          numberOfCards?: number | null
-          points?: number | null
+          reward_background?: string | null
+          reward_name: string
+          reward_number: number
+          reward_points: number
         }
         Update: {
           id?: number
-          image?: string | null
-          name?: string
-          numberOfCards?: number | null
-          points?: number | null
+          reward_background?: string | null
+          reward_name?: string
+          reward_number?: number
+          reward_points?: number
         }
         Relationships: []
       }
@@ -411,6 +414,40 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "students_user_id_fkey"
+            columns: ["user_id"]
+            referencedRelation: "users"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      students_reward: {
+        Row: {
+          claimed_at: string
+          id: number
+          reward_id: number
+          user_id: string
+        }
+        Insert: {
+          claimed_at: string
+          id?: number
+          reward_id: number
+          user_id: string
+        }
+        Update: {
+          claimed_at?: string
+          id?: number
+          reward_id?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "students_reward_reward_id_fkey"
+            columns: ["reward_id"]
+            referencedRelation: "rewards"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "students_reward_user_id_fkey"
             columns: ["user_id"]
             referencedRelation: "users"
             referencedColumns: ["user_id"]

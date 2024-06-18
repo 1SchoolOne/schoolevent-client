@@ -24,7 +24,7 @@ import utc from 'dayjs/plugin/utc'
 import { ReactNode, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-import { AutoCompleteField, IconButton, SelectField } from '@components'
+import { AutoCompleteField, IconButton, Info, SelectField } from '@components'
 import { getNameFromEmail, useAssignees } from '@utils'
 
 import { IFormProps, eventTypeLabelRecord } from './Form-types'
@@ -90,6 +90,7 @@ export function Form(props: IFormProps) {
 				event_background: '',
 				event_date: '',
 				event_description: '',
+				event_points: 0,
 			}}
 			onFinish={onSubmit}
 		>
@@ -234,9 +235,24 @@ export function Form(props: IFormProps) {
 					<Input />
 				</AntdForm.Item>
 
-				<Divider>Description</Divider>
+				<Divider>Détails</Divider>
+				<AntdForm.Item
+					name="event_points"
+					data-testid="event_points"
+					label={
+						<Space size="small">
+							Points attribués
+							<Info tooltip tooltipProps={{ placement: 'right' }}>
+								Le nombre de points attribués aux étudiants ayant participé à l'événement.
+							</Info>
+						</Space>
+					}
+				>
+					<InputNumber min={0} />
+				</AntdForm.Item>
 				<AntdForm.Item
 					name="event_description"
+					label="Description"
 					rules={[{ required: true, message: "Veuillez saisir une description d'évenement." }]}
 					data-testid="event_description"
 				>

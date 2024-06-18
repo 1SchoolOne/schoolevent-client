@@ -11,7 +11,7 @@ import './EventCard-styles.less'
 export function EventCard({ event }: IEventCardProps) {
 	return (
 		<Card
-			className={classNames('event-card', {	
+			className={classNames('event-card', {
 				'event-card--has-background': !!event.event_background,
 			})}
 			data-title={event.event_title}
@@ -22,13 +22,16 @@ export function EventCard({ event }: IEventCardProps) {
 				) : undefined
 			}
 		>
-			<p className="event-card__date">
-				{`${new Date(event.event_date).toLocaleDateString('fr-FR', {
-					weekday: 'long',
-					day: 'numeric',
-					month: 'long',
-				})} - ${getEventStartTime(event.event_date)}`}
-			</p>
+			<div className="event-card__points-and-date">
+				<p><span>20</span> pts</p>
+				<p className="event-card__date">
+					{`${new Date(event.event_date).toLocaleDateString('fr-FR', {
+						weekday: 'long',
+						day: 'numeric',
+						month: 'long',
+					})} - ${getEventStartTime(event.event_date)}`}
+				</p>
+			</div>
 			<p className="event-card__school-and-address">
 				{event.event_school_name} - {event.event_address}
 			</p>

@@ -1,4 +1,5 @@
 import { Button, Card } from 'antd'
+import classNames from 'classnames'
 
 import { IRewardCardProps } from './ChoosingRewardCard-types'
 
@@ -7,7 +8,9 @@ import './ChoosingRewardCard-styles.less'
 export function ChoosingRewardCard({ reward }: IRewardCardProps) {
 	return (
 		<Card
-			className="reward-card--has-background"
+			className={classNames('reward-card', {
+				'reward-card--has-background': !!reward.reward_background,
+			})}
 			data-title={reward.reward_name}
 			cover={
 				reward.reward_background ? (

@@ -284,18 +284,21 @@ export type Database = {
           approved: boolean
           event_id: number
           id: number
+          student_points: number
           user_id: string
         }
         Insert: {
           approved?: boolean
           event_id: number
           id?: number
+          student_points?: number
           user_id: string
         }
         Update: {
           approved?: boolean
           event_id?: number
           id?: number
+          student_points?: number
           user_id?: string
         }
         Relationships: [
@@ -390,7 +393,7 @@ export type Database = {
           id: number
           last_event: string | null
           phone: string | null
-          points: number | null
+          points: number
           user_id: string
         }
         Insert: {
@@ -399,7 +402,7 @@ export type Database = {
           id?: number
           last_event?: string | null
           phone?: string | null
-          points?: number | null
+          points?: number
           user_id: string
         }
         Update: {
@@ -408,7 +411,7 @@ export type Database = {
           id?: number
           last_event?: string | null
           phone?: string | null
-          points?: number | null
+          points?: number
           user_id?: string
         }
         Relationships: [

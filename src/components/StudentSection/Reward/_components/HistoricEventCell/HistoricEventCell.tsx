@@ -29,7 +29,7 @@ export function HistoricEventCell({ event }: IEventCardProps) {
 			</div>
 			<section className="points-won">
 				<p>Points gagnés : </p>
-				<p className="points">0</p>
+				<p className="points">{event.event_points}</p>
 			</section>
 		</div>
 	)

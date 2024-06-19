@@ -3,7 +3,7 @@ import { RouteObject } from 'react-router-dom'
 
 import { ProtectedRoute } from '@components'
 
-import { choosingRewardRoute } from './choosingReward'
+import { rewardFormRoute } from './rewardForm'
 
 export const rewardsRoute: RouteObject = {
 	path: 'reward',
@@ -14,5 +14,5 @@ export const rewardsRoute: RouteObject = {
 			</Helmet>
 		</ProtectedRoute>
 	),
-	children: [choosingRewardRoute],
+	children: [rewardFormRoute],
 }

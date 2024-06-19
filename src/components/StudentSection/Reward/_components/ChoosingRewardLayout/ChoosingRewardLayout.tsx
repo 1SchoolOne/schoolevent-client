@@ -1,5 +1,5 @@
 import { ArrowLeft } from '@phosphor-icons/react'
-import { Col, Row, Typography } from 'antd'
+import { Button, Col, Row, Typography } from 'antd'
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 
@@ -32,9 +32,12 @@ export function ChoosingRewardLayout() {
 			</Link>
 			<div className="header">
 				<Title level={2}>Choisis ta récompense !</Title>
-				<Title level={3}>
-					Tes points : <span className="points">0</span>
-				</Title>
+				<div className="validate-rewards">
+					<Button type="primary">Valider la sélection</Button>
+					<Title level={3}>
+						Tes points : <span className="points">0</span>
+					</Title>
+				</div>
 			</div>
 			<div className="rewards-list">
 				<Row gutter={[10, 40]}>

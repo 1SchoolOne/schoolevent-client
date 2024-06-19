@@ -7,6 +7,7 @@ import { Helmet } from 'react-helmet'
 import { BrowserRouter, Navigate, Outlet, Route, Routes } from 'react-router-dom'
 
 import {
+	AddReward,
 	AppointmentsLayout,
 	AuthLayout,
 	CalendarLayout,
@@ -128,6 +129,7 @@ function App() {
 								}
 							>
 								<Route index element={<Reward />} />
+								<Route path="add" element={<AddReward />} />
 								<Route path="chooseReward" element={<ChoosingRewardLayout />} />
 							</Route>
 						</Route>

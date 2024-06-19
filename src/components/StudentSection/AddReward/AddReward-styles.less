@@ -1,0 +1,92 @@
+.previous-btn {
+	width: fit-content;
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+.reward-form {
+	max-width: fit-content;
+	margin: 0 auto;
+
+	&__background-upload {
+		border-radius: var(--ant-border-radius);
+		background-color: var(--ant-layout-sider-bg);
+		width: 300px;
+		height: 160px;
+		position: relative;
+
+		&__form-item {
+			position: absolute;
+			margin: 0;
+			left: var(--ant-padding-xs);
+			bottom: var(--ant-padding-xs);
+
+			.ant-upload-wrapper {
+				display: flex;
+				flex-direction: row;
+				align-items: center;
+
+				background-color: rgba(0, 0, 0, 0.75);
+				border-radius: var(--ant-border-radius);
+
+				&:has(.ant-upload-list-item) {
+					padding-right: var(--ant-padding-xs);
+					gap: var(--ant-padding-xs);
+				}
+
+				.ant-upload-list-item {
+					margin: 0;
+
+					.ant-upload-icon .anticon {
+						color: #fff;
+					}
+
+					.ant-upload-list-item-actions .ant-btn-icon .anticon {
+						color: var(--ant-color-error);
+					}
+				}
+			}
+		}
+	}
+
+	&__fields-container {
+		.reward-form__title-item {
+			.reward-form__title.ant-typography {
+				margin-bottom: 0;
+			}
+
+			.ant-form-item-explain {
+				margin-bottom: var(--ant-margin-sm);
+			}
+		}
+
+		&--horizontal {
+			.reward-form__title.ant-typography-edit-content {
+				margin: var(--ant-margin) 0;
+				inset-inline-start: unset;
+			}
+		}
+		&--vertical {
+			.reward-form__title {
+				margin: 0 0 var(--ant-margin);
+
+				&.ant-typography-edit-content {
+					inset-inline-start: unset;
+				}
+			}
+		}
+	}
+
+	&__pts-and-qty {
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+		align-items: center;
+	}
+
+	&__submit-btn {
+		margin-top: var(--ant-margin);
+		margin-left: auto;
+	}
+}

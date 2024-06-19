@@ -32,7 +32,7 @@ export function getItems(role: Database['public']['Enums']['user_role'] | null) 
 					label: <Link to="/events">Événements</Link>,
 				},
 				{
-					key: 'menu-reward',
+					key: 'menu-rewards',
 					icon: <CoinIcon size="1rem" />,
 					label: <Link to="/rewards">Récompenses</Link>,
 				},
@@ -69,6 +69,11 @@ export function getItems(role: Database['public']['Enums']['user_role'] | null) 
 					key: 'menu-students',
 					icon: <StudentsIcon size="1rem" />,
 					label: <Link to="/students">Étudiants</Link>,
+				},
+				{
+					key: 'menu-rewards',
+					icon: <CoinIcon size="1rem" />,
+					label: <Link to="/rewards">Récompenses</Link>,
 				},
 			]
 		default:

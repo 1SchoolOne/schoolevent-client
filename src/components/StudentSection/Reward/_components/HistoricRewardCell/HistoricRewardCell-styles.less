@@ -1,0 +1,42 @@
+.reward-cell {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  border: 2px solid var(--ant-color-border);
+  border-radius: 5px;
+  padding-left: 10px;
+}
+
+.brand-logo {
+  width: 25%;
+  .img-cover {
+    width: 100%;
+    object-fit: contain;
+  }
+}
+
+.reward-infos {
+  width: 75%;
+  display: flex;
+  flex-direction: column;
+  padding: 0 5px 5px 5px;
+  color: var(--ant-color-text-heading);
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 0 0 10px 0;
+  }
+  .brand-name {
+    font-size: 18px;
+  }
+}
+
+.reward-value-and-selected {
+  display: flex;
+  justify-content: space-between;
+  .points {
+    color: var(--ant-color-primary);
+    font-weight: bold;
+  }
+}

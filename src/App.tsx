@@ -23,7 +23,6 @@ import {
 	Reward,
 	SignUpForm,
 	Success,
-	RewardForm,
 } from '@components'
 import { FavoriteContactsProvider, MapDisplayProvider, useTheme } from '@contexts'
 
@@ -131,17 +130,6 @@ function App() {
 								<Route index element={<Reward />} />
 								<Route path="chooseReward" element={<ChoosingRewardLayout />} />
 							</Route>
-							<Route
-								path="newReward"
-								element={
-									<ProtectedRoute>
-										<Helmet>
-											<title>SchoolEvent | Nouvelle récompense</title>
-										</Helmet>
-										<RewardForm />
-									</ProtectedRoute>
-								}
-							/>
 						</Route>
 						<Route path="/auth" element={<AuthLayout />}>
 							<Route path="*" element={<Navigate to="/auth/login" />} />

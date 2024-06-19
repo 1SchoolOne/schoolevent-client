@@ -7,19 +7,22 @@ import timezone from 'dayjs/plugin/timezone'
 import utc from 'dayjs/plugin/utc'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import short from 'short-uuid'
 
 import { useAuth } from '@contexts'
 import { TEvent } from '@types'
-import { useAddressCompletion, useDebounce, useEvent, useGeoIP, useSupabase } from '@utils'
-
-import { getFileExtension } from '../../EventForm-utils'
+import {
+	uploadBackgroundFile,
+	useAddressCompletion,
+	useDebounce,
+	useEvent,
+	useGeoIP,
+	useSupabase,
+} from '@utils'
 
 dayjs.extend(timezone)
 dayjs.extend(utc)
 
 const { useForm, useWatch } = Form
-const uuid = short()
 
 export function getFilePathFromUrl(url: string) {
 	return url.split('/').at(-1) as string
@@ -84,9 +87,9 @@ export function useFormController(eventId: string | undefined) {
 		const values = form.getFieldsValue() as TEvent
 
 		if (eventId) {
-			updateEvent({ values, fileList: fileList.rcFile, session })
+			updateEvent({ values, fileList: fileList.rcFile, session: session! })
 		} else {
-			createEvent({ values, fileList: fileList.rcFile, session })
+			createEvent({ values, fileList: fileList.rcFile, session: session! })
 		}
 	}
 
@@ -138,12 +141,12 @@ function useCreateEvent(userId: string) {
 		}: {
 			values: TEvent
 			fileList: RcFile[]
-			session: Session | null
+			session: Session
 		}) => {
 			if (!values) {
 				throw new Error("Le formulaire n'est pas complet.")
 			} else {
-				const url = await uploadFile(fileList[0], session!)
+				const url = await uploadBackgroundFile({ file: fileList[0], session })
 
 				const { data, error } = await supabase
 					.from('events')
@@ -187,7 +190,7 @@ function useUpdateEvent(
 		}: {
 			values: TEvent
 			fileList: RcFile[]
-			session: Session | null
+			session: Session
 		}) => {
 			if (!event) {
 				throw new Error("Impossible de mettre à jour l'événement car il n'est pas défini.")
@@ -199,7 +202,7 @@ function useUpdateEvent(
 			// current file, we should upload the new file. If the event already had a background we
 			// delete it.
 			if (fileList[0] && fileList[0].name !== getFilePathFromUrl(event.event_background ?? '')) {
-				url = await uploadFile(fileList[0], session!)
+				url = await uploadBackgroundFile({ file: fileList[0], session })
 				event.event_background && (await removeBackground(event.event_background))
 			}
 			// If the current file name is equal to the file name of the Upload component, the url should
@@ -232,40 +235,6 @@ function useUpdateEvent(
 			navigate(`/events/view/${event?.id}`)
 		},
 	})
-}
-
-async function uploadFile(file: RcFile | undefined, session: Session) {
-	if (file instanceof File) {
-		const fileExtension = getFileExtension(file.name)
-		const fileId = uuid.new()
-
-		const res = await fetch(
-			`${
-				import.meta.env.VITE_SUPABASE_URL
-			}/storage/v1/object/pictures/background_${fileId}.${fileExtension}`,
-			{
-				method: 'POST',
-				body: file,
-				headers: {
-					'Content-Type': `image/${fileExtension === 'jpg' ? 'jpeg' : fileExtension}`,
-					Authorization: `Bearer ${session?.access_token}`,
-				},
-			},
-		)
-
-		const publicUrl = `${
-			import.meta.env.VITE_SUPABASE_URL
-		}/storage/v1/object/public/pictures/background_${fileId}.${fileExtension}`
-
-		if (res.ok) {
-			return publicUrl
-		} else {
-			await Promise.reject("Le téléchargement de l'image a échoué.")
-			return null
-		}
-	} else {
-		return null
-	}
 }
 
 function blobToRcFile(file: Blob, name: string): RcFile {

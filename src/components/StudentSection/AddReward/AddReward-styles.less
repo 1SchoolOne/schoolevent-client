@@ -11,10 +11,15 @@
 
 	&__background-upload {
 		border-radius: var(--ant-border-radius);
-		background-color: var(--ant-layout-sider-bg);
 		width: 300px;
 		height: 160px;
 		position: relative;
+		background-size: cover;
+		background-position: center;
+
+		&--empty {
+			background-color: var(--ant-layout-sider-bg);
+		}
 
 		&__form-item {
 			position: absolute;
@@ -38,6 +43,7 @@
 				.ant-upload-list-item {
 					margin: 0;
 
+					&-name,
 					.ant-upload-icon .anticon {
 						color: #fff;
 					}

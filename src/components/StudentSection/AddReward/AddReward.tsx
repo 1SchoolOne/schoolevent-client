@@ -1,9 +1,7 @@
 import { ArrowLeft } from '@phosphor-icons/react'
 import { UploadSimple as UploadIcon } from '@phosphor-icons/react/UploadSimple'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
 import {
 	Form as AntdForm,
-	App,
 	Button,
 	Col,
 	Grid,
@@ -18,43 +16,21 @@ import { Link, useNavigate } from 'react-router-dom'
 
 import { useAuth } from '@contexts'
 import { TReward } from '@types'
-import { useSupabase } from '@utils'
 
 import { IconButton } from '../../IconButton/IconButton'
+import { useController } from './AddReward-utils'
 
 import './AddReward-styles.less'
 
 const { useBreakpoint } = Grid
 
 export function AddReward() {
-	const supabase = useSupabase()
 	const { role } = useAuth()
 	const navigate = useNavigate()
 	const screens = useBreakpoint()
-	const queryClient = useQueryClient()
-	const { message } = App.useApp()
-	const [formInstance] = AntdForm.useForm<Omit<TReward, 'id'>>()
-	const formValues = AntdForm.useWatch((values) => values, formInstance)
 
-	const { mutate: addReward } = useMutation({
-		mutationFn: async (values: Omit<TReward, 'id'>) => {
-			const { data, error } = await supabase.from('rewards').insert(values).select().single()
-
-			if (error) {
-				throw error
-			}
-
-			return data
-		},
-		onSuccess: async (data) => {
-			await queryClient.resetQueries({ queryKey: ['rewards'] }).then(() => {
-				message.success(`La récompense "${data.reward_name}" a été créée avec succès`)
-			})
-		},
-		onError: async () => {
-			await message.error("Une erreur est survenue lors de l'ajout de la récompense")
-		},
-	})
+	const { formInstance, formValues, backgroundUrl, fileList, setFileList, onSubmit } =
+		useController()
 
 	if ([null, 'student'].includes(role)) {
 		navigate('/rewards')
@@ -76,7 +52,7 @@ export function AddReward() {
 					name="reward"
 					layout="vertical"
 					autoComplete="off"
-					onFinish={addReward}
+					onFinish={onSubmit}
 				>
 					<Space
 						size="large"
@@ -86,10 +62,28 @@ export function AddReward() {
 						})}
 						direction={screens.xl ? 'horizontal' : 'vertical'}
 					>
-						<div className="reward-form__background-upload">
+						<div
+							className={classNames('reward-form__background-upload', {
+								'reward-form__background-upload--empty': backgroundUrl === undefined,
+							})}
+							style={{ backgroundImage: `url(${backgroundUrl})` }}
+						>
 							<AntdForm.Item className="reward-form__background-upload__form-item">
-								<Upload accept="image/png, image/jpeg">
-									<IconButton type="text" icon={<UploadIcon color="white" size={16} />} disabled />
+								<Upload
+									accept="image/png, image/jpeg"
+									fileList={fileList.rcFile}
+									beforeUpload={async (file) => {
+										const blob = [new Blob([await file.arrayBuffer()], { type: file.type })]
+
+										setFileList({ rcFile: [file], blob })
+
+										return false
+									}}
+									onRemove={() => {
+										setFileList({ rcFile: [], blob: [] })
+									}}
+								>
+									<IconButton type="text" icon={<UploadIcon color="white" size={16} />} />
 								</Upload>
 							</AntdForm.Item>
 						</div>

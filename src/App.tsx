@@ -10,6 +10,7 @@ import {
 	AppointmentsLayout,
 	AuthLayout,
 	CalendarLayout,
+	ChoosingRewardLayout,
 	ContactsLayout,
 	EventDetail,
 	EventForm,
@@ -20,7 +21,6 @@ import {
 	ProtectedRoute,
 	ProvidersWithAuth,
 	Reward,
-	ChoosingRewardLayout,
 	SignUpForm,
 	Success,
 	RewardForm,
@@ -75,7 +75,7 @@ function App() {
 								element={
 									<ProtectedRoute>
 										<Helmet>
-											<title>SchoolEvent | Calendier</title>
+											<title>SchoolEvent | Calendrier</title>
 										</Helmet>
 										<CalendarLayout />
 									</ProtectedRoute>

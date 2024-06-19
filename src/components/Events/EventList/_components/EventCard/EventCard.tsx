@@ -23,7 +23,7 @@ export function EventCard({ event }: IEventCardProps) {
 			}
 		>
 			<div className="event-card__points-and-date">
-				<p><span>20</span> pts</p>
+				<p><span>{event.event_points}</span> pts</p>
 				<p className="event-card__date">
 					{`${new Date(event.event_date).toLocaleDateString('fr-FR', {
 						weekday: 'long',

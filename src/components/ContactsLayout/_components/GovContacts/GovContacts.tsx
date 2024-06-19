@@ -65,6 +65,7 @@ export function GovContacts() {
 	// IMPORT CSV
 	const [modalOpen, setModalOpen] = useState(false)
 	const { user } = useAuth()
+
 	const showModal = () => {
 		setModalOpen(true)
 	}

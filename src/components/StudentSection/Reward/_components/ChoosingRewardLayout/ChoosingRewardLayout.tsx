@@ -30,7 +30,7 @@ export function ChoosingRewardLayout() {
 				<ArrowLeft size={16} />
 				Retour
 			</Link>
-			<div className="header">
+			<div className="choose-reward-header">
 				<Title level={2}>Choisis ta récompense !</Title>
 				<div className="validate-rewards">
 					<Button type="primary">Valider la sélection</Button>

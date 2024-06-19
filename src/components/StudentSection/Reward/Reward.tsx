@@ -7,6 +7,7 @@ import { TEvent } from '@types'
 
 import { useFetchStudentPastEventData } from './Reward-utils'
 import { HistoricEventCell } from './_components/HistoricEventCell/HistoricEventCell'
+import { HistoricRewardCell } from './_components/HistoricRewardCell/HistoricRewardCell'
 
 import './Reward-styles.less'
 
@@ -50,17 +51,23 @@ export function Reward() {
 				</div>
 				<div className="historic-container">
 					<Title level={2}>Historique de tes évènements</Title>
-					{events.map((event) => (
-						<div>
-							<HistoricEventCell event={event} />
-							<div className="divider"></div>
-						</div>
-					))}
+					<div>
+						{events.map((event) => (
+							<div>
+								<HistoricEventCell event={event} />
+								<div className="divider"></div>
+							</div>
+						))}
+					</div>
 				</div>
 			</div>
 			<div className="right-div">
+				<Title level={2}>Tes récompenses !</Title>
 				<div className="historic-rewards">
-					<Title level={2}>Tes récompenses !</Title>
+					<div>
+						<HistoricRewardCell />
+						<div className="divider"></div>
+					</div>
 				</div>
 			</div>
 		</div>

@@ -11,7 +11,8 @@ export function ChoosingRewardCard({ reward }: IRewardCardProps) {
 			className={classNames('reward-card', {
 				'reward-card--has-background': !!reward.reward_background,
 			})}
-			data-title={reward.reward_name}
+			data-title={reward.reward_name}	
+			title={!reward.reward_background ? reward.reward_name : undefined}
 			cover={
 				reward.reward_background ? (
 					<img className="img-cover" alt="event-cover" src={reward.reward_background} />

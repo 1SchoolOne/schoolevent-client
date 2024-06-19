@@ -17,6 +17,7 @@ dist-ssr
 **/.idea/tasks.xml
 **/.idea/*.iws
 **/.idea/*.iml
+**/.idea/git_toolbox_prj.xml
 .DS_Store
 *.suo
 *.ntvs*

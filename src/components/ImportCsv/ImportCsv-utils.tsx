@@ -19,7 +19,6 @@ const mapCSVToImportItem = (row: CSVRow, userId: string): ImportItem => {
 		address: row.Adresse,
 		city: row.Ville,
 		created_at: new Date().toISOString(),
-		id: 0,
 		latitude: row.Latitude,
 		longitude: row.Longitude,
 		mail: row.Email,

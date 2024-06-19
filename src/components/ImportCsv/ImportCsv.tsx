@@ -1,7 +1,10 @@
 import { UploadOutlined } from '@ant-design/icons'
+import { useMutation } from '@tanstack/react-query'
 import { Button, Modal, Upload } from 'antd'
-import { RcFile, UploadChangeParam } from 'antd/lib/upload'
+import { RcFile } from 'antd/lib/upload'
 import React, { useState } from 'react'
+
+import { useSupabase } from '@utils'
 
 import { ImportItem } from './ImportCsv-types'
 import { parseCsv } from './ImportCsv-utils'
@@ -15,29 +18,28 @@ interface CSVUploadModalProps {
 export const CSVUploadModal: React.FC<CSVUploadModalProps> = ({ open, onClose, userId }) => {
 	const [importStatus, setImportStatus] = useState<string | null>(null)
 	const [importedData, setImportedData] = useState<ImportItem[] | null>(null)
+	const supabase = useSupabase()
 
-	const handleFileChange = (file: RcFile) => {
-		setImportStatus('Importing...')
-		setImportedData(null)
+	const { mutate } = useMutation({
+		mutationFn: async (file: RcFile) => {
+			return parseCsv(file, userId)
+				.then(async (data) => {
+					const { data: insertedData, error } = await supabase.from('contacts').insert(data)
 
-		parseCsv(file, userId)
-			.then((data) => {
-				setImportStatus('Import successful')
-				setImportedData(data)
-				console.log(data)
-			})
-			.catch((errors) => {
-				setImportStatus(`Import failed: ${errors.message}`)
-				console.error(errors)
-			})
+					if (error) {
+						setImportStatus(`Import failed: ${error.message}`)
+						return false
+					} else {
+						setImportedData(insertedData)
+						return true
+					}
+				})
+				.catch(() => false)
+		},
+	})
 
-		return false
-	}
-
-	const handleUploadChange = (info: UploadChangeParam) => {
-		if (info.file.status === 'done' || info.file.status === 'uploading') {
-			handleFileChange(info.file.originFileObj as RcFile)
-		}
+	const beforeUpload = (file: RcFile, _fileList: RcFile[]) => {
+		return mutate(file)
 	}
 
 	return (
@@ -51,12 +53,13 @@ export const CSVUploadModal: React.FC<CSVUploadModalProps> = ({ open, onClose, u
 				</Button>,
 			]}
 		>
-			<Upload
-				accept=".csv"
-				showUploadList={false}
-				beforeUpload={handleFileChange}
-				onChange={handleUploadChange}
-			>
+			<Upload accept=".csv" showUploadList={false} beforeUpload={beforeUpload}>
+				<Button type="primary">
+					<a href="/fichier/fichier.csv" download>
+						Télécharger le fichier CSV de base
+					</a>
+				</Button>
+
 				<Button icon={<UploadOutlined />}>cliquer pour selectionner votre CSV</Button>
 			</Upload>
 			{importStatus && <p>{importStatus}</p>}

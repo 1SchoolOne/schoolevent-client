@@ -221,6 +221,24 @@ export type Database = {
           },
         ]
       }
+      courses: {
+        Row: {
+          created_at: string
+          id: number
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          name: string
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          name?: string
+        }
+        Relationships: []
+      }
       events: {
         Row: {
           event_address: string
@@ -286,7 +304,6 @@ export type Database = {
           status:
             | Database["public"]["Enums"]["events_participants_status"]
             | null
-          student_points: number
           user_id: string
         }
         Insert: {
@@ -295,7 +312,6 @@ export type Database = {
           status?:
             | Database["public"]["Enums"]["events_participants_status"]
             | null
-          student_points?: number
           user_id: string
         }
         Update: {
@@ -304,7 +320,6 @@ export type Database = {
           status?:
             | Database["public"]["Enums"]["events_participants_status"]
             | null
-          student_points?: number
           user_id?: string
         }
         Relationships: [
@@ -394,8 +409,8 @@ export type Database = {
       }
       students: {
         Row: {
+          course_id: number | null
           created_at: string
-          grade: string | null
           id: number
           last_event: string | null
           phone: string | null
@@ -403,8 +418,8 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          course_id?: number | null
           created_at?: string
-          grade?: string | null
           id?: number
           last_event?: string | null
           phone?: string | null
@@ -412,8 +427,8 @@ export type Database = {
           user_id: string
         }
         Update: {
+          course_id?: number | null
           created_at?: string
-          grade?: string | null
           id?: number
           last_event?: string | null
           phone?: string | null
@@ -421,6 +436,12 @@ export type Database = {
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "students_course_id_fkey"
+            columns: ["course_id"]
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "students_user_id_fkey"
             columns: ["user_id"]
@@ -505,7 +526,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      award_points_for_past_events: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
     }
     Enums: {
       apt_status: "to_contact" | "contacted" | "planned"

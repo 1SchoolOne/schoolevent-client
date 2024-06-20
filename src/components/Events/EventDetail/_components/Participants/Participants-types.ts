@@ -1,11 +1,11 @@
 import { UseMutateFunction } from '@tanstack/react-query'
 import { Dispatch, SetStateAction } from 'react'
 
-import { Database } from '@types'
+import { Database, TParticipant } from '@types'
 
 type TParticipants =
 	| Array<
-			Database['public']['Tables']['events_participants']['Row'] & {
+			TParticipant & {
 				users: Pick<Database['public']['Tables']['users']['Row'], 'id' | 'email'> | null
 			}
 	  >
@@ -26,9 +26,27 @@ export interface ICheckListProps {
 	selectedParticipants: Array<string>
 	setSelectedParticipants: Dispatch<SetStateAction<Array<string>>>
 	approveParticipants: UseMutateFunction<
-		{ id: number; event_id: number; user_id: string; approved: boolean }[],
+		Omit<
+			{
+				event_id: number
+				id: number
+				status: 'approved' | 'pending' | 'completed' | null
+				student_points: number
+				user_id: string
+			},
+			'id'
+		>[],
 		Error,
-		{ id: number; event_id: number; user_id: string; approved: boolean }[],
+		Omit<
+			{
+				event_id: number
+				id: number
+				status: 'approved' | 'pending' | 'completed' | null
+				student_points: number
+				user_id: string
+			},
+			'id'
+		>[],
 		unknown
 	>
 	declineParticipants: (toDecline: Array<string>) => Promise<void>

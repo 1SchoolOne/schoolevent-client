@@ -3,6 +3,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { Button, Checkbox, Divider, message as Message, Modal, Space, Typography } from 'antd'
 
 import { SuccessButton } from '@components'
+import { TParticipant } from '@types'
 import { getNameFromEmail } from '@utils'
 
 import { ICheckListProps, IParticipantsProps, ISimpleListProps } from './Participants-types'
@@ -49,9 +50,9 @@ function SimpleList({ participants }: ISimpleListProps) {
 	return participants && participants.length > 0 ? (
 		participants
 			.sort((a, b) => {
-				if (a.approved && !b.approved) {
+				if (a.status !== 'pending' && b.status === 'pending') {
 					return -1
-				} else if (!a.approved && b.approved) {
+				} else if (a.status === 'pending' && b.status !== 'pending') {
 					return 1
 				}
 
@@ -59,7 +60,7 @@ function SimpleList({ participants }: ISimpleListProps) {
 			})
 			.map((p) => (
 				<div key={p.id} className="simple-list__participant">
-					{p.approved ? (
+					{p.status !== 'pending' ? (
 						<Check className="simple-list__participant__icon" color="var(--ant-color-success)" />
 					) : (
 						<Minus
@@ -99,31 +100,34 @@ function CheckList(props: ICheckListProps) {
 	}
 
 	const sortedParticipants = participants.sort((a, b) => {
-		if (!a.approved && b.approved) {
+		if (a.status === 'pending' && b.status !== 'pending') {
 			return -1
-		} else if (a.approved && !b.approved) {
+		} else if (a.status !== 'pending' && b.status === 'pending') {
 			return 1
 		}
 
 		return 0
 	})
 
-	const toApprove =
+	const toApprove: Array<TParticipant> =
 		participants
-			?.filter((p) => selectedParticipants.includes(p.user_id) && !p.approved)
+			?.filter((p) => selectedParticipants.includes(p.user_id) && p.status === 'pending')
 			.map((p) => ({
 				id: p.id,
-				event_id: p.event_id,
 				user_id: p.user_id,
-				approved: true,
+				event_id: p.event_id,
+				student_points: p.student_points,
+				status: 'approved',
 			})) ?? []
 
 	const toDecline =
 		participants
-			?.filter((p) => selectedParticipants.includes(p.user_id) && !p.approved)
+			?.filter((p) => selectedParticipants.includes(p.user_id) && p.status === 'pending')
 			.map((p) => p.user_id) ?? []
 
-	const enabled = participants.some((p) => selectedParticipants.includes(p.user_id) && !p.approved)
+	const enabled = participants.some(
+		(p) => selectedParticipants.includes(p.user_id) && p.status === 'pending',
+	)
 
 	const approveButtonDisabled = enabled ? toApprove.length === 0 : true
 	const declineButtonDisabled = enabled ? toDecline.length === 0 : true
@@ -140,7 +144,9 @@ function CheckList(props: ICheckListProps) {
 						if (e.target.checked) {
 							setSelectedParticipants(participants.map((p) => p.user_id))
 						} else {
-							const alreadyApproved = participants.filter((p) => p.approved).map((p) => p.user_id)
+							const alreadyApproved = participants
+								.filter((p) => p.status !== 'pending')
+								.map((p) => p.user_id)
 							setSelectedParticipants(alreadyApproved)
 						}
 					}}
@@ -235,7 +241,7 @@ function CheckList(props: ICheckListProps) {
 				options={sortedParticipants.map((p) => ({
 					value: p.user_id,
 					label: getNameFromEmail(p.users!.email).name,
-					disabled: p.approved,
+					disabled: p.status !== 'pending',
 				}))}
 			/>
 		</>

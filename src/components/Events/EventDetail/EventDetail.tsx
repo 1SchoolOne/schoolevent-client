@@ -167,6 +167,7 @@ export function EventDetail() {
 										onOk: async () =>
 											deleteEvent()
 												.then(async (successMessage) => {
+													// TODO: reset events query
 													await msg.success(successMessage)
 													navigate('/events')
 												})

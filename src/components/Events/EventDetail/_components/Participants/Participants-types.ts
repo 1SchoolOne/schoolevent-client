@@ -31,7 +31,6 @@ export interface ICheckListProps {
 				event_id: number
 				id: number
 				status: 'approved' | 'pending' | 'completed' | null
-				student_points: number
 				user_id: string
 			},
 			'id'
@@ -42,7 +41,6 @@ export interface ICheckListProps {
 				event_id: number
 				id: number
 				status: 'approved' | 'pending' | 'completed' | null
-				student_points: number
 				user_id: string
 			},
 			'id'

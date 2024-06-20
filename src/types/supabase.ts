@@ -281,23 +281,29 @@ export type Database = {
       }
       events_participants: {
         Row: {
-          approved: boolean
           event_id: number
           id: number
+          status:
+            | Database["public"]["Enums"]["events_participants_status"]
+            | null
           student_points: number
           user_id: string
         }
         Insert: {
-          approved?: boolean
           event_id: number
           id?: number
+          status?:
+            | Database["public"]["Enums"]["events_participants_status"]
+            | null
           student_points?: number
           user_id: string
         }
         Update: {
-          approved?: boolean
           event_id?: number
           id?: number
+          status?:
+            | Database["public"]["Enums"]["events_participants_status"]
+            | null
           student_points?: number
           user_id?: string
         }
@@ -504,6 +510,7 @@ export type Database = {
     Enums: {
       apt_status: "to_contact" | "contacted" | "planned"
       event_type: "open_day" | "presentation" | "conference"
+      events_participants_status: "pending" | "approved" | "completed"
       user_role: "student" | "manager" | "admin"
     }
     CompositeTypes: {

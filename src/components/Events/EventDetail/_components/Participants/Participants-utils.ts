@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { message as Message } from 'antd'
 import { useEffect, useState } from 'react'
 
+import { TParticipant } from '@types'
 import { getNameFromEmail, log, useSupabase } from '@utils'
 
 const { useMessage } = Message
@@ -36,19 +37,14 @@ export function useController(eventId: string | undefined) {
 
 	useEffect(() => {
 		if (participants) {
-			setSelectedParticipants(participants.filter((p) => p.approved).map((p) => p.user_id))
+			setSelectedParticipants(
+				participants.filter((p) => p.status !== 'pending').map((p) => p.user_id),
+			)
 		}
 	}, [participants])
 
 	const { mutate: approveParticipants } = useMutation({
-		mutationFn: async (
-			toApprove: Array<{
-				id: number
-				event_id: number
-				user_id: string
-				approved: boolean
-			}>,
-		) => {
+		mutationFn: async (toApprove: Array<Omit<TParticipant, 'id'>>) => {
 			const { error } = await supabase.from('events_participants').upsert(toApprove)
 
 			if (error) {

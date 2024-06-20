@@ -116,7 +116,6 @@ function CheckList(props: ICheckListProps) {
 				id: p.id,
 				user_id: p.user_id,
 				event_id: p.event_id,
-				student_points: p.student_points,
 				status: 'approved',
 			})) ?? []
 

@@ -57,6 +57,7 @@ describe('Events', () => {
 				event_address: '8 rue pierre de coubertin, pontoise',
 				event_school_name: 'ESIEE-IT',
 				event_description: `super description de l'événement ${eventTitle}`,
+				event_points: 0,
 			})
 		})
 
@@ -92,6 +93,7 @@ describe('Events', () => {
 				event_address: '8 rue pierre de coubertin, pontoise',
 				event_school_name: 'ESIEE-IT',
 				event_description: `super description de l'événement ${eventTitle}`,
+				event_points: 0,
 			})
 
 			getButtonFromLabel('Modifier').should('be.visible')

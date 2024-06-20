@@ -75,6 +75,7 @@ export const EVENT: TEvent = {
 	event_description: 'super description',
 	event_background: null,
 	event_assignee: null,
+	event_points: 0,
 }
 
 export const EVENT_LIST: Array<TEvent> = [EVENT]

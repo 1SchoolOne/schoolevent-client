@@ -1,6 +1,8 @@
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { message } from 'antd'
 
-//import { TReward } from '@types'
+import { useAuth } from '@contexts'
+import { TReward } from '@types'
 import { log, useSupabase } from '@utils'
 
 export function useRewardData() {
@@ -20,49 +22,13 @@ export function useRewardData() {
 	})
 }
 
-export async function useAddRewardSelection(userId: string | undefined , rewardId: number) {
-  const supabase = useSupabase()
-  const claimedAt = new Date().toISOString()
-
-  const { data, error } = await supabase
-    .from('students_reward')
-    .insert([{ user_id: userId!, reward_id: rewardId, quantity: 1, claimed_at: claimedAt }])
-
-  if (error) {
-    log.error('Error adding reward selection: ', error)
-    throw error
-  }
-
-  return data
-}
-
-export async function useRemoveRewardSelection(userId: string, rewardId: number) {
-  const supabase = useSupabase()
-
-  const { data, error } = await supabase
-    .from('students_reward')
-    .delete()
-    .eq('user_id', userId)
-    .eq('reward_id', rewardId)
-
-  if (error) {
-    log.error('Error removing reward selection: ', error)
-    throw error
-  }
-
-  return data
-}
-
 export function useRewardSelections(userId: string | undefined) {
 	const supabase = useSupabase()
 
 	return useQuery({
 		queryKey: ['rewards-selection', { id: userId }],
 		queryFn: async () => {
-			const { data, error } = await supabase
-				.from('students_reward')
-				.select('reward_id, quantity')
-				.eq('user_id', userId!)
+			const { data, error } = await supabase.from('students_reward').select().eq('user_id', userId!)
 
 			if (error) {
 				log.error('Error fetching reward selections: ', error)
@@ -91,6 +57,36 @@ export function useStudentPoints(userId: string | undefined) {
 			}
 
 			return data.points
+		},
+	})
+}
+
+export function useConfirmRewards() {
+	const supabase = useSupabase()
+	const { user } = useAuth()
+	const queryClient = useQueryClient()
+
+	return useMutation({
+		mutationFn: async (rewardsMap: Map<TReward, number>) => {
+			const rewards = Array.from(rewardsMap.entries()).map(([reward, count]) => ({
+				quantity: count,
+				user_id: user!.id,
+				reward_id: reward.id,
+			}))
+
+			const { error } = await supabase.from('students_reward').insert(rewards)
+
+			if (error) {
+				throw error
+			}
+		},
+		onSuccess: async () => {
+			await queryClient.resetQueries({ queryKey: ['rewards'] })
+			await queryClient.resetQueries({ queryKey: ['student-points'] })
+			message.success('Les récompenses ont été réclamées avec succès.')
+		},
+		onError: () => {
+			message.error('Une erreur est survenue lors de la réclamation des récompenses.')
 		},
 	})
 }

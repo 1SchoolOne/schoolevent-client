@@ -452,21 +452,21 @@ export type Database = {
       }
       students_reward: {
         Row: {
-          claimed_at: string
+          claimed_at: string | null
           id: number
           quantity: number
           reward_id: number
           user_id: string
         }
         Insert: {
-          claimed_at: string
+          claimed_at?: string | null
           id?: number
           quantity: number
           reward_id: number
           user_id: string
         }
         Update: {
-          claimed_at?: string
+          claimed_at?: string | null
           id?: number
           quantity?: number
           reward_id?: number

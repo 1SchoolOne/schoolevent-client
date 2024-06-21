@@ -530,6 +530,13 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
+      update_reward: {
+        Args: {
+          rewardid: number
+          qty: number
+        }
+        Returns: undefined
+      }
     }
     Enums: {
       apt_status: "to_contact" | "contacted" | "planned"

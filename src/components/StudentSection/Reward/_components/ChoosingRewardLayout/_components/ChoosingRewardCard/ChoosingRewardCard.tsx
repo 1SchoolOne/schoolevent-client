@@ -8,12 +8,21 @@ import { IRewardCardProps } from './ChoosingRewardCard-types'
 
 import './ChoosingRewardCard-styles.less'
 
-export function ChoosingRewardCard({ reward, onSelect, onDeselect }: IRewardCardProps) {
+export function ChoosingRewardCard({
+	reward,
+	onSelect,
+	onDeselect,
+	studentPoints,
+}: IRewardCardProps) {
 	const [selectedCount, setSelectedCount] = useState(0)
 	const [remainingRewards, setRemainingRewards] = useState(reward.reward_number)
 
 	const addReward = async () => {
 		if (remainingRewards > 0) {
+			if (studentPoints < reward.reward_points) {
+				alert("Vous n'avez pas assez de points pour sélectionner cette récompense.")
+				return
+			}
 			try {
 				setSelectedCount(selectedCount + 1)
 				setRemainingRewards(remainingRewards - 1)
@@ -62,7 +71,7 @@ export function ChoosingRewardCard({ reward, onSelect, onDeselect }: IRewardCard
 						Retirer
 					</Button>
 				)}
-				<Button type="primary" onClick={addReward}>
+				<Button type="primary" onClick={addReward} disabled={studentPoints < reward.reward_points}>
 					{selectedCount > 0 ? `Sélectionné (${selectedCount})` : 'Sélectionner'}
 				</Button>
 			</div>

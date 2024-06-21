@@ -3,69 +3,74 @@ import { Button, Col, Modal, Row, Typography } from 'antd'
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 
+import { useAuth } from '@contexts'
 import { TReward } from '@types'
 
-import { useAddRewardSelection, useFetchRewardData, useFetchRewardSelections } from './ChoosingReward-utils'
+import { useRewardData, useStudentPoints } from './ChoosingReward-utils'
 import { ChoosingRewardCard } from './_components/ChoosingRewardCard/ChoosingRewardCard'
 
 import './ChoosingRewardLayout-styles.less'
+//import { useMutation } from '@tanstack/react-query'
 
 const { Title } = Typography
 
 export function ChoosingRewardLayout() {
-	const [rewards, setRewards] = useState<TReward[]>([])
-	const [selectedRewards, setSelectedRewards] = useState<{
-		[key: string]: { reward: TReward; count: number }
-	}>({})
+	const { user } = useAuth()
+	const [selectedRewards, setSelectedRewards] = useState(new Map())
 	const [isModalVisible, setIsModalVisible] = useState(false)
-	const userId = 'USER_ID'
+	const [remainingPoints, setRemainingPoints] = useState(0)
+
+	const { data: rewards } = useRewardData()
+	const { data: studentPoints } = useStudentPoints(user?.id)
 
 	useEffect(() => {
-		const loadRewards = async () => {
-			// eslint-disable-next-line react-hooks/rules-of-hooks
-			const rewards = await useFetchRewardData()
-			setRewards(rewards)
-
-			// eslint-disable-next-line react-hooks/rules-of-hooks
-			const selections = await useFetchRewardSelections(userId)
-			const selectionMap = selections.reduce((acc: any, { reward_id, quantity }: any) => {
-				const reward = rewards.find((r) => r.id === reward_id)
-				if (reward) {
-					acc[reward.reward_name] = { reward, count: quantity }
-				}
-				return acc
-			}, {})
-
-			setSelectedRewards(selectionMap)
+		if(studentPoints !== undefined) {
+			setRemainingPoints(studentPoints)
 		}
-
-		loadRewards()
-	}, [])
+	}, [studentPoints])
 
 	const handleSelect = (reward: TReward) => {
-		setSelectedRewards((prev) => {
-			const updatedRewards = { ...prev }
-			if (updatedRewards[reward.reward_name]) {
-				updatedRewards[reward.reward_name].count += 1
-			} else {
-				updatedRewards[reward.reward_name] = { reward, count: 1 }
-			}
-			return updatedRewards
-		})
+		if (remainingPoints >= reward.reward_points) {
+			setSelectedRewards((prev) => {
+				const updatedRewards = new Map(prev)
+				if (updatedRewards.has(reward.reward_name)) {
+					updatedRewards.set(reward.reward_name, {
+						reward,
+						count: updatedRewards.get(reward.reward_name).count + 1,
+					})
+				} else {
+					updatedRewards.set(reward.reward_name, { reward, count: 1 })
+				}
+				return updatedRewards
+			})
+
+			setRemainingPoints((prev) => prev - reward.reward_points)
+		} else {
+			alert("Vous n'avez pas assez de points pour sélectionner cette récompense.")
+		}
 	}
 
 	const handleDeselect = (reward: TReward) => {
 		setSelectedRewards((prev) => {
-			const updatedRewards = { ...prev }
-			if (updatedRewards[reward.reward_name]) {
-				updatedRewards[reward.reward_name].count -= 1
-				if (updatedRewards[reward.reward_name].count === 0) {
-					delete updatedRewards[reward.reward_name]
+			const updatedRewards = new Map(prev)
+			if (updatedRewards.has(reward.reward_name)) {
+				const currentCount = updatedRewards.get(reward.reward_name).count
+				if (currentCount === 1) {
+					updatedRewards.delete(reward.reward_name)
+				} else {
+					updatedRewards.set(reward.reward_name, {
+						reward,
+						count: currentCount - 1,
+					})
 				}
 			}
+
 			return updatedRewards
 		})
+
+		setRemainingPoints((prev) => prev + reward.reward_points)
 	}
+
 
 	const handleValidateSelection = () => {
 		setIsModalVisible(true)
@@ -75,20 +80,12 @@ export function ChoosingRewardLayout() {
 		setIsModalVisible(false)
 	}
 
-	const confirmSelection = async () => {
-		try {
-			for(const key in selectedRewards) {
-				const { reward, count } = selectedRewards[key]
-				for (let i = 0; i < count; i++) {
-					// eslint-disable-next-line react-hooks/rules-of-hooks
-					await useAddRewardSelection(userId, reward.id)
-				}
-			}
-			setSelectedRewards({})
-			setIsModalVisible(false)
-		} catch (error) {
-			console.error("Error confirming selection: ", error)
-		}
+	const getRewardSummary = () => {
+		return Array.from(selectedRewards.entries()).map(([name, data]) => (
+			<p key={name}>
+				{name}: {data.count} fois
+			</p>
+		))
 	}
 
 	return (
@@ -104,17 +101,17 @@ export function ChoosingRewardLayout() {
 						Valider la sélection
 					</Button>
 					<Title level={3}>
-						Tes points : <span className="points">0</span>
+						Tes points : <span className="points">{remainingPoints}</span>
 					</Title>
 				</div>
 			</div>
 			<div className="rewards-list">
 				<Row gutter={[10, 40]}>
-					{rewards.map((reward, index: number) => (
-						<Col span={8} key={index}>
+					{rewards?.map((reward: TReward) => (
+						<Col span={8} key={reward.id}>
 							<ChoosingRewardCard
+								studentPoints={remainingPoints}
 								reward={reward}
-								userId={userId}
 								onSelect={handleSelect}
 								onDeselect={handleDeselect}
 							/>
@@ -131,18 +128,12 @@ export function ChoosingRewardLayout() {
 						<Button type="default" key="close" onClick={handleCloseModal}>
 							Fermer
 						</Button>,
-						<Button type="primary" onClick={confirmSelection}>
+						<Button type="primary">
 							Confirmer
 						</Button>,
 					]}
 				>
-					<ul>
-						{Object.keys(selectedRewards).map((key) => (
-							<li key={key}>
-								{selectedRewards[key].reward.reward_name} - x{selectedRewards[key].count}
-							</li>
-						))}
-					</ul>
+					{getRewardSummary()}
 				</Modal>
 			</div>
 		</div>

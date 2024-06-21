@@ -19,6 +19,7 @@ import {
 	HomeLayout,
 	LoginForm,
 	MainLayout,
+	Onboarding,
 	ProtectedRoute,
 	ProvidersWithAuth,
 	Reward,
@@ -52,6 +53,7 @@ function App() {
 								<FavoriteContactsProvider>
 									<ProtectedRoute>
 										<MainLayout />
+										<Onboarding />
 									</ProtectedRoute>
 								</FavoriteContactsProvider>
 							}

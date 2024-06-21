@@ -22,6 +22,29 @@ export function AuthProvider({ children }: PropsWithChildren) {
 	supabase.auth.getSession()
 
 	useQuery({
+		queryKey: ['studentData', { userId: authState?.user?.id }],
+		queryFn: async () => {
+			const { data, error } = await supabase
+				.from('students')
+				.select()
+				.eq('user_id', authState!.user!.id)
+				.single()
+
+			if (error) {
+				throw error
+			}
+
+			setAuthState({
+				type: 'SET_STUDENT_DATA',
+				payload: { studentData: data },
+			})
+
+			return data
+		},
+		enabled: !!authState.user && authState.role === 'student',
+	})
+
+	useQuery({
 		queryKey: ['user'],
 		queryFn: async () => {
 			const { data: userObject, error } = await supabase
@@ -34,12 +57,10 @@ export function AuthProvider({ children }: PropsWithChildren) {
 				throw error
 			}
 
-			if (userObject) {
-				setAuthState({
-					type: 'SET_ROLE_AND_APPROVED',
-					payload: { role: userObject.role, approved: userObject.approved },
-				})
-			}
+			setAuthState({
+				type: 'SET_ROLE_AND_APPROVED',
+				payload: { role: userObject.role, approved: userObject.approved },
+			})
 
 			return userObject
 		},
@@ -83,6 +104,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
 		() => ({
 			session: authState.session,
 			user: authState.user,
+			studentData: authState.studentData,
 			role: authState.role,
 			approved: !!authState.approved,
 		}),

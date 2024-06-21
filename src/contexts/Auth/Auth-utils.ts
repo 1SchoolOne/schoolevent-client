@@ -19,10 +19,16 @@ export function authReducer(
 				// synchronously set the loading when `role` and `approved` are updated
 				loading: !(action.payload.role !== null && action.payload.approved !== null),
 			}
+		case 'SET_STUDENT_DATA':
+			return {
+				...state,
+				studentData: action.payload.studentData,
+			}
 		case 'RESET':
 			return {
 				session: null,
 				user: null,
+				studentData: null,
 				role: null,
 				approved: null,
 				loading: false,

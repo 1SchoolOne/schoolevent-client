@@ -2,9 +2,9 @@ import { Button, Typography } from 'antd'
 import { useNavigate } from 'react-router-dom'
 
 import { useAuth } from '@contexts'
-import { TEvent } from '@types'
+import { TEvent, TReward } from '@types'
 
-import { useStudentPastEventData, useStudentPoints } from './Reward-utils'
+import { useHistoricRewardData, useStudentPastEventData, useStudentPoints } from './Reward-utils'
 import { HistoricEventCell } from './_components/HistoricEventCell/HistoricEventCell'
 import { HistoricRewardCell } from './_components/HistoricRewardCell/HistoricRewardCell'
 
@@ -17,6 +17,7 @@ export function Reward() {
 
 	const { data: studentPastEvents } = useStudentPastEventData(user?.id)
 	const { data: studentPoints } = useStudentPoints(user?.id)
+	const { data: studentRewards } = useHistoricRewardData(user?.id)
 
 	return (
 		<div className="layout-container">
@@ -54,8 +55,12 @@ export function Reward() {
 				<Title level={2}>Tes récompenses !</Title>
 				<div className="historic-rewards">
 					<div>
-						<HistoricRewardCell />
-						<div className="divider"></div>
+						{studentRewards?.map((reward: TReward) => (
+							<div>
+								<HistoricRewardCell reward={reward} />
+								<div className="divider"></div>
+							</div>
+						))}
 					</div>
 				</div>
 			</div>

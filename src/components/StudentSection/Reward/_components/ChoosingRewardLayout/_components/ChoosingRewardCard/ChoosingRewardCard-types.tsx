@@ -6,3 +6,7 @@ export interface IRewardCardProps {
   onSelect: (reward: any) => void,
   onDeselect: (reward: any) => void,
 }
+
+export interface IHistoricRewardCardProps {
+  reward: TReward
+}

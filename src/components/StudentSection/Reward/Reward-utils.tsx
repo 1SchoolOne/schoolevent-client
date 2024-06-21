@@ -57,3 +57,47 @@ export function useStudentPoints(userId: string | undefined) {
 		},
 	})
 }
+
+export function useHistoricRewardData(userId: string | undefined) {
+	const supabase = useSupabase()
+
+	return useQuery({
+		queryKey: ['student-rewards', { id: userId }],
+		queryFn: async () => {
+			const { data: studentData, error: studentError } = await supabase
+			.from('students_reward')
+			.select('reward_id, quantity')
+			.eq('user_id', userId!)
+
+			if (studentError) {
+				log.error('Error fetching rewards data: ', studentError)
+				return []
+			}
+			const rewardIds = studentData.map(
+				(reward: { reward_id: number }) => reward.reward_id,
+			)
+
+			const { data: rewardsData, error: rewardsError } = await supabase
+			.from('rewards')
+			.select()
+			.in('id', rewardIds)
+
+			if(rewardsError) {
+				log.error('Error fetching students rewards: ', rewardsError)
+				return []
+			}
+
+			const rewardQuantities = studentData.reduce((acc: { [key: number]: number }, {reward_id, quantity}) => {
+				acc[reward_id] = quantity
+				return acc
+			}, {})
+
+			const rewardWithQuantities = rewardsData.map((reward: any) => ({
+				...reward,
+				quantity: rewardQuantities[reward.id] || 0,
+			}))
+
+			return rewardWithQuantities
+		}
+	})
+}

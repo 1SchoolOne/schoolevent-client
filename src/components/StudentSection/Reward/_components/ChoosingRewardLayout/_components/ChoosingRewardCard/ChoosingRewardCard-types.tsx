@@ -2,7 +2,7 @@ import { TReward } from "@types"
 
 export interface IRewardCardProps {
   reward: TReward,
-  userId: string,
+  studentPoints: number,
   onSelect: (reward: any) => void,
   onDeselect: (reward: any) => void,
 }

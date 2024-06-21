@@ -1,11 +1,10 @@
 import { Button, Typography } from 'antd'
-import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { useAuth } from '@contexts'
 import { TEvent } from '@types'
 
-import { useFetchStudentPastEventData } from './Reward-utils'
+import { useStudentPastEventData, useStudentPoints } from './Reward-utils'
 import { HistoricEventCell } from './_components/HistoricEventCell/HistoricEventCell'
 import { HistoricRewardCell } from './_components/HistoricRewardCell/HistoricRewardCell'
 
@@ -15,19 +14,9 @@ export function Reward() {
 	const { Title } = Typography
 	const navigate = useNavigate()
 	const { user } = useAuth()
-	const [events, setEvents] = useState<TEvent[]>([])
 
-	useEffect(() => {
-		const loadPastEvents = async () => {
-			if (user?.id) {
-				// eslint-disable-next-line react-hooks/rules-of-hooks
-				const events = await useFetchStudentPastEventData(user.id)
-				setEvents(events)
-			}
-		}
-
-		loadPastEvents()
-	}, [user])
+	const { data: studentPastEvents } = useStudentPastEventData(user?.id)
+	const { data: studentPoints } = useStudentPoints(user?.id)
 
 	return (
 		<div className="layout-container">
@@ -36,7 +25,7 @@ export function Reward() {
 					<Title level={2}>Convertis tes points !</Title>
 					<div className="convert">
 						<Title level={4}>
-							Tes points : <span className="points">0</span>
+							Tes points : <span className="points">{studentPoints}</span>
 						</Title>
 						<Button
 							className="convert-button"
@@ -52,7 +41,7 @@ export function Reward() {
 				<div className="historic-container">
 					<Title level={2}>Historique de tes évènements</Title>
 					<div>
-						{events.map((event) => (
+						{studentPastEvents?.map((event: TEvent) => (
 							<div>
 								<HistoricEventCell event={event} />
 								<div className="divider"></div>

@@ -1,4 +1,4 @@
-import { ArrowLeft } from '@phosphor-icons/react'
+import { ArrowLeft, Gift } from '@phosphor-icons/react'
 import { Button, Col, Modal, Row, Typography } from 'antd'
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -10,6 +10,7 @@ import { useRewardData, useStudentPoints } from './ChoosingReward-utils'
 import { ChoosingRewardCard } from './_components/ChoosingRewardCard/ChoosingRewardCard'
 
 import './ChoosingRewardLayout-styles.less'
+
 //import { useMutation } from '@tanstack/react-query'
 
 const { Title } = Typography
@@ -17,14 +18,14 @@ const { Title } = Typography
 export function ChoosingRewardLayout() {
 	const { user } = useAuth()
 	const [selectedRewards, setSelectedRewards] = useState(new Map())
-	const [isModalVisible, setIsModalVisible] = useState(false)
+	const [modal, contextHolder] = Modal.useModal()
 	const [remainingPoints, setRemainingPoints] = useState(0)
 
 	const { data: rewards } = useRewardData()
 	const { data: studentPoints } = useStudentPoints(user?.id)
 
 	useEffect(() => {
-		if(studentPoints !== undefined) {
+		if (studentPoints !== undefined) {
 			setRemainingPoints(studentPoints)
 		}
 	}, [studentPoints])
@@ -71,20 +72,24 @@ export function ChoosingRewardLayout() {
 		setRemainingPoints((prev) => prev + reward.reward_points)
 	}
 
-
 	const handleValidateSelection = () => {
-		setIsModalVisible(true)
-	}
-
-	const handleCloseModal = () => {
-		setIsModalVisible(false)
+		modal.confirm({
+			title: 'Récapitulatif de tes récompenses !',
+			content: getRewardSummary(),
+			icon: <Gift size={25} weight="fill" />,
+			okText: 'Confirmer',
+			centered: true,
+			width: 400,
+		})
 	}
 
 	const getRewardSummary = () => {
 		return Array.from(selectedRewards.entries()).map(([name, data]) => (
-			<p key={name}>
-				{name}: {data.count} fois
-			</p>
+			<ul key={name}>
+				<li>
+					{name} - x{data.count}
+				</li>
+			</ul>
 		))
 	}
 
@@ -100,6 +105,7 @@ export function ChoosingRewardLayout() {
 					<Button type="primary" onClick={handleValidateSelection}>
 						Valider la sélection
 					</Button>
+					{contextHolder}
 					<Title level={3}>
 						Tes points : <span className="points">{remainingPoints}</span>
 					</Title>
@@ -118,23 +124,6 @@ export function ChoosingRewardLayout() {
 						</Col>
 					))}
 				</Row>
-			</div>
-			<div>
-				<Modal
-					title="Récapitulatif"
-					open={isModalVisible}
-					onCancel={handleCloseModal}
-					footer={[
-						<Button type="default" key="close" onClick={handleCloseModal}>
-							Fermer
-						</Button>,
-						<Button type="primary">
-							Confirmer
-						</Button>,
-					]}
-				>
-					{getRewardSummary()}
-				</Modal>
 			</div>
 		</div>
 	)

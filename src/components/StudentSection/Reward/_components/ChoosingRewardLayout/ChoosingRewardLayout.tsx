@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom'
 import { useAuth } from '@contexts'
 import { TReward } from '@types'
 
-import { useRewardData, useStudentPoints } from './ChoosingReward-utils'
+import { useRewardData, useStudentPoints,useConfirmRewards } from './ChoosingReward-utils'
 import { ChoosingRewardCard } from './_components/ChoosingRewardCard/ChoosingRewardCard'
 
 import './ChoosingRewardLayout-styles.less'
@@ -17,12 +17,13 @@ const { Title } = Typography
 
 export function ChoosingRewardLayout() {
 	const { user } = useAuth()
-	const [selectedRewards, setSelectedRewards] = useState(new Map())
+	const [selectedRewards, setSelectedRewards] = useState<Map<TReward, number>>(new Map())
 	const [modal, contextHolder] = Modal.useModal()
 	const [remainingPoints, setRemainingPoints] = useState(0)
 
 	const { data: rewards } = useRewardData()
 	const { data: studentPoints } = useStudentPoints(user?.id)
+	const {mutate: confirmRewards} = useConfirmRewards()
 
 	useEffect(() => {
 		if (studentPoints !== undefined) {
@@ -34,13 +35,10 @@ export function ChoosingRewardLayout() {
 		if (remainingPoints >= reward.reward_points) {
 			setSelectedRewards((prev) => {
 				const updatedRewards = new Map(prev)
-				if (updatedRewards.has(reward.reward_name)) {
-					updatedRewards.set(reward.reward_name, {
-						reward,
-						count: updatedRewards.get(reward.reward_name).count + 1,
-					})
+				if (updatedRewards.has(reward)) {
+					updatedRewards.set(reward, (updatedRewards.get(reward)?? 0) + 1)
 				} else {
-					updatedRewards.set(reward.reward_name, { reward, count: 1 })
+					updatedRewards.set(reward, 1)
 				}
 				return updatedRewards
 			})
@@ -54,15 +52,12 @@ export function ChoosingRewardLayout() {
 	const handleDeselect = (reward: TReward) => {
 		setSelectedRewards((prev) => {
 			const updatedRewards = new Map(prev)
-			if (updatedRewards.has(reward.reward_name)) {
-				const currentCount = updatedRewards.get(reward.reward_name).count
+			if (updatedRewards.has(reward)) {
+				const currentCount = (updatedRewards.get(reward)?? 0)
 				if (currentCount === 1) {
-					updatedRewards.delete(reward.reward_name)
+					updatedRewards.delete(reward)
 				} else {
-					updatedRewards.set(reward.reward_name, {
-						reward,
-						count: currentCount - 1,
-					})
+					updatedRewards.set(reward, currentCount - 1)
 				}
 			}
 
@@ -78,16 +73,23 @@ export function ChoosingRewardLayout() {
 			content: getRewardSummary(),
 			icon: <Gift size={25} weight="fill" />,
 			okText: 'Confirmer',
+			onOk: async () => {confirmRewards(selectedRewards)},
 			centered: true,
 			width: 400,
+			footer: (_, { OkBtn, CancelBtn }) => (
+				<div className="modal-footer">
+					<CancelBtn />
+					<OkBtn />
+				</div>
+			),
 		})
 	}
 
 	const getRewardSummary = () => {
-		return Array.from(selectedRewards.entries()).map(([name, data]) => (
-			<ul key={name}>
+		return Array.from(selectedRewards.entries()).map(([reward, count]) => (
+			<ul key={reward.reward_name}>
 				<li>
-					{name} - x{data.count}
+					{reward.reward_name} - x{count}
 				</li>
 			</ul>
 		))

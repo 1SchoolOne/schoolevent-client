@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 
 import { log, useSupabase } from '@utils'
+import { TReward } from '../../../types/rewards'
 
 export function useStudentPastEventData(userId: string | undefined) {
 	const supabase = useSupabase()
@@ -66,7 +67,7 @@ export function useHistoricRewardData(userId: string | undefined) {
 		queryFn: async () => {
 			const { data: studentData, error: studentError } = await supabase
 			.from('students_reward')
-			.select('reward_id, quantity')
+			.select('reward_id, quantity, claimed_at')
 			.eq('user_id', userId!)
 
 			if (studentError) {
@@ -92,7 +93,7 @@ export function useHistoricRewardData(userId: string | undefined) {
 				return acc
 			}, {})
 
-			const rewardWithQuantities = rewardsData.map((reward: any) => ({
+			const rewardWithQuantities = rewardsData.map((reward: TReward) => ({
 				...reward,
 				quantity: rewardQuantities[reward.id] || 0,
 			}))

@@ -8,6 +8,7 @@ import { BrowserRouter, Navigate, Outlet, Route, Routes } from 'react-router-dom
 
 import {
 	AddReward,
+	AdminLayout,
 	AppointmentsLayout,
 	AuthLayout,
 	CalendarLayout,
@@ -149,6 +150,17 @@ function App() {
 								<Route path="add" element={<AddReward />} />
 								<Route path="chooseReward" element={<ChoosingRewardLayout />} />
 							</Route>
+							<Route
+								path="admin"
+								element={
+									<>
+										<Helmet>
+											<title>SchoolEvent | Administration</title>
+										</Helmet>
+										<AdminLayout />
+									</>
+								}
+							/>
 						</Route>
 						<Route path="/auth" element={<AuthLayout />}>
 							<Route path="*" element={<Navigate to="/auth/login" />} />

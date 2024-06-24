@@ -135,5 +135,6 @@ export type TRenderHeader = (
 export interface IRenderHeaderParams {
 	resetFiltersButton: JSX.Element | null
 	globalSearchInput: JSX.Element | null
+	showHeader: boolean
 	callback: TRenderHeader
 }

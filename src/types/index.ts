@@ -13,6 +13,10 @@ export type PropsWithOptionalChildren<P = object> = P & { children?: ReactNode }
 
 export type PropsWithChildren<P = object> = P & { children: ReactNode }
 
+export type Prettify<T> = {
+	[K in keyof T]: T[K]
+} & {}
+
 export interface Feature {
 	type: string
 	geometry: {
@@ -53,6 +57,7 @@ export interface IUseUserParams {
 }
 
 export type TContact = Database['public']['Tables']['contacts']['Row']
+export type TUser = Database['public']['Tables']['users']['Row']
 
 export type TStudent = Database['public']['Tables']['students']['Row']
 

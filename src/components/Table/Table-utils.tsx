@@ -281,9 +281,9 @@ export function useResetFiltersButton(onClick: () => void, enabled?: true) {
 }
 
 export function useTableHeader(params: IRenderHeaderParams) {
-	const { resetFiltersButton, globalSearchInput, callback } = params
+	const { resetFiltersButton, globalSearchInput, showHeader, callback } = params
 
-	if (!resetFiltersButton && !globalSearchInput) {
+	if (!resetFiltersButton && !globalSearchInput && !showHeader) {
 		return null
 	}
 

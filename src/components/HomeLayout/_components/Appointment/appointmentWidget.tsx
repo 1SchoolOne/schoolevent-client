@@ -9,13 +9,13 @@ import '../../HomeLayout-styles.less'
 export function AppointmentsWidget({ appointments }: ICalendarProps) {
 	const toContactAppointments = appointments
 		?.filter((appointment) => appointment.apt_status === 'to_contact')
-		.slice(0, 6)
+		.slice(0, 3)
 	const contactedAppointments = appointments
 		?.filter((appointment) => appointment.apt_status === 'contacted')
-		.slice(0, 3)
+		.slice(0, 2)
 	const plannedAppointments = appointments
 		?.filter((appointment) => appointment.apt_status === 'planned')
-		.slice(0, 3)
+		.slice(0, 2)
 
 	return (
 		<Card title="Rendez-vous" size="small" bordered={false} className="global-medium-widget">

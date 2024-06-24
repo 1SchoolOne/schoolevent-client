@@ -5,12 +5,12 @@ import { BasicLayout } from '@components'
 import { useAuth } from '@contexts'
 import { log, useSupabase } from '@utils'
 
-import { AppointmentsWidget } from './_components/Appointment/appointmentWidget'
-import { CalendarWidget } from './_components/Calendar/calendarWidget'
+import { AppointmentsWidget } from './_components/Appointment/AppointmentWidget'
+import { CalendarWidget } from './_components/Calendar/CalendarWidget'
 import { NextEventWidget } from './_components/Event/NextEventWidget'
-import { FavoritesWidget } from './_components/Favorites/favoritesWidget'
+import { FavoritesWidget } from './_components/Favorites/FavoritesWidget'
 import { ICalendarProps } from './_components/Home-types'
-import { StudentWidget } from './_components/Student/studentWidget'
+import { StudentWidget } from './_components/Student/StudentWidget'
 
 import './HomeLayout-styles.less'
 

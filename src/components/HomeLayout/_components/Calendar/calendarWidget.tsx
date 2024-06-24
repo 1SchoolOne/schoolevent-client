@@ -1,21 +1,13 @@
-import { Badge, Card, Flex, List } from 'antd'
+import { Badge, Card, List, Typography } from 'antd'
 import dayjs from 'dayjs'
 import 'dayjs/locale/fr'
 
-import { TAppointment, TEvent } from './CalendarWidget-types'
+import { ICalendarProps } from '../Home-types'
 
 import '../../HomeLayout-styles.less'
 
-interface CalendarWidgetProps {
-	events: TEvent[]
-	appointments: TAppointment[]
-}
-
-export function CalendarWidget({ events, appointments }: CalendarWidgetProps) {
+export function CalendarWidget({ events, appointments }: ICalendarProps) {
 	const currentDate = dayjs()
-	const plannedAppointments = appointments?.filter(
-		(appointment) => appointment.apt_status === 'planned',
-	)
 
 	const todaysEvents = events
 		? events
@@ -23,8 +15,8 @@ export function CalendarWidget({ events, appointments }: CalendarWidgetProps) {
 				.sort((a, b) => dayjs(a.event_date).hour() - dayjs(b.event_date).hour())
 		: []
 
-	const todaysAppointments = plannedAppointments
-		? plannedAppointments
+	const todaysAppointments = appointments
+		? appointments
 				.filter((appointment) => dayjs(appointment.planned_date).isSame(currentDate, 'day'))
 				.sort((a, b) => dayjs(a.planned_date).hour() - dayjs(b.planned_date).hour())
 		: []
@@ -33,7 +25,6 @@ export function CalendarWidget({ events, appointments }: CalendarWidgetProps) {
 	const sortedEventsAndAppointments = combinedEventsAndAppointments.sort((a, b) => {
 		const aDate = 'event_date' in a ? a.event_date : a.planned_date
 		const bDate = 'event_date' in b ? b.event_date : b.planned_date
-
 		return dayjs(aDate).hour() - dayjs(bDate).hour()
 	})
 
@@ -41,8 +32,8 @@ export function CalendarWidget({ events, appointments }: CalendarWidgetProps) {
 		<Card
 			title={
 				<>
-					Vos <Badge color="orange" /> rendez-vous et
-					<Badge color="blue" style={{ marginLeft: '5px' }} /> événements du jour
+					Vos <Badge color="orange" text="rendez-vous" /> et{' '}
+					<Badge color="blue" text="événements" /> du jour
 				</>
 			}
 			size="small"
@@ -64,13 +55,11 @@ export function CalendarWidget({ events, appointments }: CalendarWidgetProps) {
 								</>
 							}
 							description={
-								<Flex justify="space-between">
-									<i>
-										{'event_date' in item
-											? dayjs(item.event_date).format('HH:mm')
-											: dayjs(item.planned_date).format('HH:mm')}
-									</i>
-								</Flex>
+								<Typography.Text>
+									{'event_date' in item
+										? dayjs(item.event_date).format('HH:mm')
+										: dayjs(item.planned_date).format('HH:mm')}
+								</Typography.Text>
 							}
 						/>
 					</List.Item>

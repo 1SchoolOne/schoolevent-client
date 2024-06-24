@@ -22,7 +22,7 @@ export const StudentWidget: React.FC = () => {
 			bordered={false}
 			className="global-little-widget"
 		>
-			<Row gutter={16}>
+			<Row gutter={[16, 16]}>
 				<Col xs={24}>
 					<Statistic
 						className="margin-bottom"

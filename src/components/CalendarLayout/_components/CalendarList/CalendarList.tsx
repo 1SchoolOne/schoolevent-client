@@ -12,19 +12,23 @@ import { useCalendarList } from './CalendarList-utils'
 import '../../../FavoritesList/FavoritesList-styles.less'
 import './CalendarList-styles.less'
 
-const RendezVousOption = () => (
-	<div className="option-container">
-		<Badge color="orange" />
-		<div className="option-text">Rendez-vous</div>
-	</div>
-)
+function RendezVousOption() {
+	return (
+		<div className="option-container">
+			<Badge color="orange" />
+			<div className="option-text">Rendez-vous</div>
+		</div>
+	)
+}
 
-const EvenementOption = () => (
-	<div className="option-container">
-		<Badge color="blue" />
-		<div className="option-text">Événement</div>
-	</div>
-)
+function EvenementOption() {
+	return (
+		<div className="option-container">
+			<Badge color="blue" />
+			<div className="option-text">Événement</div>
+		</div>
+	)
+}
 
 export function CalendarList(props: ICalendarListProps) {
 	const {
@@ -78,20 +82,27 @@ export function CalendarList(props: ICalendarListProps) {
 								title={item.school_name?.toString() || ''}
 								description={
 									<Flex justify="space-between">
-										<i>
-											{item.school_address?.toString() || ''}{' '}
-											{item.school_postal_code?.toString() || ''}{' '}
-											{item.school_city?.toString() || ''} -
-											{getNameFromEmail(item.users?.email || '').name}
+										<div>
 											<div>
+												<strong>Adresse : </strong> <br />
+												{item.school_address?.toString() || ''}{' '}
+												{item.school_postal_code?.toString() || ''}{' '}
+												{item.school_city?.toString() || ''}
+											</div>
+											<br />
+											<strong>Information :</strong> <br />
+											<div>
+												<strong>Le </strong>
+												{item.planned_date &&
+													dayjs(item.planned_date.toString()).format('DD/MM/YYYY')}{' '}
+												<strong>à </strong>
 												{item.planned_date
 													? dayjs(item.planned_date.toString()).format('HH:mm')
 													: 'N/A'}
 											</div>
-											{item.planned_date
-												? dayjs(item.planned_date.toString()).format('DD/MM/YYYY')
-												: 'N/A'}
-										</i>
+											<strong>Assigné à : </strong>
+											{getNameFromEmail(item.users?.email || '').name}
+										</div>
 										<Dropdown menu={{ items: getAppointmentsMenu(item.id) }} trigger={['click']}>
 											<IconButton type="text" icon={<MoreIcon size={16} weight="bold" />} />
 										</Dropdown>

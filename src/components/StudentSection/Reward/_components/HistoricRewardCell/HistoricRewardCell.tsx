@@ -1,7 +1,8 @@
 import { Typography } from 'antd'
 
-import './HistoricRewardCell-styles.less'
 import { IHistoricRewardCardProps } from '../ChoosingRewardLayout/_components/ChoosingRewardCard/ChoosingRewardCard-types'
+
+import './HistoricRewardCell-styles.less'
 
 export function HistoricRewardCell({ reward }: IHistoricRewardCardProps) {
 	const { Text } = Typography
@@ -9,11 +10,9 @@ export function HistoricRewardCell({ reward }: IHistoricRewardCardProps) {
 	return (
 		<div className="reward-cell">
 			<div className="brand-logo">
-			{
-				reward.reward_background ? (
+				{reward.reward_background ? (
 					<img className="img-cover" alt="event-cover" src={reward.reward_background} />
-				) : undefined
-			}
+				) : undefined}
 			</div>
 			<div className="reward-infos">
 				<div className="header">

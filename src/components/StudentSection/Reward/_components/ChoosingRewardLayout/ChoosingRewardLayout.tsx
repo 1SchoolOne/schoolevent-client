@@ -1,5 +1,5 @@
 import { ArrowLeft, Gift } from '@phosphor-icons/react'
-import { Button, Col, Modal, Row, Typography } from 'antd'
+import { Button, Col, Modal, Row, Typography, message } from 'antd'
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 
@@ -45,7 +45,7 @@ export function ChoosingRewardLayout() {
 
 			setRemainingPoints((prev) => prev - reward.reward_points)
 		} else {
-			alert("Vous n'avez pas assez de points pour sélectionner cette récompense.")
+			message.error("Vous n'avez pas assez de points pour sélectionner cette récompense.")
 		}
 	}
 

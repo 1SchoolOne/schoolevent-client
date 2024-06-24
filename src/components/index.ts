@@ -1,4 +1,5 @@
 export { AddReward } from './StudentSection/AddReward/AddReward'
+export { AdminLayout } from './AdminLayout/AdminLayout'
 export { AppointmentsLayout } from './AppointmentsLayout/AppointmentsLayout'
 export { AuthLayout } from './AuthLayout/AuthLayout'
 export { AutoCompleteField } from './AutoCompleteField/AutoCompleteField'

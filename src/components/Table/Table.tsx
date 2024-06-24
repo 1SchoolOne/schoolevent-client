@@ -199,6 +199,7 @@ export function Table<DataType extends AnyObject>(props: ITableProps<DataType>) 
 	const tableHeader = useTableHeader({
 		resetFiltersButton,
 		globalSearchInput,
+		showHeader: props.showHeader ?? false,
 		callback: renderHeader,
 	})
 

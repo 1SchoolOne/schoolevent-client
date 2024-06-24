@@ -71,7 +71,11 @@ export function ChoosingRewardCard({
 						Retirer
 					</Button>
 				)}
-				<Button type="primary" onClick={addReward} disabled={studentPoints < reward.reward_points}>
+				<Button
+					type="primary"
+					onClick={addReward}
+					disabled={studentPoints < reward.reward_points && reward.reward_number === 0}
+				>
 					{selectedCount > 0 ? `Sélectionné (${selectedCount})` : 'Sélectionner'}
 				</Button>
 			</div>

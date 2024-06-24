@@ -46,6 +46,7 @@ export function useCalendarList(props: ICalendarListProps) {
 
 	return {
 		search,
+		setSearch,
 		selectedButton,
 		events,
 		appointments,

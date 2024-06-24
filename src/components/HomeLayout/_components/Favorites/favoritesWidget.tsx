@@ -1,9 +1,8 @@
-import { Card, Col, List, Row } from 'antd'
+import { Card, Col, List, Row, Typography } from 'antd'
 
 import { useFavorites } from '@contexts'
 
 import '../../HomeLayout-styles.less'
-import './favoritesWidget-styles.less'
 
 export const FavoritesWidget: React.FC = () => {
 	const { favorites } = useFavorites()
@@ -17,7 +16,7 @@ export const FavoritesWidget: React.FC = () => {
 			bordered={false}
 			className="global-little-widget"
 		>
-			<Row gutter={16}>
+			<Row gutter={[16, 16]}>
 				<Col xs={24} sm={12}>
 					<List
 						className="favorites-widget__list"
@@ -29,7 +28,7 @@ export const FavoritesWidget: React.FC = () => {
 							<List.Item key={item.id}>
 								<List.Item.Meta
 									className="favorites-widget__item"
-									title={item.school_name}
+									title={<Typography.Text>{item.school_name}</Typography.Text>}
 									description={`${item.school_city} - ${item.school_postal_code}`}
 								/>
 							</List.Item>
@@ -47,7 +46,7 @@ export const FavoritesWidget: React.FC = () => {
 							<List.Item key={item.id}>
 								<List.Item.Meta
 									className="favorites-widget__item"
-									title={item.school_name}
+									title={<Typography.Text>{item.school_name}</Typography.Text>}
 									description={`${item.school_city} - ${item.school_postal_code}`}
 								/>
 							</List.Item>

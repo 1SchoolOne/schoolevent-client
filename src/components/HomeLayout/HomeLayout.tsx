@@ -8,8 +8,8 @@ import { log, useSupabase } from '@utils'
 import { AppointmentsWidget } from './_components/Appointment/appointmentWidget'
 import { CalendarWidget } from './_components/Calendar/calendarWidget'
 import { NextEventWidget } from './_components/Event/NextEventWidget'
-import { VisitsWidget } from './_components/Event/VisitsWidget'
 import { FavoritesWidget } from './_components/Favorites/favoritesWidget'
+import { ICalendarProps } from './_components/Home-types'
 import { StudentWidget } from './_components/Student/studentWidget'
 
 import './HomeLayout-styles.less'
@@ -21,7 +21,10 @@ export function HomeLayout() {
 	const { data: events } = useQuery({
 		queryKey: ['events'],
 		queryFn: async () => {
-			const { data, error } = await supabase.from('events').select('*')
+			const { data, error } = await supabase
+				.from('events')
+				.select('*, users!events_event_assignee_fkey(email)')
+				.or(`event_assignee.eq.${user!.id},event_creator_id.eq.${user!.id}`)
 
 			if (error) {
 				log.error('Error fetching events', error)
@@ -37,7 +40,7 @@ export function HomeLayout() {
 		queryFn: async () => {
 			const { data, error } = await supabase
 				.from('appointments')
-				.select('*')
+				.select('*, users!appointments_assignee_fkey(email)')
 				.or(`assignee.eq.${user!.id},author_id.eq.${user!.id}`)
 
 			if (error) {
@@ -49,31 +52,33 @@ export function HomeLayout() {
 		},
 	})
 
-	const widgets = [
-		{
-			component: <NextEventWidget events={events ?? []} appointments={appointments ?? []} />,
-			xs: 24,
-			md: 24,
-		},
-		{ component: <AppointmentsWidget appointments={appointments ?? []} />, xs: 24, md: 18 },
-		{
-			component: <CalendarWidget events={events ?? []} appointments={appointments ?? []} />,
-			xs: 24,
-			md: 6,
-		},
-		{ component: <VisitsWidget />, xs: 24, sm: 12, md: 6 },
-		{ component: <StudentWidget />, xs: 24, sm: 12, md: 6 },
-		{ component: <FavoritesWidget />, xs: 24, sm: 24, md: 12 },
-	]
+	const calendarProps: ICalendarProps = {
+		events: events ?? [],
+		appointments: appointments ?? [],
+	}
 
 	return (
 		<BasicLayout className="home-layout" contentClassName="ant-layout-content">
 			<Row gutter={[16, 16]}>
-				{widgets.map((widget, index) => (
-					<Col key={index} xs={widget.xs} sm={widget.sm} md={widget.md}>
-						{widget.component}
-					</Col>
-				))}
+				<Col xs={24}>
+					<NextEventWidget {...calendarProps} />
+				</Col>
+			</Row>
+			<Row gutter={[16, 16]}>
+				<Col xs={24} md={18}>
+					<AppointmentsWidget {...calendarProps} />
+					<Row gutter={[16, 16]}>
+						<Col xs={24} md={12} className="full-height">
+							<FavoritesWidget />
+						</Col>
+						<Col xs={24} md={12} className="full-height">
+							<StudentWidget />
+						</Col>
+					</Row>
+				</Col>
+				<Col xs={24} md={6} className="full-height">
+					<CalendarWidget {...calendarProps} />
+				</Col>
 			</Row>
 		</BasicLayout>
 	)

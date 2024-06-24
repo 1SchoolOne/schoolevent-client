@@ -45,20 +45,18 @@ export function Calendar(props: ICalendarProps) {
 
 		return (
 			<div>
-				<Badge
-					count={sortedAppointments.length}
-					style={{ backgroundColor: 'orange', marginRight: '10px' }}
-				/>
-				<Badge
-					count={sortedEvents.length}
-					style={{ backgroundColor: 'blue', marginRight: '10px' }}
-				/>
+				{sortedAppointments.length > 0 && (
+					<Badge count={sortedAppointments.length} className="calendar-badge" color="orange" />
+				)}
+				{sortedEvents.length > 0 && (
+					<Badge count={sortedEvents.length} className="calendar-badge" color="blue" />
+				)}
 				<div>
 					<List
 						dataSource={sortedAppointments}
 						renderItem={(item) => (
 							<List.Item key={item.school_name}>
-								<Badge dot style={{ backgroundColor: 'orange', marginRight: '10px' }} />
+								<Badge dot className="calendar-badge" color="orange" />
 								<span className="list-item-school-name">{item.school_name}</span>
 								<div className="list-item-planned-date">
 									{getNameFromEmail(item.users?.email || '').name}
@@ -73,7 +71,7 @@ export function Calendar(props: ICalendarProps) {
 						dataSource={sortedEvents}
 						renderItem={(item) => (
 							<List.Item key={item.event_title}>
-								<Badge dot style={{ backgroundColor: 'blue', marginRight: '10px' }} />
+								<Badge dot className="calendar-badge" color="blue" />
 								<span className="list-item-event-title">{item.event_title}</span>
 								<div className="list-item-event-date">
 									{getNameFromEmail(item.users?.email || '').name}

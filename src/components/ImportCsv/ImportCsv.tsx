@@ -2,9 +2,10 @@ import { UploadOutlined } from '@ant-design/icons'
 import { useMutation } from '@tanstack/react-query'
 import { Alert, Button, Modal, Upload } from 'antd'
 import { RcFile } from 'antd/lib/upload'
+import { saveAs } from 'file-saver'
 import { useState } from 'react'
 
-import { useSupabase } from '@utils'
+import { log, useSupabase } from '@utils'
 
 import { ICSVUploadModalProps } from './ImportCsv-types'
 import { parseCsv } from './ImportCsv-utils'
@@ -44,6 +45,25 @@ export function CSVUploadModal(props: ICSVUploadModalProps) {
 		return mutate(file)
 	}
 
+	const downloadFile = async () => {
+		const {
+			data: { publicUrl },
+		} = supabase.storage.from('csv').getPublicUrl('CSV_SchoolEvent.xlsx')
+		const res = await fetch(publicUrl, { method: 'get' })
+
+		if (!res.ok) {
+			const error = new Error('Error while downloading template csv.')
+
+			log.error(error)
+			throw error
+		}
+
+		const blob = await res.blob()
+		const file = new File([blob], 'CSV_SchoolEvent.xlsx')
+
+		saveAs(file)
+	}
+
 	return (
 		<Modal
 			open={open}
@@ -57,13 +77,8 @@ export function CSVUploadModal(props: ICSVUploadModalProps) {
 		>
 			<div style={{ textAlign: 'center' }}>
 				<div className="modal-csv">
-					<Button type="primary" className="button-csv">
-						<a
-							href="http://51.254.120.199:8000/storage/v1/object/public/csv/CSV_SchoolEvent.xlsx"
-							download
-						>
-							Télécharger le fichier CSV de base
-						</a>
+					<Button type="primary" className="button-csv" onClick={downloadFile}>
+						Télécharger le fichier exemple CSV
 					</Button>
 					<Upload accept=".csv" showUploadList={false} beforeUpload={beforeUpload}>
 						<Button icon={<UploadOutlined />} type="dashed" className="upload-button-csv">

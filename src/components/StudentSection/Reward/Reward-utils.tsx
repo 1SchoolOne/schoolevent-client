@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 
 import { log, useSupabase } from '@utils'
-import { TReward } from '../../../types/rewards'
+
 
 export function useStudentPastEventData(userId: string | undefined) {
 	const supabase = useSupabase()
@@ -11,29 +11,19 @@ export function useStudentPastEventData(userId: string | undefined) {
 		queryFn: async () => {
 			const { data: participantData, error: participantError } = await supabase
 				.from('events_participants')
-				.select('event_id')
+				.select('event_id, events(*)')
 				.eq('user_id', userId!)
 
 			if (participantError) {
 				log.error('Error fetching participant data: ', participantError)
 				return []
 			}
-			const eventIds = participantData.map(
-				(participant: { event_id: number }) => participant.event_id,
+			
+			const pastEvents = participantData.map(
+				({ events }: any) => events
 			)
 
-			const { data: eventsData, error: eventsError } = await supabase
-				.from('events')
-				.select('*')
-				.in('id', eventIds)
-				.lt('event_date', new Date().toISOString())
-
-			if (eventsError) {
-				log.error('Error fetching past events: ', eventsError)
-				return []
-			}
-
-			return eventsData
+			return pastEvents
 		},
 	})
 }
@@ -66,39 +56,70 @@ export function useHistoricRewardData(userId: string | undefined) {
 		queryKey: ['student-rewards', { id: userId }],
 		queryFn: async () => {
 			const { data: studentData, error: studentError } = await supabase
-			.from('students_reward')
-			.select('reward_id, quantity, claimed_at')
-			.eq('user_id', userId!)
+				.from('students_reward')
+				.select('reward_id, quantity, claimed_at, rewards(*)')
+				.eq('user_id', userId!)
 
 			if (studentError) {
 				log.error('Error fetching rewards data: ', studentError)
 				return []
 			}
-			const rewardIds = studentData.map(
-				(reward: { reward_id: number }) => reward.reward_id,
+
+			const rewardWithQuantities = studentData.map(
+				({quantity, claimed_at, rewards}: any) => ({
+					...rewards,
+					quantity,
+					claimed_at
+				}) 
 			)
 
-			const { data: rewardsData, error: rewardsError } = await supabase
-			.from('rewards')
-			.select()
-			.in('id', rewardIds)
+			return rewardWithQuantities
+		},
+	})
+}
 
-			if(rewardsError) {
-				log.error('Error fetching students rewards: ', rewardsError)
-				return []
+export function useRewardQuantity(rewardId: number | undefined) {
+	const supabase = useSupabase()
+
+	return useQuery({
+		queryKey: ['reward-quantity', { id: rewardId }],
+		queryFn: async () => {
+			const { data, error } = await supabase
+				.from('students_reward')
+				.select('quantity')
+				.eq('reward_id', rewardId!)
+				.single()
+
+			if (error) {
+				throw error
 			}
 
-			const rewardQuantities = studentData.reduce((acc: { [key: number]: number }, {reward_id, quantity}) => {
-				acc[reward_id] = quantity
-				return acc
-			}, {})
+			return data.quantity
+		},
+	})
+}
 
-			const rewardWithQuantities = rewardsData.map((reward: TReward) => ({
-				...reward,
-				quantity: rewardQuantities[reward.id] || 0,
-			}))
+export function useRewardClaimingDate(rewardId: number) {
+	const supabase = useSupabase()
 
-			return rewardWithQuantities
-		}
+	return useQuery({
+		queryKey: ['reward-claimedAt', { id: rewardId }],
+		queryFn: async () => {
+			const { data, error } = await supabase
+				.from('students_reward')
+				.select('claimed_at')
+				.eq('reward_id', rewardId!)
+				.single()
+
+			if (error) {
+				throw error
+			}
+			
+			if (!data || !data.claimed_at) {
+				return 'Date inconnue'
+			}
+
+			return data.claimed_at
+		},
 	})
 }

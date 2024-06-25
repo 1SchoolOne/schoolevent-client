@@ -54,5 +54,5 @@ jobs:
         env:
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
-          VITE_SUPABASE_KEY: ${{ secrets.VITE_SUPABASE_KEY }}
+          VITE_TEST_SUPABASE_URL: ${{ secrets.VITE_TEST_SUPABASE_URL }}
+          VITE_TEST_SUPABASE_KEY: ${{ secrets.VITE_TEST_SUPABASE_KEY }}

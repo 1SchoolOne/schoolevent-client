@@ -1,6 +1,6 @@
 import dayjs from 'dayjs'
 
-import { EVENTS_URL, STUDENT_USER } from '../constants'
+import { EVENTS_URL, OTHER_MANAGER_USER, STUDENT_USER } from '../constants'
 import {
 	checkEventList,
 	createEvent,
@@ -101,10 +101,7 @@ describe('Events', () => {
 
 			logout()
 			login({
-				user: {
-					email: 'ilhan.yapici@edu.esiee-it.fr',
-					password: 'jesuisjesus',
-				},
+				user: OTHER_MANAGER_USER,
 				shouldNavigate: false,
 			})
 

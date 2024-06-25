@@ -20,6 +20,11 @@ export const ADMIN_USER = {
 	password: 'admin',
 }
 
+export const OTHER_MANAGER_USER = {
+	email: 'other.manager@esiee-it.fr',
+	password: 'othermanager',
+}
+
 export const MANAGER_USER = {
 	email: 'manager@esiee-it.fr',
 	password: 'manager',

@@ -1,4 +1,4 @@
-import { UploadOutlined } from '@ant-design/icons'
+import { DownloadSimple as DownloadIcon, UploadSimple as UploadIcon } from '@phosphor-icons/react'
 import { useMutation } from '@tanstack/react-query'
 import { Alert, Button, Modal, Upload } from 'antd'
 import { RcFile } from 'antd/lib/upload'
@@ -77,12 +77,17 @@ export function CSVUploadModal(props: ICSVUploadModalProps) {
 		>
 			<div style={{ textAlign: 'center' }}>
 				<div className="modal-csv">
-					<Button type="primary" className="button-csv" onClick={downloadFile}>
+					<Button
+						type="primary"
+						className="button-csv"
+						onClick={downloadFile}
+						icon={<DownloadIcon size={16} />}
+					>
 						Télécharger le fichier exemple CSV
 					</Button>
 					<Upload accept=".csv" showUploadList={false} beforeUpload={beforeUpload}>
-						<Button icon={<UploadOutlined />} type="dashed" className="upload-button-csv">
-							Cliquez pour sélectionner votre CSV
+						<Button icon={<UploadIcon />} type="dashed" className="upload-button-csv">
+							Sélectionner votre CSV
 						</Button>
 					</Upload>
 				</div>

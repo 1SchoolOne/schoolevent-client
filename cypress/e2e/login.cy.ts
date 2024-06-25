@@ -1,4 +1,5 @@
 import {
+	ADMIN_USER,
 	APPOINTMENTS_URL,
 	BASE_URL,
 	CALENDAR_URL,
@@ -7,6 +8,7 @@ import {
 	EVENTS_URL,
 	LOGIN_URL,
 	MANAGER_USER,
+	REWARDS_URL,
 	SIDE_MENU_LABELS,
 	STUDENT_USER,
 } from '../constants'
@@ -47,6 +49,19 @@ describe('Login', () => {
 	})
 
 	it('displays side menu items based on user role', () => {
+		// As admin
+		login({ user: ADMIN_USER })
+
+		waitForMainPageToLoad()
+
+		cy.get('.main-layout__sider').within(() => {
+			SIDE_MENU_LABELS.admin.shouldHaveAccessTo.forEach((label) => {
+				cy.contains(label).should('exist').and('be.visible')
+			})
+		})
+
+		logout()
+
 		// As manager
 		login({ user: MANAGER_USER })
 
@@ -55,6 +70,10 @@ describe('Login', () => {
 		cy.get('.main-layout__sider').within(() => {
 			SIDE_MENU_LABELS.manager.shouldHaveAccessTo.forEach((label) => {
 				cy.contains(label).should('exist').and('be.visible')
+			})
+
+			SIDE_MENU_LABELS.manager.shouldNotHaveAccessTo.forEach((label) => {
+				cy.contains(label).should('not.exist')
 			})
 		})
 
@@ -74,7 +93,7 @@ describe('Login', () => {
 		})
 	})
 
-	it('allows access to all routes for manager role', () => {
+	it('allows access to all routes except administration as a manager', () => {
 		login({ user: MANAGER_USER })
 
 		waitForMainPageToLoad()
@@ -92,21 +111,18 @@ describe('Login', () => {
 		cy.get('.appointments-layout').should('exist').and('be.visible')
 
 		// Manager should have access to events page
-		// TODO: add assertions for the events page when it's ready
 		cy.visit(EVENTS_URL)
-		cy.url().should('eq', EVENTS_URL)
+		cy.get('.event-layout').should('exist').and('be.visible')
 
-		// TODO: Manager should have access to students page
+		// Manager should have access to rewards page
+		cy.visit(REWARDS_URL)
+		cy.contains('Historique de tes évènements').should('exist').and('be.visible')
 	})
 
-	it('allows access to home and events routes for student role', () => {
+	it('allows access to events and rewards routes as a student', () => {
 		login({ user: STUDENT_USER })
 
 		waitForMainPageToLoad()
-
-		// This assertion is necessary to ensure that the login was successful.
-		// If we execute the cy.visit(), it will try to navigate before the login is complete.
-		cy.get('.user-menu__dropdown').should('exist').and('be.visible')
 
 		// Student should not have access to contacts page
 		cy.visit(CONTACTS_URL)
@@ -121,10 +137,11 @@ describe('Login', () => {
 		cy.url().should('eq', `${BASE_URL}/`)
 
 		// Student should have access to events page
-		// TODO: add assertions for the events page when it's ready
 		cy.visit(EVENTS_URL)
-		cy.url().should('eq', EVENTS_URL)
+		cy.get('.event-layout').should('exist').and('be.visible')
 
-		// TODO: Admin should have access to students page
+		// Student should have access to rewards page
+		cy.visit(REWARDS_URL)
+		cy.contains('Historique de tes évènements').should('exist').and('be.visible')
 	})
 })

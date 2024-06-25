@@ -5,10 +5,19 @@ import { IBasicLayoutProps } from './BasicLayout-types'
 
 import './BasicLayout-styles.less'
 
-const { Content, Sider } = Layout
+const { Content, Header, Sider } = Layout
 
 export function BasicLayout(props: IBasicLayoutProps) {
-	const { children, className, contentClassName, siderClassName, sider, siderWidth = 250 } = props
+	const {
+		children,
+		className,
+		contentClassName,
+		header,
+		headerClassName,
+		siderClassName,
+		sider,
+		siderWidth = 250,
+	} = props
 
 	return (
 		<Layout className={classNames('basic-layout', className)}>
@@ -17,9 +26,22 @@ export function BasicLayout(props: IBasicLayoutProps) {
 					{sider}
 				</Sider>
 			)}
-			<Content className={classNames('basic-layout__content', contentClassName)}>
-				{children}
-			</Content>
+			{header ? (
+				<Layout>
+					{
+						<Header className={classNames('basic-layout__header', headerClassName)}>
+							{header}
+						</Header>
+					}
+					<Content className={classNames('basic-layout__content', contentClassName)}>
+						{children}
+					</Content>
+				</Layout>
+			) : (
+				<Content className={classNames('basic-layout__content', contentClassName)}>
+					{children}
+				</Content>
+			)}
 		</Layout>
 	)
 }

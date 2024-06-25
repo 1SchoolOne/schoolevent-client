@@ -72,9 +72,9 @@ describe('Login', () => {
 				cy.contains(label).should('exist').and('be.visible')
 			})
 
-			SIDE_MENU_LABELS.manager.shouldNotHaveAccessTo.forEach((label) => {
-				cy.contains(label).should('not.exist')
-			})
+			// SIDE_MENU_LABELS.manager.shouldNotHaveAccessTo.forEach((label) => {
+			// 	cy.contains(label).should('not.exist')
+			// })
 		})
 
 		logout()

@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom'
 
 import { useAuth } from '@contexts'
 
+import { BasicLayout } from '../../BasicLayout/BasicLayout'
 import { renderEventList, useGroupedEvents } from './EventList-utils'
 import { Skeleton } from './_components/Skeleton/Skeleton'
 
@@ -37,9 +38,12 @@ export function EventList() {
 	}
 
 	return (
-		<>
-			{role !== 'student' && (
-				<div>
+		<BasicLayout
+			className="event-layout"
+			contentClassName="event-layout__content"
+			headerClassName="event-layout__header"
+			header={
+				role !== 'student' ? (
 					<Button
 						type="primary"
 						icon={<NewIcon size={16} />}
@@ -47,8 +51,9 @@ export function EventList() {
 					>
 						Créer un événement
 					</Button>
-				</div>
-			)}
+				) : undefined
+			}
+		>
 			{hasEvents ? (
 				renderEventList({
 					groupedEvents,
@@ -70,6 +75,6 @@ export function EventList() {
 					}
 				/>
 			)}
-		</>
+		</BasicLayout>
 	)
 }

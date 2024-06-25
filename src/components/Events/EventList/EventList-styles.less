@@ -1,16 +1,25 @@
-.event-list__main-collapse {
-	height: 100%;
-	overflow: hidden;
-	overflow-y: auto;
-}
+.event-layout {
+	&__header {
+		background-color: unset;
+		padding: unset;
+	}
 
-.event-list__collapse-label {
-	margin: 0;
-}
+	&__content {
+		.event-list__main-collapse {
+			height: 100%;
+			overflow: hidden;
+			overflow-y: auto;
+		}
 
-.event-list__no-data {
-	.ant-result-extra {
-		display: flex;
-		justify-content: center;
+		.event-list__collapse-label {
+			margin: 0;
+		}
+
+		.event-list__no-data {
+			.ant-result-extra {
+				display: flex;
+				justify-content: center;
+			}
+		}
 	}
 }

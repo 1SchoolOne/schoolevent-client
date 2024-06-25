@@ -88,7 +88,7 @@ function App() {
 								element={
 									<ProtectedRoute>
 										<Helmet>
-											<title>SchoolEvent | Events</title>
+											<title>SchoolEvent | Évènements</title>
 										</Helmet>
 										<Outlet />
 									</ProtectedRoute>

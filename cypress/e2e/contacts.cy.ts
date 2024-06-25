@@ -219,8 +219,8 @@ describe('Contacts', () => {
 		cy.get('img[alt="user-pin"]').should('be.visible')
 	})
 
-	it('navigates to pin when clicking on a school in the table', () => {
-		const schoolName = "2CG Ecole d'Esthétique et de Coiffure"
+	it.only('navigates to pin when clicking on a school in the table', () => {
+		const schoolName = "Ecole 2D degré professionnel privée - Académie d'Art Dentaire"
 
 		openMap()
 

@@ -251,7 +251,7 @@ export function checkEventList() {
 
 	cy.visit(EVENTS_URL)
 
-	cy.contains('Mon événement').should('be.visible')
+	cy.get('[data-title="Mon événement"]').should('be.visible')
 	cy.contains(/lundi 1 juillet/i).should('be.visible')
 	cy.contains('ESIEE-IT').should('be.visible')
 	cy.contains('8 rue pierre de coubertin, 95300 Pontoise').should('be.visible')

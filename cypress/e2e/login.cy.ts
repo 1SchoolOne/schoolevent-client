@@ -126,15 +126,15 @@ describe('Login', () => {
 
 		// Student should not have access to contacts page
 		cy.visit(CONTACTS_URL)
-		cy.url().should('eq', `${BASE_URL}/`)
+		cy.url().should('eq', EVENTS_URL)
 
 		// Student should not have access to calendar page
 		cy.visit(CALENDAR_URL)
-		cy.url().should('eq', `${BASE_URL}/`)
+		cy.url().should('eq', EVENTS_URL)
 
 		// Student should not have access to appointments page
 		cy.visit(APPOINTMENTS_URL)
-		cy.url().should('eq', `${BASE_URL}/`)
+		cy.url().should('eq', EVENTS_URL)
 
 		// Student should have access to events page
 		cy.visit(EVENTS_URL)

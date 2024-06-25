@@ -44,7 +44,7 @@ export function waitForMainPageToLoad() {
 
 export function logout() {
 	cy.get('.user-menu__dropdown').click()
-	cy.contains('Déconnexion').click()
+	cy.contains('Déconnexion').should('be.visible').click()
 }
 
 export function getTableColumnHeader(label: string | RegExp) {

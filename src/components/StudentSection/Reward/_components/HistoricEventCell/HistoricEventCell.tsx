@@ -1,7 +1,10 @@
 import { Typography } from 'antd'
 
 import { IEventCardProps } from '../../../../Events/EventList/_components/EventCard/EventCard-types'
-import { getEventStartTime } from '../../../../Events/EventList/_components/EventCard/EventCard-utils'
+import {
+	getEventDateTime,
+	getEventStartTime,
+} from '@utils'
 
 import './HistoricEventCell-styles.less'
 
@@ -14,11 +17,7 @@ export function HistoricEventCell({ event }: IEventCardProps) {
 				<Text strong>{event.event_title}</Text>
 				<div className="historic-event__date-and-address">
 					<Text>
-						{`${new Date(event.event_date).toLocaleDateString('fr-FR', {
-							weekday: 'long',
-							day: 'numeric',
-							month: 'long',
-						})} - ${getEventStartTime(event.event_date)}`}
+						{`${getEventDateTime(event.event_date)} - ${getEventStartTime(event.event_date)}`}
 					</Text>
 					<Text> | </Text>
 					<Text>{event.event_school_name}</Text>

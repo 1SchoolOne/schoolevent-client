@@ -20,6 +20,7 @@ export function ChoosingRewardLayout() {
 	const [selectedRewards, setSelectedRewards] = useState<Map<TReward, number>>(new Map())
 	const [modal, contextHolder] = Modal.useModal()
 	const [remainingPoints, setRemainingPoints] = useState(0)
+	const [errorMessage, setErrorMessage] = useState('')
 
 	const { data: rewards } = useRewardData()
 	const { data: studentPoints } = useStudentPoints(user?.id)
@@ -29,7 +30,10 @@ export function ChoosingRewardLayout() {
 		if (studentPoints !== undefined) {
 			setRemainingPoints(studentPoints)
 		}
-	}, [studentPoints])
+		if(errorMessage) {
+			message.error(errorMessage)
+		}
+	}, [studentPoints, errorMessage])
 
 	const handleSelect = (reward: TReward) => {
 		if (remainingPoints >= reward.reward_points) {
@@ -45,7 +49,7 @@ export function ChoosingRewardLayout() {
 
 			setRemainingPoints((prev) => prev - reward.reward_points)
 		} else {
-			message.error("Vous n'avez pas assez de points pour sélectionner cette récompense.")
+			setErrorMessage("Vous n'avez pas assez de points pour sélectionner cette récompense.")
 		}
 	}
 
@@ -69,7 +73,7 @@ export function ChoosingRewardLayout() {
 
 	const handleValidateSelection = () => {
 		modal.confirm({
-			title: 'Récapitulatif de tes récompenses !',
+			title: 'Récapitulatif de tes récompenses',
 			content: getRewardSummary(),
 			icon: <Gift size={25} weight="fill" />,
 			okText: 'Confirmer',

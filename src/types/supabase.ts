@@ -452,21 +452,21 @@ export type Database = {
       }
       students_reward: {
         Row: {
-          claimed_at: string | null
+          claimed_at: string
           id: number
           quantity: number
           reward_id: number
           user_id: string
         }
         Insert: {
-          claimed_at?: string | null
+          claimed_at?: string
           id?: number
           quantity: number
           reward_id: number
           user_id: string
         }
         Update: {
-          claimed_at?: string | null
+          claimed_at?: string
           id?: number
           quantity?: number
           reward_id?: number
@@ -495,6 +495,7 @@ export type Database = {
           id: number
           role: Database["public"]["Enums"]["user_role"]
           user_id: string
+          role_text: string | null
         }
         Insert: {
           approved?: boolean | null
@@ -526,9 +527,29 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      approve_users: {
+        Args: {
+          user_ids: number[]
+          invoker_id: string
+        }
+        Returns: undefined
+      }
       award_points_for_past_events: {
         Args: Record<PropertyKey, never>
         Returns: undefined
+      }
+      deactivate_users: {
+        Args: {
+          user_ids: number[]
+          invoker_id: string
+        }
+        Returns: undefined
+      }
+      role_text: {
+        Args: {
+          "": unknown
+        }
+        Returns: string
       }
       update_reward: {
         Args: {

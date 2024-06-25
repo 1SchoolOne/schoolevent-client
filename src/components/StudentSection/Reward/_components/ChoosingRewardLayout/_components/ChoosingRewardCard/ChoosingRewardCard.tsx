@@ -67,7 +67,7 @@ export function ChoosingRewardCard({
 			</p>
 			<div className="select-reward">
 				{selectedCount > 0 && (
-					<Button type="default" onClick={removeReward} style={{ marginRight: '10px' }}>
+					<Button className="remove-item" type="default" onClick={removeReward}>
 						Retirer
 					</Button>
 				)}
@@ -76,7 +76,11 @@ export function ChoosingRewardCard({
 					onClick={addReward}
 					disabled={studentPoints < reward.reward_points && reward.reward_number === 0}
 				>
-					{selectedCount > 0 ? `Sélectionné (${selectedCount})` : 'Sélectionner'}
+					{reward.reward_number === 0
+						? 'Indisponible'
+						: selectedCount > 0
+						? `Sélectionné (${selectedCount})`
+						: 'Sélectionner'}
 				</Button>
 			</div>
 		</Card>

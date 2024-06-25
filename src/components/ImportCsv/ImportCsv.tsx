@@ -2,21 +2,18 @@ import { UploadOutlined } from '@ant-design/icons'
 import { useMutation } from '@tanstack/react-query'
 import { Alert, Button, Modal, Upload } from 'antd'
 import { RcFile } from 'antd/lib/upload'
-import React, { useState } from 'react'
+import { useState } from 'react'
 
 import { useSupabase } from '@utils'
 
+import { ICSVUploadModalProps } from './ImportCsv-types'
 import { parseCsv } from './ImportCsv-utils'
 
 import './ImportCsv-style.less'
 
-interface CSVUploadModalProps {
-	open: boolean
-	onClose: () => void
-	userId: string
-}
+export function CSVUploadModal(props: ICSVUploadModalProps) {
+	const { open, onClose, userId } = props
 
-export const CSVUploadModal: React.FC<CSVUploadModalProps> = ({ open, onClose, userId }) => {
 	const [importStatus, setImportStatus] = useState<string | null>(null)
 	const supabase = useSupabase()
 

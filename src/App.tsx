@@ -124,7 +124,7 @@ function App() {
 								element={
 									<>
 										<Helmet>
-											<title>SchoolEvent | Reward</title>
+											<title>SchoolEvent | Récompenses</title>
 										</Helmet>
 										<Outlet />
 									</>

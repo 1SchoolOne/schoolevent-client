@@ -4,7 +4,8 @@ import classNames from 'classnames'
 import { Link } from 'react-router-dom'
 
 import { IEventCardProps } from './EventCard-types'
-import { formatEventDuration, getEventStartTime, getEventTypeLabel } from './EventCard-utils'
+import { formatEventDuration, getEventTypeLabel } from './EventCard-utils'
+import { getEventStartTime } from '@utils'
 
 import './EventCard-styles.less'
 

@@ -61,37 +61,37 @@ function App() {
 							<Route
 								path="contacts"
 								element={
-									<ProtectedRoute>
+									<>
 										<Helmet>
 											<title>SchoolEvent | Contacts</title>
 										</Helmet>
 										<MapDisplayProvider>
 											<ContactsLayout />
 										</MapDisplayProvider>
-									</ProtectedRoute>
+									</>
 								}
 							/>
 							<Route index element={<HomeLayout />} />
 							<Route
 								path="calendar"
 								element={
-									<ProtectedRoute>
+									<>
 										<Helmet>
 											<title>SchoolEvent | Calendrier</title>
 										</Helmet>
 										<CalendarLayout />
-									</ProtectedRoute>
+									</>
 								}
 							/>
 							<Route
 								path="events"
 								element={
-									<ProtectedRoute>
+									<>
 										<Helmet>
 											<title>SchoolEvent | Évènements</title>
 										</Helmet>
 										<Outlet />
-									</ProtectedRoute>
+									</>
 								}
 							>
 								<Route index element={<EventList />} />
@@ -109,25 +109,25 @@ function App() {
 							<Route
 								path="appointments"
 								element={
-									<ProtectedRoute>
+									<>
 										<Helmet>
 											<title>SchoolEvent | Rendez-vous</title>
 										</Helmet>
 										<DndProvider backend={HTML5Backend}>
 											<AppointmentsLayout />
 										</DndProvider>
-									</ProtectedRoute>
+									</>
 								}
 							/>
 							<Route
 								path="rewards"
 								element={
-									<ProtectedRoute>
+									<>
 										<Helmet>
 											<title>SchoolEvent | Reward</title>
 										</Helmet>
 										<Outlet />
-									</ProtectedRoute>
+									</>
 								}
 							>
 								<Route index element={<Reward />} />

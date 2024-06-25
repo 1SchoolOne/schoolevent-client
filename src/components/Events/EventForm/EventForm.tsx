@@ -10,11 +10,7 @@ export function EventForm() {
 	const { eventId } = useParams()
 
 	return (
-		<BasicLayout
-			className="event-form-layout"
-			contentClassName="event-form-layout__content"
-			// sider={<ShortEventsList />}
-		>
+		<BasicLayout className="event-form-layout" contentClassName="event-form-layout__content">
 			<Form eventId={eventId} />
 		</BasicLayout>
 	)

@@ -1,13 +1,14 @@
 import { UploadOutlined } from '@ant-design/icons'
 import { useMutation } from '@tanstack/react-query'
-import { Button, Modal, Upload } from 'antd'
+import { Alert, Button, Modal, Upload } from 'antd'
 import { RcFile } from 'antd/lib/upload'
 import React, { useState } from 'react'
 
 import { useSupabase } from '@utils'
 
-import { ImportItem } from './ImportCsv-types'
 import { parseCsv } from './ImportCsv-utils'
+
+import './ImportCsv-style.less'
 
 interface CSVUploadModalProps {
 	open: boolean
@@ -17,24 +18,28 @@ interface CSVUploadModalProps {
 
 export const CSVUploadModal: React.FC<CSVUploadModalProps> = ({ open, onClose, userId }) => {
 	const [importStatus, setImportStatus] = useState<string | null>(null)
-	const [importedData, setImportedData] = useState<ImportItem[] | null>(null)
 	const supabase = useSupabase()
 
 	const { mutate } = useMutation({
 		mutationFn: async (file: RcFile) => {
 			return parseCsv(file, userId)
 				.then(async (data) => {
-					const { data: insertedData, error } = await supabase.from('contacts').insert(data)
+					const { error } = await supabase.from('contacts').insert(data)
 
 					if (error) {
-						setImportStatus(`Import failed: ${error.message}`)
+						setImportStatus(`Échec de l'importation :  ${error.message}`)
 						return false
 					} else {
-						setImportedData(insertedData)
+						setImportStatus('Importation réussie !')
 						return true
 					}
 				})
-				.catch(() => false)
+				.catch(() => {
+					setImportStatus(
+						"Échec de l'importation : Une erreur s'est produite lors de l'analyse du fichier.",
+					)
+					return false
+				})
 		},
 	})
 
@@ -53,22 +58,31 @@ export const CSVUploadModal: React.FC<CSVUploadModalProps> = ({ open, onClose, u
 				</Button>,
 			]}
 		>
-			<Upload accept=".csv" showUploadList={false} beforeUpload={beforeUpload}>
-				<Button type="primary">
-					<a href="/fichier/fichier.csv" download>
-						Télécharger le fichier CSV de base
-					</a>
-				</Button>
-
-				<Button icon={<UploadOutlined />}>cliquer pour selectionner votre CSV</Button>
-			</Upload>
-			{importStatus && <p>{importStatus}</p>}
-			{importedData && (
-				<div>
-					<h3>Imported Data:</h3>
-					<pre>{JSON.stringify(importedData, null, 2)}</pre>
+			<div style={{ textAlign: 'center' }}>
+				<div className="modal-csv">
+					<Button type="primary" className="button-csv">
+						<a
+							href="http://51.254.120.199:8000/storage/v1/object/public/csv/CSV_SchoolEvent.xlsx"
+							download
+						>
+							Télécharger le fichier CSV de base
+						</a>
+					</Button>
+					<Upload accept=".csv" showUploadList={false} beforeUpload={beforeUpload}>
+						<Button icon={<UploadOutlined />} type="dashed" className="upload-button-csv">
+							Cliquez pour sélectionner votre CSV
+						</Button>
+					</Upload>
 				</div>
-			)}
+				{importStatus && (
+					<Alert
+						message={importStatus}
+						type={importStatus.includes('failed') ? 'error' : 'success'}
+						showIcon
+						className="button-csv"
+					/>
+				)}
+			</div>
 		</Modal>
 	)
 }

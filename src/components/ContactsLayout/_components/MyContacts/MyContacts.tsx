@@ -1,14 +1,17 @@
 import {
+	FileCsv as CSVIcon,
 	BookOpenText as GovContactsIcon,
 	AddressBook as MyContactsIcon,
 } from '@phosphor-icons/react'
-import { Segmented, Space, Typography } from 'antd'
+import { Button, Segmented, Space, Typography } from 'antd'
+import { useState } from 'react'
 
 import { Table } from '@components'
 import { useAuth, useContacts, useFavorites, useMapDisplay } from '@contexts'
 import { TContact } from '@types'
 import { useSupabase } from '@utils'
 
+import { CSVUploadModal } from '../../../ImportCsv/ImportCsv'
 import {
 	formatNumberWithDots,
 	parseFiltersForSupabase,
@@ -18,6 +21,7 @@ import { useColumns } from './MyContacts-utils'
 
 export function MyContacts() {
 	const supabase = useSupabase()
+	const [isModalOpen, setIsModalOpen] = useState(false)
 	const { favorites } = useFavorites()
 	const { setFocusedPin, mapDisplayState } = useMapDisplay()
 	const { user } = useAuth()
@@ -25,6 +29,13 @@ export function MyContacts() {
 	const columns = useColumns()
 
 	const isSplitView = mapDisplayState.state === 'split' && !mapDisplayState.isHidden
+
+	const showModal = () => {
+		setIsModalOpen(true)
+	}
+	const closeModal = () => {
+		setIsModalOpen(false)
+	}
 
 	return (
 		<Table<TContact & { favorite: boolean }>
@@ -50,6 +61,12 @@ export function MyContacts() {
 						value={dataMode}
 						onChange={(value) => setDataMode(value as 'my-contacts' | 'gov-contacts')}
 					/>
+
+					<Button type="primary" onClick={showModal} icon={<CSVIcon size={16} />}>
+						Import CSV
+					</Button>
+					{user && <CSVUploadModal open={isModalOpen} onClose={closeModal} userId={user.id} />}
+
 					{globalSearchInput}
 					{resetFiltersButton}
 				</>

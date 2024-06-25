@@ -1,7 +1,8 @@
 .event-card {
 	position: relative;
+	overflow: hidden;
 
-	&--has-background::before {
+	&::before {
 		content: attr(data-title);
 		display: block;
 		z-index: 99;
@@ -21,12 +22,19 @@
 
 	.ant-card-cover {
 		height: 175px;
+		padding: unset;
 
 		img.img-cover {
 			position: relative;
 			height: 100%;
+			width: 100%;
 			object-fit: cover;
 			filter: brightness(60%);
+		}
+
+		.img-cover--empty {
+			height: 100%;
+			background-color: #0f1828;
 		}
 	}
 

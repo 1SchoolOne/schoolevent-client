@@ -3,9 +3,10 @@ import { Card } from 'antd'
 import classNames from 'classnames'
 import { Link } from 'react-router-dom'
 
+import { getEventStartTime } from '@utils'
+
 import { IEventCardProps } from './EventCard-types'
 import { formatEventDuration, getEventTypeLabel } from './EventCard-utils'
-import { getEventStartTime } from '@utils'
 
 import './EventCard-styles.less'
 
@@ -16,15 +17,18 @@ export function EventCard({ event }: IEventCardProps) {
 				'event-card--has-background': !!event.event_background,
 			})}
 			data-title={event.event_title}
-			title={!event.event_background ? event.event_title : undefined}
 			cover={
 				event.event_background ? (
 					<img className="img-cover" alt="event-cover" src={event.event_background} />
-				) : undefined
+				) : (
+					<div className="img-cover--empty" />
+				)
 			}
 		>
 			<div className="event-card__points-and-date">
-				<p><span>{event.event_points}</span> pts</p>
+				<p>
+					<span>{event.event_points}</span> pts
+				</p>
 				<p className="event-card__date">
 					{`${new Date(event.event_date).toLocaleDateString('fr-FR', {
 						weekday: 'long',

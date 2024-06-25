@@ -5,7 +5,7 @@ import {
 	Trash as DeleteIcon,
 	X as NotApprovedIcon,
 } from '@phosphor-icons/react'
-import { Button, Divider, InputRef, Modal, Space, Tag, Tooltip, Typography } from 'antd'
+import { Button, Divider, Form, InputRef, Modal, Space, Tag, Tooltip, Typography } from 'antd'
 import dayjs from 'dayjs'
 import { useEffect, useReducer, useRef, useState } from 'react'
 
@@ -13,13 +13,17 @@ import { Table, getColumnSearchFilterConfig, getRadioOrCheckboxFilterConfig } fr
 import { TUser } from '@types'
 import { getNameFromEmail, useSupabase } from '@utils'
 
-import { formatNumberWithDots, parseFiltersForSupabase } from '../../../Table/Table-utils'
+import { TRole } from '../../../../contexts/Auth/Auth-types'
+import { formatNumberWithDots } from '../../../Table/Table-utils'
+import { EditRoleModalContent } from '../EditRoleModalContent/EditRoleModalContent'
 import { TAdminTableData } from './AdminTable-types'
 import {
 	adminTableReducer,
+	parseFiltersForSupabase,
 	useApproveUsers,
 	useDeactivateUsers,
 	useDeleteUsers,
+	useUpdateUserRole,
 } from './AdminTable-utils'
 
 import './AdminTable-styles.less'
@@ -98,18 +102,25 @@ export function AdminTable() {
 		[selectedRows],
 	)
 
-	const { mutate: approveUsers } = useApproveUsers(() => {
-		setSelectedRows([])
-		setSelectedRowKeys([])
+	const { mutate: approveUsers } = useApproveUsers({
+		successCallback: () => {
+			setSelectedRows([])
+			setSelectedRowKeys([])
+		},
 	})
-	const { mutate: deactivateUsers } = useDeactivateUsers(() => {
-		setSelectedRows([])
-		setSelectedRowKeys([])
+	const { mutate: deactivateUsers } = useDeactivateUsers({
+		successCallback: () => {
+			setSelectedRows([])
+			setSelectedRowKeys([])
+		},
 	})
-	const { mutate: deleteUsers } = useDeleteUsers(() => {
-		setSelectedRows([])
-		setSelectedRowKeys([])
+	const { mutate: deleteUsers } = useDeleteUsers({
+		successCallback: () => {
+			setSelectedRows([])
+			setSelectedRowKeys([])
+		},
 	})
+	const { mutate: updateUserRole } = useUpdateUserRole({})
 
 	return (
 		<>
@@ -128,12 +139,10 @@ export function AdminTable() {
 						.range(from, to)
 					const parsedFilters = parseFiltersForSupabase<TUser>(filters)
 
-					// if (filters && parsedFilters) {
-					// 	request.or(parsedFilters)
-					// }
-
-					// TODO: custom `parseFiltersForSupabase` to implement the next line
-					request.like('role_text', 'student')
+					if (filters && parsedFilters) {
+						// TODO: use `filter` instead of `or`
+						request.or(parsedFilters)
+					}
 
 					const { data, error, count } = await request
 
@@ -149,7 +158,8 @@ export function AdminTable() {
 					return { data: finalData, totalCount: count ?? 0 }
 				}}
 				showHeader
-				renderHeader={() => (
+				showResetFilters
+				renderHeader={(resetFiltersButton) => (
 					<div className="admin-table__header">
 						{selectedRows.length > 0 && (
 							<Space className="admin-table__header__selected-rows-count" size="small">
@@ -206,7 +216,6 @@ export function AdminTable() {
 									Désactiver
 								</Button>
 							</Tooltip>
-							<Divider type="vertical" />
 							<Tooltip title={buttonsStatus.deleteBtn.message}>
 								<Button
 									icon={<DeleteIcon size={16} />}
@@ -231,6 +240,8 @@ export function AdminTable() {
 									Supprimer
 								</Button>
 							</Tooltip>
+							<Divider type="vertical" />
+							{resetFiltersButton}
 						</Space>
 					</div>
 				)}
@@ -245,8 +256,6 @@ export function AdminTable() {
 						...getColumnSearchFilterConfig(inputRef),
 					},
 					{
-						// TODO: make this cell editable
-						// https://ant.design/components/table#components-table-demo-edit-row
 						dataIndex: 'role',
 						title: 'Role',
 						width: 100,
@@ -283,6 +292,45 @@ export function AdminTable() {
 							) : (
 								<NotApprovedIcon size={16} fill="var(--ant-color-error)" />
 							),
+						...getRadioOrCheckboxFilterConfig({
+							options: [
+								{ label: 'Oui', value: true },
+								{ label: 'Non', value: false },
+							],
+						}),
+					},
+					{
+						key: 'action',
+						title: 'Action',
+						width: 75,
+						render: (_, record) => {
+							return (
+								<Button
+									type="link"
+									onClick={() => {
+										modal.confirm({
+											centered: true,
+											title: 'Modifier le rôle',
+											content: <EditRoleModalContent user={record} />,
+											modalRender: (dom) => (
+												<Form<{ role: TRole }>
+													name="edit-user-role"
+													layout="vertical"
+													onFinish={({ role }) => {
+														updateUserRole({ id: record.id, role })
+													}}
+												>
+													{dom}
+												</Form>
+											),
+											okButtonProps: { htmlType: 'submit' },
+										})
+									}}
+								>
+									Éditer
+								</Button>
+							)
+						},
 					},
 				]}
 				rowSelection={{

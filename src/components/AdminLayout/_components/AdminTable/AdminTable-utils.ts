@@ -1,9 +1,11 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { message } from 'antd'
 
+import { TFilters } from '@components'
 import { useAuth } from '@contexts'
 import { log, useSupabase } from '@utils'
 
+import { TRole } from '../../../../contexts/Auth/Auth-types'
 import {
 	IAdminTableBtnReducerState,
 	TAdminTableBtnReducerActionType,
@@ -33,7 +35,7 @@ export function adminTableReducer(
 	}
 }
 
-export function useApproveUsers(successCallback?: () => void) {
+export function useApproveUsers({ successCallback }: { successCallback?: () => void }) {
 	const { user } = useAuth()
 	const queryClient = useQueryClient()
 	const supabase = useSupabase()
@@ -69,11 +71,12 @@ export function useApproveUsers(successCallback?: () => void) {
 		},
 		onError: (error) => {
 			log.error(error)
+			message.error("Une erreur est survenue lors de l'approbation des utilisateurs")
 		},
 	})
 }
 
-export function useDeactivateUsers(successCallback?: () => void) {
+export function useDeactivateUsers({ successCallback }: { successCallback?: () => void }) {
 	const { user } = useAuth()
 	const supabase = useSupabase()
 	const queryClient = useQueryClient()
@@ -109,11 +112,12 @@ export function useDeactivateUsers(successCallback?: () => void) {
 		},
 		onError: (error) => {
 			log.error(error)
+			message.error('Une erreur est survenue lors de la désactivation des utilisateurs')
 		},
 	})
 }
 
-export function useDeleteUsers(successCallback?: () => void) {
+export function useDeleteUsers({ successCallback }: { successCallback?: () => void }) {
 	const supabase = useSupabase()
 	const queryClient = useQueryClient()
 
@@ -148,6 +152,72 @@ export function useDeleteUsers(successCallback?: () => void) {
 		},
 		onError: (error) => {
 			log.error(error)
+			message.error('Une erreur est survenue lors de la suppression des utilisateurs')
 		},
 	})
+}
+
+export function useUpdateUserRole({ successCallback }: { successCallback?: () => void }) {
+	const supabase = useSupabase()
+	const queryClient = useQueryClient()
+
+	return useMutation({
+		mutationFn: async ({ id, role }: { id: number; role: TRole }) => {
+			const { error } = await supabase.from('users').update({ role }).eq('id', id)
+
+			if (error) {
+				throw error
+			}
+		},
+		onSuccess: async () => {
+			successCallback?.()
+
+			message.success("Le rôle de l'utilisateur a été mis à jour avec succès")
+			await queryClient.resetQueries({ queryKey: ['admin'] })
+		},
+		onError: (error) => {
+			log.error(error)
+			message.error("Une erreur est survenue lors de la mise à jour du role de l'utilisateur")
+		},
+	})
+}
+
+/**
+ * Custom function based on the original one from Table component utils.
+ * It implements the search for the 'role' column as you can't use `ilike`
+ * on enums.
+ */
+export function parseFiltersForSupabase<T>(filters: TFilters<keyof T> | undefined) {
+	const queries: Array<string> = []
+
+	if (filters === undefined) {
+		return null
+	}
+
+	Object.keys(filters).forEach((dataIndex) => {
+		const filterValues = filters[dataIndex as keyof T]
+		console.log(`${dataIndex} = ${filterValues}`)
+
+		if (filterValues === null) {
+			return
+		}
+
+		if (dataIndex === 'role' && filterValues && filterValues.length >= 1) {
+			queries.push(`role_text.in.(${(filterValues as Array<string>).join(',')})`)
+		} else if (dataIndex === 'approved') {
+			queries.push(`approved.eq.${filterValues}`)
+		} else if (filterValues && filterValues.length > 1) {
+			const innerQueries: Array<string> = []
+
+			filterValues.forEach((value) => {
+				innerQueries.push(`${dataIndex}.ilike.%${value}%`)
+			})
+
+			queries.push(`or(${innerQueries.join(',')})`)
+		} else {
+			queries.push(`${dataIndex}.ilike.%${filterValues![0]}%`)
+		}
+	})
+
+	return queries.length > 0 ? queries.join(',') : null
 }

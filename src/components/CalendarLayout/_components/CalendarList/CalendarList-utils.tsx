@@ -34,16 +34,6 @@ export function useCalendarList(props: ICalendarListProps) {
 		[navigate],
 	)
 
-	const getEventsMenu = useCallback(
-		(_id: string): ItemType[] => [
-			{
-				key: 'create-follow-up',
-				label: "Modifier l'événement",
-			},
-		],
-		[],
-	)
-
 	return {
 		search,
 		setSearch,
@@ -53,6 +43,5 @@ export function useCalendarList(props: ICalendarListProps) {
 		handleSearchChange,
 		handleSegmentChange,
 		getAppointmentsMenu,
-		getEventsMenu,
 	}
 }

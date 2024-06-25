@@ -38,7 +38,6 @@ export function CalendarList(props: ICalendarListProps) {
 		handleSearchChange,
 		handleSegmentChange,
 		getAppointmentsMenu,
-		getEventsMenu,
 	} = useCalendarList(props)
 
 	const futureAppointments = appointments.filter((a) => dayjs(a.planned_date).isAfter(dayjs()))
@@ -76,32 +75,25 @@ export function CalendarList(props: ICalendarListProps) {
 					}}
 					dataSource={futureAppointments}
 					renderItem={(item) => (
-						<List.Item key={item.school_name?.toString() || ''}>
+						<List.Item key={item.id}>
 							<List.Item.Meta
 								className="favorites-list__item"
-								title={item.school_name?.toString() || ''}
+								title={item.school_name}
 								description={
 									<Flex justify="space-between">
 										<div>
 											<div>
 												<strong>Adresse : </strong> <br />
-												{item.school_address?.toString() || ''}{' '}
-												{item.school_postal_code?.toString() || ''}{' '}
-												{item.school_city?.toString() || ''}
+												{`${item.school_address} ${item.school_postal_code} ${item.school_city}`}
 											</div>
 											<br />
 											<strong>Information :</strong> <br />
 											<div>
-												<strong>Le </strong>
 												{item.planned_date &&
-													dayjs(item.planned_date.toString()).format('DD/MM/YYYY')}{' '}
-												<strong>à </strong>
-												{item.planned_date
-													? dayjs(item.planned_date.toString()).format('HH:mm')
-													: 'N/A'}
+													dayjs(item.planned_date).format('[Le] DD/MM/YYYY [à] HH:mm')}
 											</div>
 											<strong>Assigné à : </strong>
-											{getNameFromEmail(item.users?.email || '').name}
+											{getNameFromEmail(item.users?.email ?? '').name}
 										</div>
 										<Dropdown menu={{ items: getAppointmentsMenu(item.id) }} trigger={['click']}>
 											<IconButton type="text" icon={<MoreIcon size={16} weight="bold" />} />
@@ -121,26 +113,25 @@ export function CalendarList(props: ICalendarListProps) {
 					}}
 					dataSource={futureEvents}
 					renderItem={(item) => (
-						<List.Item key={item.event_title?.toString() || ''}>
+						<List.Item key={item.id}>
 							<List.Item.Meta
 								className="favorites-list__item"
-								title={item.event_title?.toString() || ''}
+								title={item.event_title}
 								description={
 									<Flex justify="space-between">
 										<i>
-											{item.event_address?.toString() || ''} -
-											{getNameFromEmail(item.users?.email || '').name}
-											<div>
-												{item.event_date
-													? dayjs(item.event_date.toString()).format('HH:mm')
-													: 'N/A'}
-											</div>
-											{item.event_date
-												? dayjs(item.event_date.toString()).format('DD/MM/YYYY')
-												: 'N/A'}
+											{item.event_address} - {getNameFromEmail(item.users?.email ?? '').name}
+											<div>{dayjs(item.event_date).format('HH:mm DD/MM/YYYY')}</div>
 										</i>
 										<Dropdown
-											menu={{ items: getEventsMenu(item.id?.toString() || '') }}
+											menu={{
+												items: [
+													{
+														key: 'create-follow-up',
+														label: "Modifier l'événement",
+													},
+												],
+											}}
 											trigger={['click']}
 										>
 											<IconButton type="text" icon={<MoreIcon size={16} weight="bold" />} />

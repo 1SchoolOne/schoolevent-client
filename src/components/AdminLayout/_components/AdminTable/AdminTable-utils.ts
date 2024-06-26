@@ -196,7 +196,6 @@ export function parseFiltersForSupabase<T>(filters: TFilters<keyof T> | undefine
 
 	Object.keys(filters).forEach((dataIndex) => {
 		const filterValues = filters[dataIndex as keyof T]
-		console.log(`${dataIndex} = ${filterValues}`)
 
 		if (filterValues === null) {
 			return

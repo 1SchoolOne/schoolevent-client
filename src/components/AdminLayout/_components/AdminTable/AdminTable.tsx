@@ -128,20 +128,21 @@ export function AdminTable() {
 			<Table<TAdminTableData>
 				tableId="admin"
 				className="admin-table"
-				dataSource={async (filters, _sorter, pagination, currentPage) => {
+				dataSource={async (filters, sorter, pagination, currentPage) => {
 					const from = (currentPage - 1) * pagination!.size
 					const to = from + pagination!.size
 
-					let request = supabase
-						.from('users')
-						.select('*', { count: 'exact' })
-						.order('role')
-						.range(from, to)
+					let request = supabase.from('users').select('*', { count: 'exact' }).range(from, to)
 					const parsedFilters = parseFiltersForSupabase<TUser>(filters)
 
 					if (filters && parsedFilters) {
-						// TODO: use `filter` instead of `or`
 						request.or(parsedFilters)
+					}
+
+					if (sorter) {
+						request = request.order(sorter.field, {
+							ascending: sorter.order === 'ascend',
+						})
 					}
 
 					const { data, error, count } = await request
@@ -259,6 +260,7 @@ export function AdminTable() {
 						dataIndex: 'role',
 						title: 'Role',
 						width: 100,
+						sorter: true,
 						render: (value: TAdminTableData['role']) => {
 							switch (value) {
 								case 'admin':
@@ -281,6 +283,7 @@ export function AdminTable() {
 					{
 						dataIndex: 'created_at',
 						title: "Date d'inscription",
+						sorter: true,
 						render: (value: string) => dayjs(value).format('DD/MM/YYYY [à] HH:mm'),
 					},
 					{

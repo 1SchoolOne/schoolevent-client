@@ -24,6 +24,7 @@ import {
 	ProvidersWithAuth,
 	Reward,
 	SignUpForm,
+	StudentTable,
 	Success,
 } from '@components'
 import { FavoriteContactsProvider, MapDisplayProvider, useTheme } from '@contexts'
@@ -119,6 +120,20 @@ function App() {
 									</>
 								}
 							/>
+							<Route
+								path="students"
+								element={
+									<>
+										<Helmet>
+											<title>SchoolEvent | Étudiants</title>
+										</Helmet>
+										<Outlet />
+									</>
+								}
+							>
+								<Route path="*" element={<Navigate to="/students" />} />
+								<Route index element={<StudentTable />} />
+							</Route>
 							<Route
 								path="rewards"
 								element={

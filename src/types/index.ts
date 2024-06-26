@@ -54,6 +54,8 @@ export interface IUseUserParams {
 
 export type TContact = Database['public']['Tables']['contacts']['Row']
 
+export type TStudent = Database['public']['Tables']['students']['Row']
+
 export * from './localStorage'
 export * from './useCopyToClipboard'
 export * from './appointments'

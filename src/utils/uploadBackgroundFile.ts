@@ -9,6 +9,12 @@ interface IUploadBackgroundFileParams {
 	session: Session
 }
 
+const APP_MODE = import.meta.env.MODE
+const SUPABASE_URL =
+	APP_MODE === 'staging'
+		? import.meta.env.VITE_TEST_SUPABASE_URL
+		: import.meta.env.VITE_SUPABASE_URL
+
 export async function uploadBackgroundFile(params: IUploadBackgroundFileParams) {
 	const { file, session } = params
 
@@ -17,9 +23,7 @@ export async function uploadBackgroundFile(params: IUploadBackgroundFileParams) 
 		const fileId = uuid.new()
 
 		const res = await fetch(
-			`${
-				import.meta.env.VITE_SUPABASE_URL
-			}/storage/v1/object/pictures/background_${fileId}.${fileExtension}`,
+			`${SUPABASE_URL}/storage/v1/object/pictures/background_${fileId}.${fileExtension}`,
 			{
 				method: 'POST',
 				body: file,
@@ -30,9 +34,7 @@ export async function uploadBackgroundFile(params: IUploadBackgroundFileParams) 
 			},
 		)
 
-		const publicUrl = `${
-			import.meta.env.VITE_SUPABASE_URL
-		}/storage/v1/object/public/pictures/background_${fileId}.${fileExtension}`
+		const publicUrl = `${SUPABASE_URL}/storage/v1/object/public/pictures/background_${fileId}.${fileExtension}`
 
 		if (res.ok) {
 			return publicUrl

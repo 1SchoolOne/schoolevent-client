@@ -62,7 +62,7 @@ export function useHistoricRewardData(userId: string | undefined) {
 				return []
 			}
 
-			const rewardWithQuantities = studentData.map(({ quantity, claimed_at, rewards }: any) => ({
+			const rewardWithQuantities = studentData.map(({ quantity, claimed_at, rewards }) => ({
 				...rewards,
 				quantity,
 				claimed_at,

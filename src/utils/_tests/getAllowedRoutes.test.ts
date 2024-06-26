@@ -11,12 +11,12 @@ const testData = [
 	{
 		title: 'returns the correct allowed routes for a manager',
 		args: 'manager',
-		expected: ['appointments', 'calendar', 'contacts', 'events', 'students'],
+		expected: ['appointments', 'calendar', 'contacts', 'events', 'students', 'rewards'],
 	},
 	{
 		title: 'returns the correct allowed routes for an admin',
 		args: 'admin',
-		expected: ['appointments', 'calendar', 'contacts', 'events', 'students'],
+		expected: ['appointments', 'calendar', 'contacts', 'events', 'students', 'rewards', 'admin'],
 	},
 ] as const
 

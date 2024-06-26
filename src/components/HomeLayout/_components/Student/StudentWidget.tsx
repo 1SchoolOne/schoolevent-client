@@ -1,8 +1,9 @@
-import { ArrowDownOutlined, ArrowUpOutlined, UserAddOutlined } from '@ant-design/icons'
+import { UserAddOutlined } from '@ant-design/icons'
 import { Card, Col, Row, Statistic } from 'antd'
 import { valueType } from 'antd/lib/statistic/utils'
-import { useMemo } from 'react'
+import { log, useSupabase } from '@utils'
 import CountUp from 'react-countup'
+import { useQuery } from '@tanstack/react-query'
 
 import '../../HomeLayout-styles.less'
 
@@ -12,8 +13,24 @@ const formatter = (value: valueType) => {
 }
 
 export const StudentWidget: React.FC = () => {
-	const visits = useMemo(() => 67, [])
-	const comparison = useMemo(() => 4, [])
+	const supabase = useSupabase()
+
+
+	const { data: studentsCount } = useQuery({
+		queryKey: ['students'],
+		queryFn: async () => {
+			const { count, error } = await supabase
+				.from('students')
+				.select('*', { count: 'exact' })
+
+			if (error) {
+				log.error('Error fetching events_participants', error)
+				throw error
+			}
+
+			return count ?? 0
+		},
+	})
 
 	return (
 		<Card
@@ -27,19 +44,11 @@ export const StudentWidget: React.FC = () => {
 					<Statistic
 						className="margin-bottom"
 						title="Nombre d'inscriptions d'étudiants :"
-						value={visits}
+						value={studentsCount}
 						prefix={<UserAddOutlined />}
 						formatter={formatter}
 					/>
 					<hr className="margin-bottom" />
-					<Statistic
-						title="Comparé au mois dernier :"
-						value={comparison}
-						formatter={formatter}
-						prefix={comparison > 0 ? <ArrowUpOutlined /> : <ArrowDownOutlined />}
-						valueStyle={{ color: comparison > 0 ? '#3f8600' : '#cf1322' }}
-						suffix="%"
-					/>
 				</Col>
 			</Row>
 		</Card>

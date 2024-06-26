@@ -13,7 +13,7 @@ export const APPOINTMENTS_URL = `${BASE_URL}/appointments`
 export const EVENTS_URL = `${BASE_URL}/events`
 export const REWARDS_URL = `${BASE_URL}/rewards`
 export const STUDENTS_URL = `${BASE_URL}/students`
-export const STATS_URL = `${BASE_URL}/statistics`
+export const ADMIN_URL = `${BASE_URL}/admin`
 
 export const ADMIN_USER = {
 	email: 'admin@esiee-it.fr',
@@ -50,6 +50,7 @@ export const SIDE_MENU_LABELS = {
 			'Événements',
 			'Étudiants',
 			'Récompenses',
+			'Administration',
 		],
 	},
 	manager: {
@@ -62,10 +63,18 @@ export const SIDE_MENU_LABELS = {
 			'Étudiants',
 			'Récompenses',
 		],
+		shouldNotHaveAccessTo: ['Administration'],
 	},
 	student: {
 		shouldHaveAccessTo: ['Événements', 'Récompenses'],
-		shouldNotHaveAccessTo: ['Accueil', 'Contacts', 'Calendrier', 'Rendez-vous', 'Étudiants'],
+		shouldNotHaveAccessTo: [
+			'Accueil',
+			'Contacts',
+			'Calendrier',
+			'Rendez-vous',
+			'Étudiants',
+			'Administration',
+		],
 	},
 }
 

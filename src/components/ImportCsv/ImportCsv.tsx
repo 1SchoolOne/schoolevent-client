@@ -69,6 +69,7 @@ export function CSVUploadModal(props: ICSVUploadModalProps) {
 			open={open}
 			title="Importer vos contacts depuis un fichier CSV"
 			onCancel={onClose}
+			centered
 			footer={[
 				<Button key="close" onClick={onClose}>
 					Annuler

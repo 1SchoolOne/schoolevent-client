@@ -17,7 +17,7 @@ export function EventForm() {
 		if (role === 'student') {
 			navigate('/events')
 		}
-	}, [role])
+	}, [role, navigate])
 
 	if (role === null) {
 		return null

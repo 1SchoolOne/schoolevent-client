@@ -2,7 +2,6 @@ import { useQuery } from '@tanstack/react-query'
 
 import { log, useSupabase } from '@utils'
 
-
 export function useStudentPastEventData(userId: string | undefined) {
 	const supabase = useSupabase()
 
@@ -18,10 +17,8 @@ export function useStudentPastEventData(userId: string | undefined) {
 				log.error('Error fetching participant data: ', participantError)
 				return []
 			}
-			
-			const pastEvents = participantData.map(
-				({ events }: any) => events
-			)
+
+			const pastEvents = participantData.map(({ events }) => events)
 
 			return pastEvents
 		},
@@ -65,13 +62,11 @@ export function useHistoricRewardData(userId: string | undefined) {
 				return []
 			}
 
-			const rewardWithQuantities = studentData.map(
-				({quantity, claimed_at, rewards}: any) => ({
-					...rewards,
-					quantity,
-					claimed_at
-				}) 
-			)
+			const rewardWithQuantities = studentData.map(({ quantity, claimed_at, rewards }: any) => ({
+				...rewards,
+				quantity,
+				claimed_at,
+			}))
 
 			return rewardWithQuantities
 		},
@@ -114,7 +109,7 @@ export function useRewardClaimingDate(rewardId: number) {
 			if (error) {
 				throw error
 			}
-			
+
 			if (!data || !data.claimed_at) {
 				return 'Date inconnue'
 			}

@@ -34,7 +34,7 @@ export type TSetStorageParams =
 	| ISetSidebarStorage
 	| ISetCommentSortStorage
 	| ISetAnyStorage
-	| any
+	| unknown
 export type TGetStorageReturn =
 	| ITableStorage
 	| ISidebarStorage

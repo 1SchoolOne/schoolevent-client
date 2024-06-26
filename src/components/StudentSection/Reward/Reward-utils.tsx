@@ -63,7 +63,7 @@ export function useHistoricRewardData(userId: string | undefined) {
 			}
 
 			const rewardWithQuantities = studentData.map(({ quantity, claimed_at, rewards }) => ({
-				...rewards,
+				...rewards!,
 				quantity,
 				claimed_at,
 			}))

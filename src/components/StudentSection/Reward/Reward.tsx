@@ -3,7 +3,6 @@ import { Button, Empty, Typography } from 'antd'
 import { useNavigate } from 'react-router-dom'
 
 import { useAuth } from '@contexts'
-import { TEvent, TReward } from '@types'
 
 import { useHistoricRewardData, useStudentPastEventData, useStudentPoints } from './Reward-utils'
 import { HistoricEventCell } from './_components/HistoricEventCell/HistoricEventCell'
@@ -48,15 +47,17 @@ export function Reward() {
 						{studentPastEvents?.length === 0 ? (
 							<div className="empty-section">
 								<Empty description={<Text>Aucun évènement récent</Text>}>
-									<Button onClick={() => queryClient.resetQueries({ queryKey: ['student-past-events'] })}>
+									<Button
+										onClick={() => queryClient.resetQueries({ queryKey: ['student-past-events'] })}
+									>
 										Actualiser
 									</Button>
 								</Empty>
 							</div>
 						) : (
-							studentPastEvents?.map((event: TEvent) => (
+							studentPastEvents?.map((event) => (
 								<div>
-									<HistoricEventCell event={event} />
+									<HistoricEventCell event={event!} />
 									<div className="divider"></div>
 								</div>
 							))
@@ -71,13 +72,15 @@ export function Reward() {
 						{studentRewards?.length === 0 ? (
 							<div className="empty-section">
 								<Empty description={<Text>Aucune récompense récente</Text>}>
-									<Button onClick={() => queryClient.resetQueries({ queryKey: ['student-rewards'] })}>
+									<Button
+										onClick={() => queryClient.resetQueries({ queryKey: ['student-rewards'] })}
+									>
 										Actualiser
 									</Button>
 								</Empty>
 							</div>
 						) : (
-							studentRewards?.map((reward: TReward) => (
+							studentRewards?.map((reward) => (
 								<div>
 									<HistoricRewardCell reward={reward} />
 									<div className="divider"></div>

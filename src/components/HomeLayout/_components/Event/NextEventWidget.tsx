@@ -2,32 +2,52 @@ import { CalendarOutlined, ClockCircleOutlined, TeamOutlined } from '@ant-design
 import { Button, Card, Col, Row, Space, Statistic, Typography } from 'antd'
 import dayjs from 'dayjs'
 import 'dayjs/locale/fr'
-import { useMemo } from 'react'
+import { log, useSupabase } from '@utils'
 import { useNavigate } from 'react-router-dom'
 
 import { ICalendarProps } from '../Home-types'
 
 import '../../HomeLayout-styles.less'
+import { useQuery } from '@tanstack/react-query'
 
 export function NextEventWidget({ events, appointments }: ICalendarProps) {
 	const navigate = useNavigate()
 	const currentDate = dayjs()
+	const supabase = useSupabase()
 	const plannedAppointments = appointments?.filter(
 		(appointment) => appointment.apt_status === 'planned',
 	)
-	const studentCount = useMemo(() => 3, [])
 
 	const nextEvent = events
 		? events
-				.filter((event) => dayjs(event.event_date).isAfter(currentDate))
-				.sort((a, b) => (dayjs(a.event_date).isAfter(dayjs(b.event_date)) ? 1 : -1))[0]
+			.filter((event) => dayjs(event.event_date).isAfter(currentDate))
+			.sort((a, b) => (dayjs(a.event_date).isAfter(dayjs(b.event_date)) ? 1 : -1))[0]
 		: null
+
+	const { data: eventStudentCount } = useQuery({
+		queryKey: ['event-participants', { eventId: nextEvent?.id }],
+		queryFn: async () => {
+			const { count, error } = await supabase
+				.from('events_participants')
+				.select('*', { count: 'exact' })
+				.eq('event_id', nextEvent!.id)
+
+			if (error) {
+				log.error('Error fetching events_participants', error)
+				throw error
+			}
+
+			return count ?? 0
+		},
+		enabled: !!nextEvent,
+	})
 
 	const nextAppointment = plannedAppointments
 		? plannedAppointments
-				.filter((appointment) => dayjs(appointment.planned_date).isAfter(currentDate))
-				.sort((a, b) => (dayjs(a.planned_date).isAfter(dayjs(b.planned_date)) ? 1 : -1))[0]
+			.filter((appointment) => dayjs(appointment.planned_date).isAfter(currentDate))
+			.sort((a, b) => (dayjs(a.planned_date).isAfter(dayjs(b.planned_date)) ? 1 : -1))[0]
 		: null
+
 
 	return (
 		<Card
@@ -59,7 +79,7 @@ export function NextEventWidget({ events, appointments }: ICalendarProps) {
 				</Col>
 				<Col xs={24} sm={12} md={8}>
 					<Typography.Title level={5}>Nombre d'étudiants présents à l'événement :</Typography.Title>
-					<Statistic value={studentCount} prefix={<TeamOutlined />} />
+					<Statistic value={eventStudentCount} prefix={<TeamOutlined />} />
 				</Col>
 				<Col xs={24} sm={12} md={8}>
 					<Typography.Title level={5}>Votre prochain rendez-vous :</Typography.Title>

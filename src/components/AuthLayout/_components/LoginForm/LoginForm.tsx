@@ -3,10 +3,10 @@ import { Alert, Button, Form, Input } from 'antd'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
-import { log, useSupabase } from '@utils'
+import { useSupabase } from '@utils'
 
 import { ILoginFormFields } from '../types'
-import { parseLoginError } from './LoginForm-utils'
+import { onFinish } from './LoginForm-utils'
 
 import './LoginForm-styles.less'
 
@@ -14,20 +14,6 @@ export function LoginForm() {
 	const [error, setError] = useState<null | string>(null)
 	const [form] = Form.useForm()
 	const supabase = useSupabase()
-
-	const onFinish = async (values: ILoginFormFields) => {
-		const { email, password } = values
-
-		if (!email || !password) return
-
-		const { error } = await supabase.auth.signInWithPassword({ email, password })
-
-		if (error) {
-			log.error(error)
-			const parsedMessage = parseLoginError(error.message)
-			parsedMessage && setError(parsedMessage)
-		}
-	}
 
 	return (
 		<Form
@@ -37,7 +23,7 @@ export function LoginForm() {
 			size="large"
 			layout="vertical"
 			autoComplete="off"
-			onFinish={onFinish}
+			onFinish={(values: ILoginFormFields) => onFinish(values, setError, supabase)}
 			initialValues={{ email: '', password: '' }}
 			requiredMark={false}
 			onChange={() => {

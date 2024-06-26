@@ -128,7 +128,7 @@ function useBackgroundFile(url: string | null | undefined, eventId: string | und
 	})
 }
 
-function useCreateEvent(userId: string) {
+export function useCreateEvent(userId: string) {
 	const supabase = useSupabase()
 	const navigate = useNavigate()
 	const queryClient = useQueryClient()

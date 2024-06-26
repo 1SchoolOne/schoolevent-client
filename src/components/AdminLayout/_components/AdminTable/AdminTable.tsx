@@ -182,11 +182,23 @@ export function AdminTable() {
 												selectedRows.length
 											} utilisateur${selectedRows.length > 1 ? 's' : ''} ?`,
 											centered: true,
-											icon: <ApproveIcon size={16} fill="var(--ant-color-warning)" />,
+											icon: (
+												<ApproveIcon
+													className="approve-icon"
+													size={20}
+													fill="var(--ant-color-warning)"
+												/>
+											),
 											okText: 'Confirmer',
 											onOk: () => {
 												approveUsers(selectedRows)
 											},
+											footer: (_, { OkBtn, CancelBtn }) => (
+												<div className="modal-footer">
+													<CancelBtn />
+													<OkBtn />
+												</div>
+											),
 										})
 									}}
 									disabled={buttonsStatus.approveBtn.disabled}
@@ -205,11 +217,23 @@ export function AdminTable() {
 												selectedRows.length
 											} utilisateur${selectedRows.length > 1 ? 's' : ''} ?`,
 											centered: true,
-											icon: <DeactivateIcon size={16} fill="var(--ant-color-warning)" />,
+											icon: (
+												<DeactivateIcon
+													className="deactivate-icon"
+													size={20}
+													fill="var(--ant-color-warning)"
+												/>
+											),
 											okText: 'Confirmer',
 											onOk: () => {
 												deactivateUsers(selectedRows)
 											},
+											footer: (_, { OkBtn, CancelBtn }) => (
+												<div className="modal-footer">
+													<CancelBtn />
+													<OkBtn />
+												</div>
+											),
 										})
 									}}
 									disabled={buttonsStatus.deactivateBtn.disabled}
@@ -227,12 +251,24 @@ export function AdminTable() {
 												selectedRows.length
 											} utilisateur${selectedRows.length > 1 ? 's' : ''} ?`,
 											centered: true,
-											icon: <DeleteIcon size={16} fill="var(--ant-color-error)" />,
+											icon: (
+												<DeleteIcon
+													className="delete-icon"
+													size={20}
+													fill="var(--ant-color-error)"
+												/>
+											),
 											okText: 'Confirmer',
 											okButtonProps: { danger: true },
 											onOk: () => {
 												deleteUsers(selectedRows)
 											},
+											footer: (_, { OkBtn, CancelBtn }) => (
+												<div className="modal-footer">
+													<CancelBtn />
+													<OkBtn />
+												</div>
+											),
 										})
 									}}
 									disabled={buttonsStatus.deleteBtn.disabled}
@@ -326,7 +362,14 @@ export function AdminTable() {
 													{dom}
 												</Form>
 											),
+											okText: 'Confirmer',
 											okButtonProps: { htmlType: 'submit' },
+											footer: (_, { OkBtn, CancelBtn }) => (
+												<div className="modal-footer">
+													<CancelBtn />
+													<OkBtn />
+												</div>
+											),
 										})
 									}}
 								>

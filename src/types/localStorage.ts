@@ -34,7 +34,7 @@ export type TSetStorageParams =
 	| ISetSidebarStorage
 	| ISetCommentSortStorage
 	| ISetAnyStorage
-	| any // eslint-disable @typescript-eslint/no-explicit-any
+	| any // eslint-disable-line @typescript-eslint/no-explicit-any
 export type TGetStorageReturn =
 	| ITableStorage
 	| ISidebarStorage

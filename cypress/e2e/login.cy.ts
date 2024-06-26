@@ -1,4 +1,5 @@
 import {
+	ADMIN_URL,
 	ADMIN_USER,
 	APPOINTMENTS_URL,
 	BASE_URL,
@@ -72,9 +73,9 @@ describe('Login', () => {
 				cy.contains(label).should('exist').and('be.visible')
 			})
 
-			// SIDE_MENU_LABELS.manager.shouldNotHaveAccessTo.forEach((label) => {
-			// 	cy.contains(label).should('not.exist')
-			// })
+			SIDE_MENU_LABELS.manager.shouldNotHaveAccessTo.forEach((label) => {
+				cy.contains(label).should('not.exist')
+			})
 		})
 
 		logout()
@@ -117,6 +118,10 @@ describe('Login', () => {
 		// Manager should have access to rewards page
 		cy.visit(REWARDS_URL)
 		cy.contains('Historique de tes évènements').should('exist').and('be.visible')
+
+		// Manager should not have access to admin page
+		cy.visit(ADMIN_URL)
+		cy.url().should('eq', `${BASE_URL}/`)
 	})
 
 	it('allows access to events and rewards routes as a student', () => {
@@ -143,5 +148,9 @@ describe('Login', () => {
 		// Student should have access to rewards page
 		cy.visit(REWARDS_URL)
 		cy.contains('Historique de tes évènements').should('exist').and('be.visible')
+
+		// Manager should not have access to admin page
+		cy.visit(ADMIN_URL)
+		cy.url().should('eq', EVENTS_URL)
 	})
 })

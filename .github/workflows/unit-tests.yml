@@ -28,6 +28,12 @@ jobs:
       - name: Code Checkout
         uses: actions/checkout@v4
 
+      - name: Setup Env Variables
+        run: |
+          touch .env
+          echo VITE_TEST_SUPABASE_URL=${{ secrets.VITE_TEST_SUPABASE_URL }} >> .env
+          echo VITE_TEST_SUPABASE_KEY=${{ secrets.VITE_TEST_SUPABASE_KEY }} >> .env
+
       - name: Install Dependencies
         run: yarn install --frozen-lockfile
 

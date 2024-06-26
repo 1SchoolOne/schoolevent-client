@@ -13,6 +13,8 @@ import {
 	waitForMainPageToLoad,
 } from '../support/utils'
 
+// TODO: fix tests where cypress looks for an event in the event list but can't find it
+// because it is collapsed
 describe('Events', () => {
 	context('as a manager', () => {
 		const eventTitle = 'test-event_' + dayjs().unix()

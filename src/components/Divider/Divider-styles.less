@@ -1,4 +1,4 @@
-.divider {
+.se-divider {
 	display: grid;
 	gap: var(--ant-margin-sm);
 	align-items: center;
@@ -10,7 +10,7 @@
 	&--2-items {
 		grid-template-columns: var(--ant-padding-xl) max-content auto min-content;
 
-		&.divider--with-icon {
+		&.se-divider--with-icon {
 			grid-template-columns: var(--ant-padding-xl) min-content max-content auto;
 		}
 	}
@@ -18,7 +18,7 @@
 	&--3-items {
 		grid-template-columns: var(--ant-padding-xl) max-content auto min-content min-content;
 
-		&.divider--with-icon {
+		&.se-divider--with-icon {
 			grid-template-columns: var(--ant-padding-xl) min-content max-content auto min-content;
 		}
 	}
@@ -29,5 +29,6 @@
 
 	h5 {
 		margin: 0;
+		width: fit-content;
 	}
 }

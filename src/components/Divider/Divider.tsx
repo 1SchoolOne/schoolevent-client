@@ -63,8 +63,8 @@ export function Divider(props: IDividerProps) {
 
 	return (
 		<div
-			className={classNames('divider', `divider--${numberOfItems}-items`, {
-				'divider--with-icon': !!icon,
+			className={classNames('se-divider', `se-divider--${numberOfItems}-items`, {
+				'se-divider--with-icon': !!icon,
 			})}
 		>
 			<Splitter />
